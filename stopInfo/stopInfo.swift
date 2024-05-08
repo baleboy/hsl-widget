@@ -37,7 +37,6 @@ struct Provider: TimelineProvider {
         
         print("Reloading timeline")
         
-        let hslApi = HslApi()
         let defaults = UserDefaults(suiteName: "group.balenet.widget")
 
         let stopId = defaults?.string(forKey: "selectedStopId") ?? Provider.stationId
@@ -45,10 +44,10 @@ struct Provider: TimelineProvider {
         
         print(stopId)
         Task {
-            let departures = await hslApi.fetchDepartures(stationId: stopId, numberOfResults: Provider.numberOfFetchedResults)
+            let departures = await HslApi.shared.fetchDepartures(stationId: stopId, numberOfResults: Provider.numberOfFetchedResults)
             
             var entries: [TimetableEntry] = []
-            let lastValidIndex = departures.count - Provider.maxNumberOfShownResults
+            let lastValidIndex = max(0,departures.count - Provider.maxNumberOfShownResults)
             
             // Iterate over the fetched departures to create timeline entries
             for index in 0..<lastValidIndex {
@@ -104,7 +103,7 @@ struct stopInfo: Widget {
         }
         .configurationDisplayName("My Widget")
         .description("This is an example widget.")
-        .supportedFamilies([.accessoryRectangular, .systemMedium])
+        .supportedFamilies([.accessoryRectangular, .systemSmall])
     }
 }
 

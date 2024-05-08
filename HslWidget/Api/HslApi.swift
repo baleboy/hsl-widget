@@ -7,23 +7,14 @@
 
 import Foundation
 
-struct HslApi {
+class HslApi {
     
-    private static let routingUrl = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql?digitransit-subscription-key="
+    static let shared = HslApi()
+    
+    private let routingUrl = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql?digitransit-subscription-key="
 
-    let apiKey: String
-    
-    init() {
-        var apiKey: String {
-            ProcessInfo.processInfo.environment["API_KEY"] ?? "DefaultAPIKey"
-        }
-        if let apiKey = ProcessInfo.processInfo.environment["HSL_API_KEY"] {
-            self.apiKey = apiKey
-        } else {
-            fatalError("Missing HSL API key")
-        }
-    }
-    
+    private let apiKey = "Add HSL API Key"
+        
     enum HslApiError: Error {
         case invalidURL
         // Add more error cases as needed
@@ -103,7 +94,7 @@ struct HslApi {
     }
 
     private func buildRequest(query: String) throws -> URLRequest {
-        guard let url = URL(string: HslApi.routingUrl + apiKey) else {
+        guard let url = URL(string: routingUrl + apiKey) else {
             print("Invalid URL")
             throw HslApiError.invalidURL
         }

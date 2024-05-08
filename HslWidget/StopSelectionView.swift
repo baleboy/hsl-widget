@@ -13,7 +13,6 @@ struct StopSelectionView: View {
     @State private var searchTerm = ""
     @State var selectedStop: Stop? = nil
     
-    private let hslApi = HslApi()
     private let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
     
     var filteredStops: [Stop] {
@@ -58,7 +57,7 @@ struct StopSelectionView: View {
             }
         }
         .task {
-            stops = await hslApi.fetchAllStops()
+            stops = await HslApi.shared.fetchAllStops()
         }
     }
     
