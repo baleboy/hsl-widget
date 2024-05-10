@@ -9,8 +9,6 @@
 struct StopInfo: Codable {
     let gtfsId: String
     let name: String
-    let lat: Double
-    let lon: Double
     let code: String?
 }
 

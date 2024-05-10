@@ -13,7 +13,7 @@ class HslApi {
     
     private let routingUrl = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql?digitransit-subscription-key="
 
-    private let apiKey = "Add HSL API Key"
+    private let apiKey = ""
         
     enum HslApiError: Error {
         case invalidURL
@@ -27,8 +27,6 @@ class HslApi {
           stops {
             gtfsId
             name
-            lat
-            lon
             code
           }
         }

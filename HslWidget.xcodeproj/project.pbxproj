@@ -74,6 +74,7 @@
 		25FA042E2BEB3A540052A577 /* StopSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopSelectionView.swift; sourceTree = "<group>"; };
 		25FA04302BEB50D30052A577 /* HslWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HslWidget.entitlements; sourceTree = "<group>"; };
 		25FA04312BEB50F50052A577 /* stopInfoExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = stopInfoExtension.entitlements; sourceTree = "<group>"; };
+		25FA04342BEBD1BF0052A577 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +100,7 @@
 		25D19E4B2BE600920055E70E = {
 			isa = PBXGroup;
 			children = (
+				25FA04342BEBD1BF0052A577 /* README.md */,
 				25FA04312BEB50F50052A577 /* stopInfoExtension.entitlements */,
 				25D19E562BE600920055E70E /* HslWidget */,
 				25D19E6F2BE755310055E70E /* stopInfo */,

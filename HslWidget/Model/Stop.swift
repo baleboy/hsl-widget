@@ -12,13 +12,11 @@ struct Stop: Identifiable {
     let name: String
     let code: String
     let id: String
-    let distance: Int
         
     init(id: String, name: String, code: String, distance: Int = 0) {
         self.id = id
         self.name = name
         self.code = code
-        self.distance = distance
     }
     
     static var defaultStop: Stop {
