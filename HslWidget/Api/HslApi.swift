@@ -11,9 +11,9 @@ class HslApi {
     
     static let shared = HslApi()
     
-    private let routingUrl = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql?digitransit-subscription-key="
+    private let routingUrl = "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1?digitransit-subscription-key="
 
-    private let apiKey = ""
+    private let apiKey = "API_KEY_HERE"
         
     enum HslApiError: Error {
         case invalidURL
