@@ -9,6 +9,35 @@ import CoreLocation
 import SwiftUI
 import WidgetKit
 
+/// A wrapper for CLLocationManager that provides async/await-based location fetching.
+///
+/// This class handles the complex coordination between CLLocationManager's delegate-based API
+/// and Swift's modern async/await concurrency model. It manages authorization requests and
+/// location updates, providing a simple async interface for requesting the user's current location.
+///
+/// ## Thread Safety
+/// This class is annotated with `@MainActor` to ensure all interactions with CLLocationManager
+/// and state management occur on the main thread, as required by CoreLocation.
+///
+/// ## Single Request Limitation
+/// Only one location request can be active at a time. If a new request is made while a previous
+/// request is still pending, the previous request will be cancelled and return `nil`.
+///
+/// ## Authorization Handling
+/// - If location services are disabled system-wide, returns `nil` immediately
+/// - If authorization is denied or restricted, returns `nil`
+/// - If authorization is not determined, requests "when in use" authorization
+/// - Automatically handles authorization state changes and resumes pending requests
+///
+/// ## Usage
+/// ```swift
+/// let fetcher = LocationFetcher()
+/// if let location = await fetcher.requestLocation() {
+///     // Use location
+/// } else {
+///     // Location unavailable (disabled, denied, or error)
+/// }
+/// ```
 @MainActor
 final class LocationFetcher: NSObject, CLLocationManagerDelegate {
 
@@ -21,6 +50,19 @@ final class LocationFetcher: NSObject, CLLocationManagerDelegate {
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     }
 
+    /// Requests the user's current location asynchronously.
+    ///
+    /// This method checks location services availability and authorization status before
+    /// requesting location. If necessary, it will request authorization from the user.
+    ///
+    /// - Returns: The user's current location, or `nil` if:
+    ///   - Location services are disabled
+    ///   - Authorization is denied or restricted
+    ///   - A location error occurs
+    ///   - A new request cancels this one
+    ///
+    /// - Note: Only one request can be active at a time. If this method is called while
+    ///   a previous request is pending, the previous request will be cancelled and return `nil`.
     func requestLocation() async -> CLLocation? {
         guard CLLocationManager.locationServicesEnabled() else {
             return nil
@@ -48,16 +90,38 @@ final class LocationFetcher: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    /// CLLocationManagerDelegate method called when location updates are available.
+    ///
+    /// Resumes the pending continuation with the first available location and clears
+    /// the continuation to prepare for the next request.
+    ///
+    /// - Parameters:
+    ///   - manager: The location manager that generated the update
+    ///   - locations: An array of location objects in chronological order
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         continuation?.resume(returning: locations.first)
         continuation = nil
     }
 
+    /// CLLocationManagerDelegate method called when a location request fails.
+    ///
+    /// Resumes the pending continuation with `nil` and clears the continuation.
+    ///
+    /// - Parameters:
+    ///   - manager: The location manager that encountered the error
+    ///   - error: The error that occurred
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         continuation?.resume(returning: nil)
         continuation = nil
     }
 
+    /// CLLocationManagerDelegate method called when authorization status changes.
+    ///
+    /// If authorization is granted while a request is pending, this automatically triggers
+    /// the location request. If authorization is denied or restricted, any pending request
+    /// is cancelled and returns `nil`.
+    ///
+    /// - Parameter manager: The location manager whose authorization status changed
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         switch manager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
