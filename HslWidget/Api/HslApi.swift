@@ -23,11 +23,13 @@ class HslApi {
     
     func fetchAllStops() async -> [Stop] {
         let query = """
-        {
+        { 
           stops {
             gtfsId
             name
             code
+            lat
+            lon
           }
         }
         """
@@ -38,7 +40,13 @@ class HslApi {
                 var result = [Stop]()
                 let stops = decodedResponse.data.stops
                 for stop in stops {
-                    let newStop = Stop(id: stop.gtfsId, name: stop.name, code: stop.code ?? "No code")
+                    let newStop = Stop(
+                        id: stop.gtfsId,
+                        name: stop.name,
+                        code: stop.code ?? "No code",
+                        latitude: stop.lat,
+                        longitude: stop.lon
+                    )
                     result.append(newStop)
                 }
                 return result

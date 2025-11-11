@@ -10,6 +10,8 @@ struct StopInfo: Codable {
     let gtfsId: String
     let name: String
     let code: String?
+    let lat: Double
+    let lon: Double
 }
 
 // Define a structure for the container of stops
