@@ -31,6 +31,7 @@ final class LocationFetcher: NSObject, CLLocationManagerDelegate {
             return nil
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
+            return nil
         default:
             break
         }
