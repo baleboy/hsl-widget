@@ -11,10 +11,11 @@ import WidgetKit
 struct StopSelectionView: View {
     @State private var stops = [Stop]()
     @State private var searchTerm = ""
-    @State var selectedStop: Stop? = nil
-    
-    private let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
-    
+    @State private var favoriteStopIds = Set<String>()
+    @StateObject private var locationManager = LocationManager.shared
+
+    private let favoritesManager = FavoritesManager.shared
+
     var filteredStops: [Stop] {
         guard !searchTerm.isEmpty else {
             return stops
@@ -25,34 +26,41 @@ struct StopSelectionView: View {
         }
     }
 
+    var favoritesSection: [Stop] {
+        stops.filter { favoriteStopIds.contains($0.id) }
+    }
+
     var body: some View {
         NavigationView {
             if stops.isEmpty {
                 Text("Loading...").font(.title)
             } else {
-                ScrollViewReader { proxy in
-                    List(filteredStops) { stop in
-                        Button(action: {
-                            selectStop(stop)
-                        }) {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(stop.name)
-                                    Text(stop.code).font(.caption)
-                                }
-                                Spacer()
-                                if selectedStop?.id == stop.id {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(.accentColor)
-                                }
+                List {
+                    // Show favorites section if there are any
+                    if !favoritesSection.isEmpty && searchTerm.isEmpty {
+                        Section(header: Text("Favorites")) {
+                            ForEach(favoritesSection) { stop in
+                                stopRow(stop)
                             }
                         }
                     }
-                    .searchable(text: $searchTerm, prompt: "Search by name or code")
-                    .navigationBarTitle("Select a Stop")
-                    .onAppear {
-                        loadSelectedStopId(with: proxy)
+
+                    Section(header: searchTerm.isEmpty ? Text("All Stops") : nil) {
+                        ForEach(filteredStops) { stop in
+                            // Skip stops already shown in favorites section
+                            if searchTerm.isEmpty && favoriteStopIds.contains(stop.id) {
+                                EmptyView()
+                            } else {
+                                stopRow(stop)
+                            }
+                        }
                     }
+                }
+                .searchable(text: $searchTerm, prompt: "Search by name or code")
+                .navigationBarTitle("Favorite Stops")
+                .onAppear {
+                    loadFavorites()
+                    requestLocationPermission()
                 }
             }
         }
@@ -60,26 +68,42 @@ struct StopSelectionView: View {
             stops = await HslApi.shared.fetchAllStops()
         }
     }
-    
-    private func selectStop(_ stop: Stop) {
-        selectedStop = stop
-        saveSelectedStopData(stop)
-        WidgetCenter.shared.reloadAllTimelines()
-    }
 
-    private func saveSelectedStopData(_ stop: Stop) {
-        sharedDefaults?.set(stop.id, forKey: "selectedStopId")
-        sharedDefaults?.set(stop.name, forKey: "selectedStopName")
-    }
-    
-    private func loadSelectedStopId(with scrollProxy: ScrollViewProxy) {
-        if let stopId = sharedDefaults?.string(forKey: "selectedStopId"),
-           let stop = stops.first(where: { $0.id == stopId }) {
-            selectedStop = stop
-            withAnimation {
-                scrollProxy.scrollTo(stop.id, anchor: .top)
+    private func stopRow(_ stop: Stop) -> some View {
+        Button(action: {
+            toggleFavorite(stop)
+        }) {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(stop.name)
+                    Text(stop.code).font(.caption).foregroundColor(.secondary)
+                }
+                Spacer()
+                if favoriteStopIds.contains(stop.id) {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                }
             }
         }
+        .buttonStyle(PlainButtonStyle())
+    }
+
+    private func toggleFavorite(_ stop: Stop) {
+        print("UI: Toggling favorite for: \(stop.name)")
+        favoritesManager.toggleFavorite(stop)
+        loadFavorites()
+        print("UI: Current favorites count: \(favoriteStopIds.count)")
+    }
+
+    private func loadFavorites() {
+        let favorites = favoritesManager.getFavorites()
+        favoriteStopIds = Set(favorites.map { $0.id })
+        print("UI: Loaded \(favoriteStopIds.count) favorites")
+    }
+
+    private func requestLocationPermission() {
+        print("UI: Requesting location permission")
+        locationManager.requestPermission()
     }
 }
 

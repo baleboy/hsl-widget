@@ -1,0 +1,103 @@
+//
+//  LocationManager.swift
+//  HslWidget
+//
+//  Manages user location and shares it with the widget extension
+//
+
+import Foundation
+import CoreLocation
+import WidgetKit
+
+class LocationManager: NSObject, ObservableObject {
+    static let shared = LocationManager()
+
+    private let locationManager = CLLocationManager()
+    private let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
+
+    private let latitudeKey = "currentLatitude"
+    private let longitudeKey = "currentLongitude"
+
+    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
+    @Published var currentLocation: CLLocation?
+
+    private override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        locationManager.distanceFilter = 100 // Update every 100 meters
+
+        authorizationStatus = locationManager.authorizationStatus
+    }
+
+    /// Request location permissions
+    func requestPermission() {
+        print("LocationManager: Requesting when-in-use authorization")
+        locationManager.requestWhenInUseAuthorization()
+    }
+
+    /// Start monitoring location
+    func startMonitoring() {
+        print("LocationManager: Starting location updates")
+        locationManager.startUpdatingLocation()
+    }
+
+    /// Stop monitoring location
+    func stopMonitoring() {
+        print("LocationManager: Stopping location updates")
+        locationManager.stopUpdatingLocation()
+    }
+
+    /// Get the last known location from shared storage
+    func getSharedLocation() -> CLLocation? {
+        guard let latitude = sharedDefaults?.double(forKey: latitudeKey),
+              let longitude = sharedDefaults?.double(forKey: longitudeKey),
+              latitude != 0 && longitude != 0 else {
+            return nil
+        }
+        return CLLocation(latitude: latitude, longitude: longitude)
+    }
+
+    /// Save location to shared storage
+    private func saveLocation(_ location: CLLocation) {
+        sharedDefaults?.set(location.coordinate.latitude, forKey: latitudeKey)
+        sharedDefaults?.set(location.coordinate.longitude, forKey: longitudeKey)
+
+        // Reload widget when location changes significantly
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
+extension LocationManager: CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationStatus = manager.authorizationStatus
+        print("LocationManager: Authorization status changed to: \(authorizationStatus.rawValue)")
+
+        switch authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            print("LocationManager: Location authorized, starting monitoring")
+            startMonitoring()
+        case .denied, .restricted:
+            print("LocationManager: Location denied/restricted, stopping monitoring")
+            stopMonitoring()
+        case .notDetermined:
+            print("LocationManager: Location permission not determined yet")
+            break
+        @unknown default:
+            break
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+
+        print("LocationManager: Location updated: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+        currentLocation = location
+        saveLocation(location)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("LocationManager: Error: \(error.localizedDescription)")
+    }
+}

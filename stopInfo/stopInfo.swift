@@ -7,21 +7,22 @@
 
 import WidgetKit
 import SwiftUI
+import CoreLocation
 
 struct Provider: TimelineProvider {
-    
-    static let stationId = "HSL:1080416"
-    static let stationName = "Merisotilaantori"
-    static let stationCode = "H0421"
+
     static let maxNumberOfShownResults = 2
     static let numberOfFetchedResults = 20
+
+    private let favoritesManager = FavoritesManager.shared
+    private let locationManager = LocationManager.shared
 
     struct TimetableEntry: TimelineEntry {
         let date: Date
         let stopName: String
         let departures: [Departure]
-        
-        static let example =         TimetableEntry(date: Date(), stopName: "Merisotilaantori", departures: [Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi"), Departure(departureTime: Date(), routeShortName: "5", headsign: "Munkkiniemi")])
+
+        static let example = TimetableEntry(date: Date(), stopName: "Merisotilaantori", departures: [Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi"), Departure(departureTime: Date(), routeShortName: "5", headsign: "Munkkiniemi")])
     }
 
     func placeholder(in context: Context) -> TimetableEntry {
@@ -34,53 +35,115 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TimetableEntry>) -> ()) {
-        
-        print("Reloading timeline")
-        
-        let defaults = UserDefaults(suiteName: "group.balenet.widget")
 
-        let stopId = defaults?.string(forKey: "selectedStopId") ?? Provider.stationId
-        let stopName = defaults?.string(forKey: "selectedStopName") ?? Provider.stationName
-        
-        print(stopId)
+        print("========== Widget Timeline Reload ==========")
+
         Task {
-            let departures = await HslApi.shared.fetchDepartures(stationId: stopId, numberOfResults: Provider.numberOfFetchedResults)
-            
+            // Get favorite stops
+            let favorites = favoritesManager.getFavorites()
+            print("Widget: Retrieved \(favorites.count) favorites from FavoritesManager")
+
+            // Handle no favorites case
+            guard !favorites.isEmpty else {
+                print("Widget: No favorites found, showing empty state")
+                let entry = TimetableEntry(date: Date(), stopName: "No favorites", departures: [])
+                let timeline = Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(60 * 60)))
+                completion(timeline)
+                return
+            }
+
+            // Get current location
+            let currentLocation = locationManager.getSharedLocation()
+            if let loc = currentLocation {
+                print("Widget: Current location: \(loc.coordinate.latitude), \(loc.coordinate.longitude)")
+            } else {
+                print("Widget: No location available, will use alphabetical fallback")
+            }
+
+            // Find closest favorite stop
+            let closestStop = findClosestStop(favorites: favorites, currentLocation: currentLocation)
+
+            print("Widget: Selected stop: \(closestStop.name) (ID: \(closestStop.id))")
+            print("==========================================")
+
+            // Fetch departures for the closest stop
+            let departures = await HslApi.shared.fetchDepartures(stationId: closestStop.id, numberOfResults: Provider.numberOfFetchedResults)
+
             var entries: [TimetableEntry] = []
-            let lastValidIndex = max(0,departures.count - Provider.maxNumberOfShownResults)
-            
+            let lastValidIndex = max(0, departures.count - Provider.maxNumberOfShownResults)
+
             // Iterate over the fetched departures to create timeline entries
             for index in 0..<lastValidIndex {
                 let entryDate = (index == 0 ? Date() : departures[index-1].departureTime)
                 let nextDepartures = Array(departures[index..<(index + Provider.maxNumberOfShownResults)])
-                let entry = TimetableEntry(date: entryDate, stopName: stopName, departures: nextDepartures)
+                let entry = TimetableEntry(date: entryDate, stopName: closestStop.name, departures: nextDepartures)
                 entries.append(entry)
             }
-            
+
             let timeline = Timeline(entries: entries, policy: .atEnd)
             completion(timeline)
         }
+    }
+
+    /// Find the closest stop to the current location
+    /// If location is unavailable, return the first favorite alphabetically
+    private func findClosestStop(favorites: [Stop], currentLocation: CLLocation?) -> Stop {
+        guard let currentLocation = currentLocation else {
+            // Fallback: return first favorite alphabetically by name
+            return favorites.sorted(by: { $0.name < $1.name }).first!
+        }
+
+        var closestStop = favorites[0]
+        var minDistance = Double.greatestFiniteMagnitude
+
+        for stop in favorites {
+            if let lat = stop.latitude, let lon = stop.longitude {
+                let stopLocation = CLLocation(latitude: lat, longitude: lon)
+                let distance = currentLocation.distance(from: stopLocation)
+
+                if distance < minDistance {
+                    minDistance = distance
+                    closestStop = stop
+                }
+            }
+        }
+
+        return closestStop
     }
 }
 
 
 struct stopInfoEntryView : View {
     var entry: Provider.Entry
-    
+
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(entry.stopName)
-                .font(.headline)
-                .widgetAccentable()
-            ForEach(entry.departures) { departure in
-                HStack {
-                    Label(departure.routeShortName, systemImage: "tram.fill")
+        VStack(alignment: .leading, spacing: 4) {
+            if entry.departures.isEmpty {
+                // Show message when no favorites are selected
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("No favorites")
                         .font(.headline)
-                    Label {
-                        Text(departure.departureTime, style: .time)
-                    } icon: {
-                        Image(systemName: "clock")
-                    }.padding(.leading)
+                        .widgetAccentable()
+                    Text("Open the app to select favorite stops")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                // Show stop name and departures
+                Text(entry.stopName)
+                    .font(.headline)
+                    .widgetAccentable()
+
+                ForEach(entry.departures) { departure in
+                    HStack {
+                        Label(departure.routeShortName, systemImage: "tram.fill")
+                            .font(.headline)
+                        Label {
+                            Text(departure.departureTime, style: .time)
+                        } icon: {
+                            Image(systemName: "clock")
+                        }.padding(.leading)
+                    }
                 }
             }
         }

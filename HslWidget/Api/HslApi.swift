@@ -13,7 +13,7 @@ class HslApi {
     
     private let routingUrl = "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1?digitransit-subscription-key="
 
-    private let apiKey = "API_KEY_HERE"
+    private let apiKey = "877adb1ee87e4aae9a7ff5fe39b2502b"
         
     enum HslApiError: Error {
         case invalidURL
@@ -28,6 +28,8 @@ class HslApi {
             gtfsId
             name
             code
+            lat
+            lon
           }
         }
         """
@@ -38,7 +40,7 @@ class HslApi {
                 var result = [Stop]()
                 let stops = decodedResponse.data.stops
                 for stop in stops {
-                    let newStop = Stop(id: stop.gtfsId, name: stop.name, code: stop.code ?? "No code")
+                    let newStop = Stop(id: stop.gtfsId, name: stop.name, code: stop.code ?? "No code", latitude: stop.lat, longitude: stop.lon)
                     result.append(newStop)
                 }
                 return result
