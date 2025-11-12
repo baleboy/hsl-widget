@@ -119,6 +119,20 @@ struct FavoritesListView: View {
                                                     .foregroundColor(.blue)
                                             }
                                         }
+
+                                        // Show headsigns (directions) if available
+                                        if let headsigns = stop.headsigns, !headsigns.isEmpty {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "arrow.right")
+                                                    .font(.caption2)
+                                                    .foregroundColor(.secondary)
+                                                Text(headsigns.prefix(3).joined(separator: ", "))
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                                    .lineLimit(1)
+                                            }
+                                            .padding(.top, 2)
+                                        }
                                     }
                                 }
                                 .buttonStyle(PlainButtonStyle())

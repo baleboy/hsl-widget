@@ -174,7 +174,22 @@ struct StopPickerView: View {
 
     private func toggleFavorite(_ stop: Stop) {
         print("StopPicker: Toggling favorite for: \(stop.name)")
-        favoritesManager.toggleFavorite(stop)
+
+        // Create a new Stop with headsigns included if available
+        let stopWithHeadsigns = Stop(
+            id: stop.id,
+            name: stop.name,
+            code: stop.code,
+            latitude: stop.latitude,
+            longitude: stop.longitude,
+            vehicleModes: stop.vehicleModes,
+            headsigns: stopHeadsigns[stop.id] ?? stop.headsigns,
+            allStopIds: stop.allStopIds,
+            filteredLines: stop.filteredLines,
+            filteredHeadsignPattern: stop.filteredHeadsignPattern
+        )
+
+        favoritesManager.toggleFavorite(stopWithHeadsigns)
         loadFavorites()
         print("StopPicker: Current favorites count: \(favoriteStopIds.count)")
 
