@@ -19,7 +19,7 @@ struct HslWidgetApp: App {
 
     var body: some Scene {
         WindowGroup {
-            StopSelectionView()
+            FavoritesListView()
         }
     }
 
