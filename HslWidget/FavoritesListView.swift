@@ -16,6 +16,7 @@ struct FavoritesListView: View {
     @State private var departures: [Departure] = []
     @State private var isLoadingDepartures = false
     @State private var filteredHeadsigns: [String: [String]] = [:] // stopId -> headsigns for filtered lines
+    @State private var filteredLinesByMode: [String: [String: [String]]] = [:] // stopId -> [mode: [lines]]
     @StateObject private var locationManager = LocationManager.shared
 
     private let favoritesManager = FavoritesManager.shared
@@ -149,16 +150,19 @@ struct FavoritesListView: View {
                                             .padding(.top, 2)
                                         }
 
-                                        // Show filtered lines indicator if configured
-                                        if let filteredLines = stop.filteredLines, !filteredLines.isEmpty {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "number")
-                                                    .font(.caption2)
-                                                    .foregroundColor(.blue)
-                                                Text("Lines: \(filteredLines.joined(separator: ", "))")
-                                                    .font(.caption)
-                                                    .foregroundColor(.blue)
-                                                    .lineLimit(1)
+                                        // Show lines grouped by mode if available
+                                        if let linesByMode = filteredLinesByMode[stop.id], !linesByMode.isEmpty {
+                                            HStack(spacing: 6) {
+                                                ForEach(Array(linesByMode.keys.sorted()), id: \.self) { mode in
+                                                    if let lines = linesByMode[mode], !lines.isEmpty {
+                                                        HStack(spacing: 2) {
+                                                            modeIcon(for: mode)
+                                                            Text(lines.sorted().joined(separator: ", "))
+                                                                .font(.caption)
+                                                                .foregroundColor(stop.hasFilters ? .blue : .secondary)
+                                                        }
+                                                    }
+                                                }
                                             }
                                             .padding(.top, 2)
                                         }
@@ -240,22 +244,41 @@ struct FavoritesListView: View {
         stopToEdit = stop
     }
 
+    private func modeIcon(for mode: String) -> some View {
+        Group {
+            switch mode.uppercased() {
+            case "BUS":
+                Image(systemName: "bus.fill")
+                    .foregroundColor(.blue)
+            case "TRAM":
+                Image(systemName: "tram.fill")
+                    .foregroundColor(.green)
+            case "RAIL":
+                Image(systemName: "train.side.front.car")
+                    .foregroundColor(.purple)
+            case "SUBWAY":
+                Image(systemName: "train.side.front.car")
+                    .foregroundColor(.orange)
+            case "FERRY":
+                Image(systemName: "ferry.fill")
+                    .foregroundColor(.cyan)
+            default:
+                Image(systemName: "mappin.circle.fill")
+                    .foregroundColor(.gray)
+            }
+        }
+        .font(.caption)
+    }
+
     private func saveFilteredStop(_ stop: Stop) {
         favoritesManager.updateFavorite(stop)
-
-        // Clear filtered headsigns for this stop if filters were removed
-        if stop.filteredLines == nil || stop.filteredLines!.isEmpty {
-            filteredHeadsigns[stop.id] = nil
-        }
 
         loadFavorites()
         updateClosestStopAndDepartures()
 
-        // Refresh headsigns for this stop if it has line filters
-        if let filteredLines = stop.filteredLines, !filteredLines.isEmpty {
-            Task {
-                await fetchFilteredHeadsigns()
-            }
+        // Refresh data for this stop (fetches lines for all stops now)
+        Task {
+            await fetchFilteredHeadsigns()
         }
     }
 
@@ -263,9 +286,10 @@ struct FavoritesListView: View {
         favorites = favoritesManager.getFavorites()
         print("FavoritesListView: Loaded \(favorites.count) favorites")
 
-        // Clean up stale entries in filteredHeadsigns for stops no longer in favorites
+        // Clean up stale entries for stops no longer in favorites
         let favoriteIds = Set(favorites.map { $0.id })
         filteredHeadsigns = filteredHeadsigns.filter { favoriteIds.contains($0.key) }
+        filteredLinesByMode = filteredLinesByMode.filter { favoriteIds.contains($0.key) }
 
         // Fetch headsigns for filtered stops
         Task {
@@ -273,43 +297,78 @@ struct FavoritesListView: View {
         }
     }
 
-    /// Fetch headsigns for stops that have line filters
+    /// Fetch headsigns and lines for all favorite stops
     private func fetchFilteredHeadsigns() async {
-        // First, remove entries for stops that no longer have filters
-        await MainActor.run {
-            for stop in favorites {
-                if stop.filteredLines == nil || stop.filteredLines!.isEmpty {
-                    filteredHeadsigns[stop.id] = nil
-                }
-            }
-        }
-
-        // Then fetch headsigns for stops that do have filters
+        // Fetch for all favorite stops
         for stop in favorites {
-            // Only fetch for stops with line filters
-            guard let filteredLines = stop.filteredLines, !filteredLines.isEmpty else {
-                continue
-            }
-
             // Fetch departures for this stop
             let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
 
-            // Extract headsigns for the filtered lines
+            let filteredLines = stop.filteredLines
+
+            // Extract headsigns and lines
             var headsignsForLines: [String] = []
             var seenHeadsigns = Set<String>()
 
+            // Group ALL lines by mode (for display)
+            var allLinesByMode: [String: Set<String>] = [:] // mode -> set of lines
+
+            // Group filtered lines by mode (for headsigns)
+            var filteredLinesByModeSet: [String: Set<String>] = [:] // mode -> set of lines
+
             for departure in allDepartures {
-                if filteredLines.contains(departure.routeShortName) {
-                    if !seenHeadsigns.contains(departure.headsign) {
-                        headsignsForLines.append(departure.headsign)
-                        seenHeadsigns.insert(departure.headsign)
+                // Collect all lines by mode for display
+                if let mode = departure.mode {
+                    var lines = allLinesByMode[mode] ?? Set<String>()
+                    lines.insert(departure.routeShortName)
+                    allLinesByMode[mode] = lines
+                }
+
+                // If this stop has filters, collect headsigns and filtered lines
+                if let filteredLines = filteredLines, !filteredLines.isEmpty {
+                    if filteredLines.contains(departure.routeShortName) {
+                        // Collect headsigns for filtered lines
+                        if !seenHeadsigns.contains(departure.headsign) {
+                            headsignsForLines.append(departure.headsign)
+                            seenHeadsigns.insert(departure.headsign)
+                        }
+
+                        // Group filtered lines by mode
+                        if let mode = departure.mode {
+                            var lines = filteredLinesByModeSet[mode] ?? Set<String>()
+                            lines.insert(departure.routeShortName)
+                            filteredLinesByModeSet[mode] = lines
+                        }
                     }
                 }
             }
 
-            // Store the headsigns
+            // Decide which lines to display
+            var linesToDisplay: [String: [String]]
+            if let filteredLines = filteredLines, !filteredLines.isEmpty {
+                // Show only filtered lines
+                var linesByModeArrays: [String: [String]] = [:]
+                for (mode, linesSet) in filteredLinesByModeSet {
+                    linesByModeArrays[mode] = Array(linesSet)
+                }
+                linesToDisplay = linesByModeArrays
+            } else {
+                // Show all lines
+                var linesByModeArrays: [String: [String]] = [:]
+                for (mode, linesSet) in allLinesByMode {
+                    linesByModeArrays[mode] = Array(linesSet)
+                }
+                linesToDisplay = linesByModeArrays
+            }
+
+            // Store the headsigns and lines by mode
             await MainActor.run {
-                filteredHeadsigns[stop.id] = headsignsForLines
+                if let filteredLines = filteredLines, !filteredLines.isEmpty {
+                    filteredHeadsigns[stop.id] = headsignsForLines
+                } else {
+                    filteredHeadsigns[stop.id] = nil
+                }
+                filteredLinesByMode[stop.id] = linesToDisplay
             }
         }
     }
@@ -317,8 +376,9 @@ struct FavoritesListView: View {
     private func removeFavorite(_ stop: Stop) {
         favoritesManager.removeFavorite(stop)
 
-        // Clear filtered headsigns for this stop
+        // Clear filtered data for this stop
         filteredHeadsigns[stop.id] = nil
+        filteredLinesByMode[stop.id] = nil
 
         loadFavorites()
         updateClosestStopAndDepartures()

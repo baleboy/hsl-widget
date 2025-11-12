@@ -181,8 +181,9 @@ class HslApi {
                     let date = Date(timeIntervalSince1970: departureTimeStamp)
                     let shortName = stopTime.trip.route.shortName
                     let headsign = stopTime.headsign
+                    let mode = stopTime.trip.route.mode
                     let departure = Departure(departureTime: date, routeShortName: shortName,
-                        headsign: headsign ?? "No headsign")
+                        headsign: headsign ?? "No headsign", mode: mode)
                     result.append(departure)
                 }
                 print("HslApi: Fetched \(result.count) departures for stop \(stationId)")

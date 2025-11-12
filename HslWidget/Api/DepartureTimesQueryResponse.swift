@@ -30,6 +30,7 @@ struct DepartureTimesQueryResponse: Codable {
     
     struct Route: Codable {
         let shortName: String
+        let mode: String
     }
     
     let data: Data
