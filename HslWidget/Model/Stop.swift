@@ -15,14 +15,16 @@ struct Stop: Identifiable, Codable {
     let latitude: Double?
     let longitude: Double?
     let vehicleModes: Set<String>?
+    let headsigns: [String]?
 
-    init(id: String, name: String, code: String, latitude: Double? = nil, longitude: Double? = nil, vehicleModes: Set<String>? = nil) {
+    init(id: String, name: String, code: String, latitude: Double? = nil, longitude: Double? = nil, vehicleModes: Set<String>? = nil, headsigns: [String]? = nil) {
         self.id = id
         self.name = name
         self.code = code
         self.latitude = latitude
         self.longitude = longitude
         self.vehicleModes = vehicleModes
+        self.headsigns = headsigns
     }
 
     static var defaultStop: Stop {

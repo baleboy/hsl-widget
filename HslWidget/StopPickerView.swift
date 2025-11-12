@@ -12,6 +12,7 @@ struct StopPickerView: View {
     @State private var stops = [Stop]()
     @State private var searchTerm = ""
     @State private var favoriteStopIds = Set<String>()
+    @State private var stopHeadsigns: [String: [String]] = [:] // stopId -> headsigns
     @StateObject private var locationManager = LocationManager.shared
 
     private let favoritesManager = FavoritesManager.shared
@@ -61,6 +62,12 @@ struct StopPickerView: View {
                 .onAppear {
                     loadFavorites()
                 }
+                .onChange(of: sortedStops) { newStops in
+                    // Fetch headsigns for top 20 stops
+                    Task {
+                        await fetchHeadsignsForVisibleStops(newStops)
+                    }
+                }
             }
         }
         .task {
@@ -101,6 +108,19 @@ struct StopPickerView: View {
                                     modeIcon(for: mode)
                                 }
                             }
+                        }
+                    }
+
+                    // Show headsigns (directions) if available
+                    if let headsigns = stopHeadsigns[stop.id], !headsigns.isEmpty {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.right")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                            Text(headsigns.joined(separator: ", "))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
                         }
                     }
                 }
@@ -176,6 +196,25 @@ struct StopPickerView: View {
             return String(format: "%.0f m", distance)
         } else {
             return String(format: "%.1f km", distance / 1000)
+        }
+    }
+
+    private func fetchHeadsignsForVisibleStops(_ stops: [Stop]) async {
+        // Fetch headsigns for top 20 stops to avoid too many API calls
+        let stopsToFetch = Array(stops.prefix(20))
+
+        for stop in stopsToFetch {
+            // Skip if we already have headsigns for this stop
+            if stopHeadsigns[stop.id] != nil {
+                continue
+            }
+
+            let headsigns = await HslApi.shared.fetchHeadsigns(stopId: stop.id)
+            if !headsigns.isEmpty {
+                await MainActor.run {
+                    stopHeadsigns[stop.id] = headsigns
+                }
+            }
         }
     }
 }

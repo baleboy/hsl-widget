@@ -105,6 +105,45 @@ class HslApi {
     }
     
     
+    func fetchHeadsigns(stopId: String) async -> [String] {
+        let query = """
+            {
+                stop(id:\"\(stopId)\"){
+                    stoptimesWithoutPatterns(numberOfDepartures: 10) {
+                        headsign
+                    }
+                }
+            }
+            """
+        do {
+            let request = try buildRequest(query: query)
+            let (data, _) = try await URLSession.shared.data(for: request)
+            if let decodedResponse = try? JSONDecoder().decode(DepartureTimesQueryResponse.self, from: data) {
+                // Extract unique headsigns
+                let headsigns = decodedResponse.data.stop.stoptimesWithoutPatterns
+                    .compactMap { $0.headsign }
+                    .filter { !$0.isEmpty }
+
+                // Get unique headsigns while preserving order
+                var uniqueHeadsigns: [String] = []
+                var seen = Set<String>()
+                for headsign in headsigns {
+                    if !seen.contains(headsign) {
+                        uniqueHeadsigns.append(headsign)
+                        seen.insert(headsign)
+                    }
+                }
+
+                return Array(uniqueHeadsigns.prefix(3)) // Return max 3 headsigns
+            } else {
+                print("HslApi: Failed to decode headsigns for stop \(stopId)")
+            }
+        } catch {
+            print("HslApi: Error fetching headsigns for stop \(stopId): \(error)")
+        }
+        return []
+    }
+
     func fetchDepartures(stationId: String, numberOfResults: Int) async -> [Departure] {
 
         let query = """
