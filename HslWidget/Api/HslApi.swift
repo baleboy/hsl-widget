@@ -36,24 +36,51 @@ class HslApi {
         do {
             let request = try buildRequest(query: query)
             let (data, _) = try await URLSession.shared.data(for: request)
+
             if let decodedResponse = try? JSONDecoder().decode(StopsQueryResponse.self, from: data) {
                 var result = [Stop]()
                 let stops = decodedResponse.data.stops
+                print("HslApi: Received \(stops.count) stops from API")
+
+                // Deduplicate by code, keeping the LAST occurrence
+                // This typically keeps the platform/stop over the parent station
+                // Also filter stops without codes
+                var stopsByCode: [String: Stop] = [:]
+
                 for stop in stops {
-                    let newStop = Stop(id: stop.gtfsId, name: stop.name, code: stop.code ?? "No code", latitude: stop.lat, longitude: stop.lon)
-                    result.append(newStop)
+                    // Skip stops without a code
+                    guard let code = stop.code, !code.isEmpty else {
+                        continue
+                    }
+
+                    let newStop = Stop(id: stop.gtfsId, name: stop.name, code: code, latitude: stop.lat, longitude: stop.lon)
+
+                    // Always replace - this keeps the last occurrence for each code
+                    // In HSL data, parent stations typically come before platforms
+                    if let existing = stopsByCode[code] {
+                        print("HslApi: Replacing \(code): \(existing.id) -> \(newStop.id)")
+                    }
+                    stopsByCode[code] = newStop
                 }
+
+                result = Array(stopsByCode.values)
+                print("HslApi: Returning \(result.count) stops after deduplication")
                 return result
+            } else {
+                print("HslApi: Failed to decode stops response")
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("HslApi: Raw response (first 500 chars): \(jsonString.prefix(500))")
+                }
             }
         } catch {
-            print("Error requesting data")
+            print("HslApi: Error requesting stops: \(error)")
         }
         return []
     }
     
     
     func fetchDepartures(stationId: String, numberOfResults: Int) async -> [Departure] {
-                
+
         let query = """
             {
                 stop(id:\"\(stationId)\"){
@@ -85,10 +112,13 @@ class HslApi {
                         headsign: headsign ?? "No headsign")
                     result.append(departure)
                 }
+                print("HslApi: Fetched \(result.count) departures for stop \(stationId)")
                 return result
+            } else {
+                print("HslApi: Failed to decode departures for stop \(stationId)")
             }
         } catch {
-            print("Error requesting data")
+            print("HslApi: Error fetching departures for stop \(stationId): \(error)")
         }
         return []
     }
