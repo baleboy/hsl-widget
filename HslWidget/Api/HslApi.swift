@@ -123,7 +123,8 @@ class HslApi {
         do {
             let request = try buildRequest(query: query)
             let (data, _) = try await URLSession.shared.data(for: request)
-            if let decodedResponse = try? JSONDecoder().decode(DepartureTimesQueryResponse.self, from: data) {
+
+            if let decodedResponse = try? JSONDecoder().decode(HeadsignsQueryResponse.self, from: data) {
                 // Extract unique headsigns
                 let headsigns = decodedResponse.data.stop.stoptimesWithoutPatterns
                     .compactMap { $0.headsign }
@@ -140,11 +141,13 @@ class HslApi {
                 }
 
                 return Array(uniqueHeadsigns.prefix(3)) // Return max 3 headsigns
-            } else {
-                print("HslApi: Failed to decode headsigns for stop \(stopId)")
             }
         } catch {
-            print("HslApi: Error fetching headsigns for stop \(stopId): \(error)")
+            // Ignore cancellation errors - they're expected when user types/scrolls quickly
+            let nsError = error as NSError
+            if nsError.domain != NSURLErrorDomain || nsError.code != NSURLErrorCancelled {
+                print("HslApi: Error fetching headsigns for stop \(stopId): \(error)")
+            }
         }
         return []
     }

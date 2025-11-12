@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Stop: Identifiable, Codable {
+struct Stop: Identifiable, Codable, Equatable {
 
     let name: String
     let code: String

@@ -13,6 +13,7 @@ struct StopPickerView: View {
     @State private var searchTerm = ""
     @State private var favoriteStopIds = Set<String>()
     @State private var stopHeadsigns: [String: [String]] = [:] // stopId -> headsigns
+    @State private var headsignFetchTask: Task<Void, Never>? = nil
     @StateObject private var locationManager = LocationManager.shared
 
     private let favoritesManager = FavoritesManager.shared
@@ -56,15 +57,24 @@ struct StopPickerView: View {
                 }
                 .searchable(text: $searchTerm, prompt: "Search by name or code")
                 .navigationBarTitle("Select Stops", displayMode: .inline)
-                .navigationBarItems(trailing: Button("Done") {
-                    onDismiss()
-                })
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") {
+                            onDismiss()
+                        }
+                    }
+                }
                 .onAppear {
                     loadFavorites()
                 }
-                .onChange(of: sortedStops) { newStops in
-                    // Fetch headsigns for top 20 stops
-                    Task {
+                .onChange(of: sortedStops) { oldStops, newStops in
+                    // Cancel any pending fetch task
+                    headsignFetchTask?.cancel()
+
+                    // Fetch headsigns for top 20 stops with a small delay to avoid fetching on every keystroke
+                    headsignFetchTask = Task {
+                        try? await Task.sleep(nanoseconds: 300_000_000) // 300ms delay
+                        guard !Task.isCancelled else { return }
                         await fetchHeadsignsForVisibleStops(newStops)
                     }
                 }
@@ -167,6 +177,13 @@ struct StopPickerView: View {
         favoritesManager.toggleFavorite(stop)
         loadFavorites()
         print("StopPicker: Current favorites count: \(favoriteStopIds.count)")
+
+        // Dismiss the search keyboard so the "Done" button becomes clear
+        hideKeyboard()
+    }
+
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
     private func loadFavorites() {

@@ -34,3 +34,21 @@ struct DepartureTimesQueryResponse: Codable {
     
     let data: Data
 }
+
+// Simplified response model for headsigns-only queries
+struct HeadsignsQueryResponse: Codable {
+
+    struct Data: Codable {
+        let stop: Stop
+    }
+
+    struct Stop: Codable {
+        let stoptimesWithoutPatterns: [Stoptime]
+    }
+
+    struct Stoptime: Codable {
+        let headsign: String?
+    }
+
+    let data: Data
+}
