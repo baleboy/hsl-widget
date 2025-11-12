@@ -64,10 +64,23 @@ struct Provider: TimelineProvider {
             let closestStop = findClosestStop(favorites: favorites, currentLocation: currentLocation)
 
             print("Widget: Selected stop: \(closestStop.name) (ID: \(closestStop.id))")
+            if closestStop.hasFilters {
+                print("Widget: Stop has filters configured")
+                if let lines = closestStop.filteredLines {
+                    print("Widget: Filtered lines: \(lines.joined(separator: ", "))")
+                }
+                if let pattern = closestStop.filteredHeadsignPattern {
+                    print("Widget: Filtered headsign pattern: \(pattern)")
+                }
+            }
             print("==========================================")
 
             // Fetch departures for the closest stop
-            let departures = await HslApi.shared.fetchDepartures(stationId: closestStop.id, numberOfResults: Provider.numberOfFetchedResults)
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: closestStop.id, numberOfResults: Provider.numberOfFetchedResults)
+
+            // Apply filters if configured
+            let departures = allDepartures.filter { closestStop.matchesFilters(departure: $0) }
+            print("Widget: Filtered departures: \(departures.count) of \(allDepartures.count)")
 
             var entries: [TimetableEntry] = []
             let lastValidIndex = max(0, departures.count - Provider.maxNumberOfShownResults)

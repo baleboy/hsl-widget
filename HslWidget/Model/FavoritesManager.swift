@@ -61,6 +61,20 @@ class FavoritesManager {
         return getFavorites().contains(where: { $0.id == stop.id })
     }
 
+    /// Update an existing favorite stop (e.g., to change filters)
+    func updateFavorite(_ stop: Stop) {
+        var favorites = getFavorites()
+
+        // Find and replace the stop with matching ID
+        if let index = favorites.firstIndex(where: { $0.id == stop.id }) {
+            favorites[index] = stop
+            saveFavorites(favorites)
+            print("FavoritesManager: Updated favorite: \(stop.name)")
+        } else {
+            print("FavoritesManager: Warning - tried to update non-existent favorite: \(stop.name)")
+        }
+    }
+
     /// Save favorites to UserDefaults
     private func saveFavorites(_ favorites: [Stop]) {
         if let encoded = try? JSONEncoder().encode(favorites) {

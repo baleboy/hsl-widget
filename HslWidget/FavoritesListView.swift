@@ -11,6 +11,7 @@ import CoreLocation
 struct FavoritesListView: View {
     @State private var favorites: [Stop] = []
     @State private var showingStopPicker = false
+    @State private var stopToEdit: Stop?
     @State private var closestStop: Stop?
     @State private var departures: [Departure] = []
     @State private var isLoadingDepartures = false
@@ -86,23 +87,41 @@ struct FavoritesListView: View {
                         // All favorites section
                         Section(header: Text("All Favorites")) {
                             ForEach(favorites) { stop in
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack {
-                                        Text(stop.name)
-                                            .font(.headline)
-                                        Spacer()
-                                        if stop.id == closestStop?.id {
-                                            Image(systemName: "location.fill")
-                                                .foregroundColor(.blue)
-                                                .font(.caption)
+                                Button(action: {
+                                    editFilters(for: stop)
+                                }) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Text(stop.name)
+                                                .font(.headline)
+                                                .foregroundColor(.primary)
+                                            Spacer()
+                                            if stop.hasFilters {
+                                                Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                                                    .foregroundColor(.blue)
+                                                    .font(.caption)
+                                            }
+                                            if stop.id == closestStop?.id {
+                                                Image(systemName: "location.fill")
+                                                    .foregroundColor(.blue)
+                                                    .font(.caption)
+                                            }
+                                            Image(systemName: "star.fill")
+                                                .foregroundColor(.yellow)
                                         }
-                                        Image(systemName: "star.fill")
-                                            .foregroundColor(.yellow)
+                                        HStack {
+                                            Text(stop.code)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                            if stop.hasFilters {
+                                                Text("• Filtered")
+                                                    .font(.caption)
+                                                    .foregroundColor(.blue)
+                                            }
+                                        }
                                     }
-                                    Text(stop.code)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
                                 }
+                                .buttonStyle(PlainButtonStyle())
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button(role: .destructive) {
                                         removeFavorite(stop)
@@ -145,7 +164,29 @@ struct FavoritesListView: View {
                     updateClosestStopAndDepartures()
                 })
             }
+            .sheet(item: $stopToEdit) { stop in
+                StopFilterView(
+                    stop: stop,
+                    onSave: { updatedStop in
+                        saveFilteredStop(updatedStop)
+                        stopToEdit = nil
+                    },
+                    onDismiss: {
+                        stopToEdit = nil
+                    }
+                )
+            }
         }
+    }
+
+    private func editFilters(for stop: Stop) {
+        stopToEdit = stop
+    }
+
+    private func saveFilteredStop(_ stop: Stop) {
+        favoritesManager.updateFavorite(stop)
+        loadFavorites()
+        updateClosestStopAndDepartures()
     }
 
     private func loadFavorites() {
@@ -187,12 +228,16 @@ struct FavoritesListView: View {
         isLoadingDepartures = true
         print("FavoritesListView: Fetching departures for \(stop.name)")
 
-        let fetchedDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 10)
+        let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 20)
+
+        // Apply filters if configured
+        let filteredDepartures = allDepartures.filter { stop.matchesFilters(departure: $0) }
+        print("FavoritesListView: Filtered departures: \(filteredDepartures.count) of \(allDepartures.count)")
 
         await MainActor.run {
-            self.departures = fetchedDepartures
+            self.departures = filteredDepartures
             self.isLoadingDepartures = false
-            print("FavoritesListView: Loaded \(fetchedDepartures.count) departures")
+            print("FavoritesListView: Loaded \(filteredDepartures.count) departures")
         }
     }
 
