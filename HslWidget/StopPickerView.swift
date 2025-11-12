@@ -72,6 +72,8 @@ struct StopPickerView: View {
         }
         .task {
             stops = await HslApi.shared.fetchAllStops()
+            // Fetch headsigns for initial stops
+            await fetchHeadsignsForVisibleStops(sortedStops)
         }
     }
 
@@ -209,10 +211,28 @@ struct StopPickerView: View {
                 continue
             }
 
-            let headsigns = await HslApi.shared.fetchHeadsigns(stopId: stop.id)
-            if !headsigns.isEmpty {
+            // Fetch headsigns from ALL stop IDs that share this code (to get all directions)
+            let stopIdsToFetch = stop.allStopIds ?? [stop.id]
+            var allHeadsigns: [String] = []
+
+            for stopId in stopIdsToFetch {
+                let headsigns = await HslApi.shared.fetchHeadsigns(stopId: stopId)
+                allHeadsigns.append(contentsOf: headsigns)
+            }
+
+            // Remove duplicates while preserving order
+            var uniqueHeadsigns: [String] = []
+            var seen = Set<String>()
+            for headsign in allHeadsigns {
+                if !seen.contains(headsign) {
+                    uniqueHeadsigns.append(headsign)
+                    seen.insert(headsign)
+                }
+            }
+
+            if !uniqueHeadsigns.isEmpty {
                 await MainActor.run {
-                    stopHeadsigns[stop.id] = headsigns
+                    stopHeadsigns[stop.id] = Array(uniqueHeadsigns.prefix(4)) // Show up to 4 headsigns
                 }
             }
         }

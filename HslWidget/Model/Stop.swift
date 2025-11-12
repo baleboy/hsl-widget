@@ -16,8 +16,9 @@ struct Stop: Identifiable, Codable {
     let longitude: Double?
     let vehicleModes: Set<String>?
     let headsigns: [String]?
+    let allStopIds: [String]? // All stop IDs that share this code (for multi-direction stops)
 
-    init(id: String, name: String, code: String, latitude: Double? = nil, longitude: Double? = nil, vehicleModes: Set<String>? = nil, headsigns: [String]? = nil) {
+    init(id: String, name: String, code: String, latitude: Double? = nil, longitude: Double? = nil, vehicleModes: Set<String>? = nil, headsigns: [String]? = nil, allStopIds: [String]? = nil) {
         self.id = id
         self.name = name
         self.code = code
@@ -25,6 +26,7 @@ struct Stop: Identifiable, Codable {
         self.longitude = longitude
         self.vehicleModes = vehicleModes
         self.headsigns = headsigns
+        self.allStopIds = allStopIds
     }
 
     static var defaultStop: Stop {

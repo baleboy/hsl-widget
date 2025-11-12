@@ -46,7 +46,7 @@ class HslApi {
                 print("HslApi: Received \(stops.count) stops from API")
 
                 // Deduplicate by code, merging vehicle modes from all occurrences
-                // This keeps the LAST stop ID but merges modes from all duplicates
+                // This collects ALL stop IDs that share the same code (for multi-direction stops)
                 // Also filter stops without codes
                 var stopsByCode: [String: Stop] = [:]
 
@@ -70,21 +70,26 @@ class HslApi {
                             mergedModes.formUnion(newModes)
                         }
 
-                        // Create merged stop with the new ID but combined modes
+                        // Collect all stop IDs for this code
+                        var allIds = existing.allStopIds ?? [existing.id]
+                        allIds.append(stop.gtfsId)
+
+                        // Create merged stop with combined modes and all IDs
                         let mergedStop = Stop(
                             id: stop.gtfsId,
                             name: stop.name,
                             code: code,
                             latitude: stop.lat ?? existing.latitude,
                             longitude: stop.lon ?? existing.longitude,
-                            vehicleModes: mergedModes.isEmpty ? nil : mergedModes
+                            vehicleModes: mergedModes.isEmpty ? nil : mergedModes,
+                            allStopIds: allIds
                         )
 
-                        print("HslApi: Merging \(code): \(existing.id) + \(stop.gtfsId), modes: \(mergedModes)")
+                        print("HslApi: Merging \(code): collected IDs \(allIds), modes: \(mergedModes)")
                         stopsByCode[code] = mergedStop
                     } else {
                         // First occurrence of this code
-                        let newStop = Stop(id: stop.gtfsId, name: stop.name, code: code, latitude: stop.lat, longitude: stop.lon, vehicleModes: vehicleModes)
+                        let newStop = Stop(id: stop.gtfsId, name: stop.name, code: code, latitude: stop.lat, longitude: stop.lon, vehicleModes: vehicleModes, allStopIds: [stop.gtfsId])
                         stopsByCode[code] = newStop
                     }
                 }
