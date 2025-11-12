@@ -15,6 +15,7 @@ struct FavoritesListView: View {
     @State private var closestStop: Stop?
     @State private var departures: [Departure] = []
     @State private var isLoadingDepartures = false
+    @State private var filteredHeadsigns: [String: [String]] = [:] // stopId -> headsigns for filtered lines
     @StateObject private var locationManager = LocationManager.shared
 
     private let favoritesManager = FavoritesManager.shared
@@ -120,8 +121,8 @@ struct FavoritesListView: View {
                                             }
                                         }
 
-                                        // Show headsigns (directions) if available
-                                        if let headsigns = stop.headsigns, !headsigns.isEmpty {
+                                        // Show headsigns for filtered lines if available
+                                        if let headsigns = filteredHeadsigns[stop.id], !headsigns.isEmpty {
                                             HStack(spacing: 4) {
                                                 Image(systemName: "arrow.right")
                                                     .font(.caption2)
@@ -129,6 +130,48 @@ struct FavoritesListView: View {
                                                 Text(headsigns.prefix(3).joined(separator: ", "))
                                                     .font(.caption)
                                                     .foregroundColor(.secondary)
+                                                    .lineLimit(1)
+                                            }
+                                            .padding(.top, 2)
+                                        }
+                                        // Show all headsigns if no line filter
+                                        else if let headsigns = stop.headsigns, !headsigns.isEmpty,
+                                                stop.filteredLines == nil || stop.filteredLines!.isEmpty {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "arrow.right")
+                                                    .font(.caption2)
+                                                    .foregroundColor(.secondary)
+                                                Text(headsigns.prefix(3).joined(separator: ", "))
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                                    .lineLimit(1)
+                                            }
+                                            .padding(.top, 2)
+                                        }
+
+                                        // Show filtered lines indicator if configured
+                                        if let filteredLines = stop.filteredLines, !filteredLines.isEmpty {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "number")
+                                                    .font(.caption2)
+                                                    .foregroundColor(.blue)
+                                                Text("Lines: \(filteredLines.joined(separator: ", "))")
+                                                    .font(.caption)
+                                                    .foregroundColor(.blue)
+                                                    .lineLimit(1)
+                                            }
+                                            .padding(.top, 2)
+                                        }
+
+                                        // Show filtered headsign pattern if configured
+                                        if let pattern = stop.filteredHeadsignPattern, !pattern.isEmpty {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "arrow.right")
+                                                    .font(.caption2)
+                                                    .foregroundColor(.blue)
+                                                Text("To: \(pattern)")
+                                                    .font(.caption)
+                                                    .foregroundColor(.blue)
                                                     .lineLimit(1)
                                             }
                                             .padding(.top, 2)
@@ -199,17 +242,84 @@ struct FavoritesListView: View {
 
     private func saveFilteredStop(_ stop: Stop) {
         favoritesManager.updateFavorite(stop)
+
+        // Clear filtered headsigns for this stop if filters were removed
+        if stop.filteredLines == nil || stop.filteredLines!.isEmpty {
+            filteredHeadsigns[stop.id] = nil
+        }
+
         loadFavorites()
         updateClosestStopAndDepartures()
+
+        // Refresh headsigns for this stop if it has line filters
+        if let filteredLines = stop.filteredLines, !filteredLines.isEmpty {
+            Task {
+                await fetchFilteredHeadsigns()
+            }
+        }
     }
 
     private func loadFavorites() {
         favorites = favoritesManager.getFavorites()
         print("FavoritesListView: Loaded \(favorites.count) favorites")
+
+        // Clean up stale entries in filteredHeadsigns for stops no longer in favorites
+        let favoriteIds = Set(favorites.map { $0.id })
+        filteredHeadsigns = filteredHeadsigns.filter { favoriteIds.contains($0.key) }
+
+        // Fetch headsigns for filtered stops
+        Task {
+            await fetchFilteredHeadsigns()
+        }
+    }
+
+    /// Fetch headsigns for stops that have line filters
+    private func fetchFilteredHeadsigns() async {
+        // First, remove entries for stops that no longer have filters
+        await MainActor.run {
+            for stop in favorites {
+                if stop.filteredLines == nil || stop.filteredLines!.isEmpty {
+                    filteredHeadsigns[stop.id] = nil
+                }
+            }
+        }
+
+        // Then fetch headsigns for stops that do have filters
+        for stop in favorites {
+            // Only fetch for stops with line filters
+            guard let filteredLines = stop.filteredLines, !filteredLines.isEmpty else {
+                continue
+            }
+
+            // Fetch departures for this stop
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+
+            // Extract headsigns for the filtered lines
+            var headsignsForLines: [String] = []
+            var seenHeadsigns = Set<String>()
+
+            for departure in allDepartures {
+                if filteredLines.contains(departure.routeShortName) {
+                    if !seenHeadsigns.contains(departure.headsign) {
+                        headsignsForLines.append(departure.headsign)
+                        seenHeadsigns.insert(departure.headsign)
+                    }
+                }
+            }
+
+            // Store the headsigns
+            await MainActor.run {
+                filteredHeadsigns[stop.id] = headsignsForLines
+            }
+        }
     }
 
     private func removeFavorite(_ stop: Stop) {
         favoritesManager.removeFavorite(stop)
+
+        // Clear filtered headsigns for this stop
+        filteredHeadsigns[stop.id] = nil
+
         loadFavorites()
         updateClosestStopAndDepartures()
     }
