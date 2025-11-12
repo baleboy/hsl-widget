@@ -65,10 +65,27 @@ class FavoritesManager {
     private func saveFavorites(_ favorites: [Stop]) {
         if let encoded = try? JSONEncoder().encode(favorites) {
             sharedDefaults?.set(encoded, forKey: favoritesKey)
+
+            // Force sync on device (important for App Groups)
+            sharedDefaults?.synchronize()
+
             print("FavoritesManager: Saved \(favorites.count) favorites: \(favorites.map { $0.name })")
+
+            // Verify the save worked
+            if let verified = sharedDefaults?.data(forKey: favoritesKey) {
+                print("FavoritesManager: ✅ Verified data written (\(verified.count) bytes)")
+            } else {
+                print("FavoritesManager: ❌ WARNING: Data not found after save!")
+            }
+
+            // Check if sharedDefaults is nil (App Group issue)
+            if sharedDefaults == nil {
+                print("FavoritesManager: ❌ CRITICAL: sharedDefaults is nil! App Group not working!")
+            }
 
             // Reload widget timelines when favorites change
             WidgetCenter.shared.reloadAllTimelines()
+            print("FavoritesManager: Widget reload requested")
         } else {
             print("FavoritesManager: Failed to encode favorites")
         }
