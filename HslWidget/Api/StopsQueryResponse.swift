@@ -5,6 +5,11 @@
 //  Created by Francesco Balestrieri on 8.5.2024.
 //
 
+// Define the route structure to get mode
+struct RouteInfo: Codable {
+    let mode: String
+}
+
 // Define the Stop structure
 struct StopInfo: Codable {
     let gtfsId: String
@@ -12,6 +17,7 @@ struct StopInfo: Codable {
     let code: String?
     let lat: Double?
     let lon: Double?
+    let routes: [RouteInfo]?
 }
 
 // Define a structure for the container of stops

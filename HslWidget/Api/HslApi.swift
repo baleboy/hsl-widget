@@ -30,6 +30,9 @@ class HslApi {
             code
             lat
             lon
+            routes {
+              mode
+            }
           }
         }
         """
@@ -42,8 +45,8 @@ class HslApi {
                 let stops = decodedResponse.data.stops
                 print("HslApi: Received \(stops.count) stops from API")
 
-                // Deduplicate by code, keeping the LAST occurrence
-                // This typically keeps the platform/stop over the parent station
+                // Deduplicate by code, merging vehicle modes from all occurrences
+                // This keeps the LAST stop ID but merges modes from all duplicates
                 // Also filter stops without codes
                 var stopsByCode: [String: Stop] = [:]
 
@@ -53,14 +56,37 @@ class HslApi {
                         continue
                     }
 
-                    let newStop = Stop(id: stop.gtfsId, name: stop.name, code: code, latitude: stop.lat, longitude: stop.lon)
-
-                    // Always replace - this keeps the last occurrence for each code
-                    // In HSL data, parent stations typically come before platforms
-                    if let existing = stopsByCode[code] {
-                        print("HslApi: Replacing \(code): \(existing.id) -> \(newStop.id)")
+                    // Extract unique vehicle modes from routes
+                    var vehicleModes: Set<String>? = nil
+                    if let routes = stop.routes, !routes.isEmpty {
+                        vehicleModes = Set(routes.map { $0.mode })
                     }
-                    stopsByCode[code] = newStop
+
+                    // Check if we already have a stop with this code
+                    if let existing = stopsByCode[code] {
+                        // Merge vehicle modes from both the existing and new stop
+                        var mergedModes = existing.vehicleModes ?? Set<String>()
+                        if let newModes = vehicleModes {
+                            mergedModes.formUnion(newModes)
+                        }
+
+                        // Create merged stop with the new ID but combined modes
+                        let mergedStop = Stop(
+                            id: stop.gtfsId,
+                            name: stop.name,
+                            code: code,
+                            latitude: stop.lat ?? existing.latitude,
+                            longitude: stop.lon ?? existing.longitude,
+                            vehicleModes: mergedModes.isEmpty ? nil : mergedModes
+                        )
+
+                        print("HslApi: Merging \(code): \(existing.id) + \(stop.gtfsId), modes: \(mergedModes)")
+                        stopsByCode[code] = mergedStop
+                    } else {
+                        // First occurrence of this code
+                        let newStop = Stop(id: stop.gtfsId, name: stop.name, code: code, latitude: stop.lat, longitude: stop.lon, vehicleModes: vehicleModes)
+                        stopsByCode[code] = newStop
+                    }
                 }
 
                 result = Array(stopsByCode.values)

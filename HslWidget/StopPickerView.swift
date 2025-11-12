@@ -76,7 +76,7 @@ struct StopPickerView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(stop.name)
                         .foregroundColor(.primary)
-                    HStack {
+                    HStack(spacing: 4) {
                         Text(stop.code)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -90,6 +90,18 @@ struct StopPickerView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
+
+                        // Show transport mode icons
+                        if let modes = stop.vehicleModes, !modes.isEmpty {
+                            Text("•")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            HStack(spacing: 2) {
+                                ForEach(Array(modes.sorted()), id: \.self) { mode in
+                                    modeIcon(for: mode)
+                                }
+                            }
+                        }
                     }
                 }
                 Spacer()
@@ -100,6 +112,32 @@ struct StopPickerView: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+    }
+
+    private func modeIcon(for mode: String) -> some View {
+        Group {
+            switch mode.uppercased() {
+            case "BUS":
+                Image(systemName: "bus.fill")
+                    .foregroundColor(.blue)
+            case "TRAM":
+                Image(systemName: "tram.fill")
+                    .foregroundColor(.green)
+            case "RAIL":
+                Image(systemName: "train.side.front.car")
+                    .foregroundColor(.purple)
+            case "SUBWAY":
+                Image(systemName: "train.side.front.car")
+                    .foregroundColor(.orange)
+            case "FERRY":
+                Image(systemName: "ferry.fill")
+                    .foregroundColor(.cyan)
+            default:
+                Image(systemName: "mappin.circle.fill")
+                    .foregroundColor(.gray)
+            }
+        }
+        .font(.caption)
     }
 
     private func toggleFavorite(_ stop: Stop) {
