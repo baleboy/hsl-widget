@@ -15,6 +15,8 @@ struct StopPickerView: View {
     @State private var stopHeadsigns: [String: [String]] = [:] // stopId -> headsigns
     @State private var headsignFetchTask: Task<Void, Never>? = nil
     @StateObject private var locationManager = LocationManager.shared
+    @StateObject private var preloader = HeadsignPreloader()
+    @State private var isInitialLoad = true
 
     private let favoritesManager = FavoritesManager.shared
     let onDismiss: () -> Void
@@ -48,7 +50,31 @@ struct StopPickerView: View {
     var body: some View {
         NavigationView {
             if stops.isEmpty {
-                Text("Loading...").font(.title)
+                VStack(spacing: 16) {
+                    ProgressView()
+                    Text("Loading stops...")
+                        .font(.headline)
+                }
+            } else if preloader.isLoading && isInitialLoad {
+                // Show loading screen with progress during initial headsign preload
+                VStack(spacing: 20) {
+                    ProgressView(value: Double(preloader.loadingProgress), total: Double(preloader.totalStops))
+                        .progressViewStyle(.linear)
+                        .frame(width: 200)
+
+                    VStack(spacing: 8) {
+                        Text("Loading nearby stops")
+                            .font(.headline)
+                        Text(preloader.loadingMessage)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Text("This only happens once")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
             } else {
                 List {
                     ForEach(sortedStops) { stop in
@@ -71,7 +97,7 @@ struct StopPickerView: View {
                     // Cancel any pending fetch task
                     headsignFetchTask?.cancel()
 
-                    // Fetch headsigns for top 20 stops with a small delay to avoid fetching on every keystroke
+                    // Lazy load headsigns for distant stops that aren't in cache
                     headsignFetchTask = Task {
                         try? await Task.sleep(nanoseconds: 300_000_000) // 300ms delay
                         guard !Task.isCancelled else { return }
@@ -81,9 +107,20 @@ struct StopPickerView: View {
             }
         }
         .task {
+            // Load all stops first
             stops = await HslApi.shared.fetchAllStops()
-            // Fetch headsigns for initial stops
-            await fetchHeadsignsForVisibleStops(sortedStops)
+
+            // Load or refresh headsign cache for nearby stops
+            let userLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
+            let cachedHeadsigns = await preloader.loadOrRefreshCache(
+                allStops: stops,
+                userLocation: userLocation,
+                radius: 5000
+            )
+
+            // Populate stopHeadsigns with cached data
+            stopHeadsigns = cachedHeadsigns
+            isInitialLoad = false
         }
     }
 
