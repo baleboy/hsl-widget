@@ -38,6 +38,18 @@ struct FavoritesListView: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
+
+                        Button(action: {
+                            showingStopPicker = true
+                        }) {
+                            Label("Add Favorite Stop", systemImage: "plus.circle.fill")
+                                .font(.headline)
+                                .padding()
+                                .background(Color.accentColor)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                        .padding(.top, 8)
                     }
                     .frame(maxHeight: .infinity)
                 } else {
