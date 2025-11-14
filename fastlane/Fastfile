@@ -3,9 +3,6 @@ default_platform(:ios)
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
-    # Ensure we're on a clean state
-    ensure_git_status_clean
-
     # Get the latest TestFlight build number and increment
     app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
@@ -40,15 +37,5 @@ platform :ios do
       distribute_external: false,
       notify_external_testers: false
     )
-
-    # Commit the build number increment
-    commit_version_bump(
-      message: "Bump build number for TestFlight",
-      xcodeproj: "HslWidget.xcodeproj",
-      force: true
-    )
-
-    # Push the commit back to the repository
-    push_to_git_remote
   end
 end
