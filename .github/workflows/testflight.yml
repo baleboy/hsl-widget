@@ -53,11 +53,13 @@ jobs:
           echo "$MAIN_PROVISIONING_PROFILE" | base64 --decode > /tmp/main.mobileprovision
           MAIN_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i /tmp/main.mobileprovision))
           cp /tmp/main.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${MAIN_UUID}.mobileprovision"
+          echo "MAIN_PROFILE_UUID=$MAIN_UUID" >> $GITHUB_ENV
 
           # Widget extension profile - extract UUID and install
           echo "$WIDGET_PROVISIONING_PROFILE" | base64 --decode > /tmp/widget.mobileprovision
           WIDGET_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i /tmp/widget.mobileprovision))
           cp /tmp/widget.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${WIDGET_UUID}.mobileprovision"
+          echo "WIDGET_PROFILE_UUID=$WIDGET_UUID" >> $GITHUB_ENV
 
       - name: Configure git for pushing
         run: |

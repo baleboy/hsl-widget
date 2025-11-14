@@ -26,7 +26,7 @@ platform :ios do
       path: "HslWidget.xcodeproj",
       targets: ["HslWidget"],
       code_sign_identity: "Apple Distribution",
-      profile_name: "HslWidget App Store",
+      profile_uuid: ENV["MAIN_PROFILE_UUID"],
       bundle_identifier: "com.balenet.HslWidget"
     )
 
@@ -36,7 +36,7 @@ platform :ios do
       path: "HslWidget.xcodeproj",
       targets: ["stopInfoExtension"],
       code_sign_identity: "Apple Distribution",
-      profile_name: "HslWidget stopInfo App Store",
+      profile_uuid: ENV["WIDGET_PROFILE_UUID"],
       bundle_identifier: "com.balenet.HslWidget.stopInfo"
     )
 
