@@ -1,0 +1,51 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    # Ensure we're on a clean state
+    ensure_git_status_clean
+
+    # Get the latest TestFlight build number and increment
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+      is_key_content_base64: true
+    )
+
+    # Increment build number based on TestFlight
+    increment_build_number(
+      build_number: latest_testflight_build_number + 1,
+      xcodeproj: "HslWidget.xcodeproj"
+    )
+
+    # Build the app
+    build_app(
+      scheme: "stopInfoExtension",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "com.balenet.HslWidget" => "HslWidget App Store",
+          "com.balenet.HslWidget.stopInfo" => "HslWidget stopInfo App Store"
+        }
+      }
+    )
+
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+
+    # Commit the build number increment
+    commit_version_bump(
+      message: "Bump build number for TestFlight",
+      xcodeproj: "HslWidget.xcodeproj"
+    )
+
+    # Push the commit back to the repository
+    push_to_git_remote
+  end
+end

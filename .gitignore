@@ -41,3 +41,23 @@ xcuserdata/
 # Backup files
 *.bak
 
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/README.md
+
+# Bundler
+vendor/bundle/
+.bundle/
+Gemfile.lock
+
+# Provisioning profiles and certificates
+*.mobileprovision
+*.cer
+*.p12
+*.certSigningRequest
+
+# App Store Connect API Key
+AuthKey_*.p8

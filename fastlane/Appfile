@@ -1,0 +1,8 @@
+app_identifier("com.balenet.HslWidget")
+apple_id("bale@balenet.com")
+
+# Uncomment the line below if you want to use a different Apple ID for App Store Connect
+# itc_team_id("123456789")
+
+# Uncomment if you have multiple teams
+# team_id("TEAM_ID")

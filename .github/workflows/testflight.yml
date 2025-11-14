@@ -1,0 +1,82 @@
+name: Deploy to TestFlight
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for git operations
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: |
+          gem install fastlane
+
+      - name: Setup code signing
+        env:
+          CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          MAIN_PROVISIONING_PROFILE: ${{ secrets.MAIN_PROVISIONING_PROFILE }}
+          WIDGET_PROVISIONING_PROFILE: ${{ secrets.WIDGET_PROVISIONING_PROFILE }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # Decode certificate
+          echo "$CERTIFICATES_P12" | base64 --decode > cert.p12
+
+          # Create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+
+          # Import certificate
+          security import cert.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
+          # Install provisioning profiles
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+
+          # Main app profile
+          MAIN_PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/main.mobileprovision"
+          echo "$MAIN_PROVISIONING_PROFILE" | base64 --decode > "$MAIN_PROFILE_PATH"
+
+          # Widget extension profile
+          WIDGET_PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/widget.mobileprovision"
+          echo "$WIDGET_PROVISIONING_PROFILE" | base64 --decode > "$WIDGET_PROFILE_PATH"
+
+      - name: Configure git for pushing
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Build and upload to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          # Create API key file
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY_KEY" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_KEY_ID}.p8
+
+          # Run Fastlane
+          fastlane beta
+
+      - name: Cleanup
+        if: always()
+        run: |
+          security delete-keychain build.keychain || true
+          rm -f cert.p12
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision
