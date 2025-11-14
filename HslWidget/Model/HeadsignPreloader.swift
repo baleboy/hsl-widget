@@ -114,7 +114,7 @@ class HeadsignPreloader: ObservableObject {
     /// Load or refresh headsigns cache
     func loadOrRefreshCache(allStops: [Stop], userLocation: CLLocation?, radius: Double = 5000, forceRefresh: Bool = false) async -> [String: [String]] {
         // Check if we should use cached data
-        if !forceRefresh, let cachedHeadsigns = cache.loadCache(), !cache.shouldRefreshCache(currentLocation: userLocation, radius: radius) {
+        if !forceRefresh, let cachedHeadsigns = cache.loadCache(currentLocation: userLocation, radius: radius), !cache.shouldRefreshCache(currentLocation: userLocation, radius: radius) {
             print("HeadsignPreloader: Using cached headsigns (\(cachedHeadsigns.count) stops)")
             return cachedHeadsigns
         }
