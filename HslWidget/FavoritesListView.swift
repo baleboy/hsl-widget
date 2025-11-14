@@ -87,7 +87,19 @@ struct FavoritesListView: View {
                         }
 
                         // All favorites section
-                        Section(header: Text("All Favorites")) {
+                        Section(header:
+                            HStack {
+                                Text("All Favorites")
+                                Spacer()
+                                Button(action: {
+                                    showingStopPicker = true
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                        ) {
                             ForEach(favorites) { stop in
                                 Button(action: {
                                     editFilters(for: stop)
@@ -193,20 +205,6 @@ struct FavoritesListView: View {
                             }
                         }
                     }
-                }
-
-                // Add favorites button
-                Button(action: {
-                    showingStopPicker = true
-                }) {
-                    Label(favorites.isEmpty ? "Select Favorites" : "Add More Favorites", systemImage: "plus.circle.fill")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding()
                 }
             }
             .navigationTitle("Favorite Stops")
