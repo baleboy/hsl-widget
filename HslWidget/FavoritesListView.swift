@@ -120,8 +120,6 @@ struct FavoritesListView: View {
                                                     .foregroundColor(.blue)
                                                     .font(.caption)
                                             }
-                                            Image(systemName: "star.fill")
-                                                .foregroundColor(.yellow)
                                         }
                                         HStack {
                                             Text(stop.code)
