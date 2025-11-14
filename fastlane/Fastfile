@@ -20,35 +20,16 @@ platform :ios do
       xcodeproj: "HslWidget.xcodeproj"
     )
 
-    # Disable automatic code signing for main app
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "HslWidget.xcodeproj",
-      targets: ["HslWidget"],
-      code_sign_identity: "Apple Distribution",
-      profile_uuid: ENV["MAIN_PROFILE_UUID"],
-      bundle_identifier: "com.balenet.HslWidget"
-    )
-
-    # Disable automatic code signing for widget extension
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "HslWidget.xcodeproj",
-      targets: ["stopInfoExtension"],
-      code_sign_identity: "Apple Distribution",
-      profile_uuid: ENV["WIDGET_PROFILE_UUID"],
-      bundle_identifier: "com.balenet.HslWidget.stopInfo"
-    )
-
-    # Build the app
+    # Build the app - use installed profiles
     build_app(
       scheme: "stopInfoExtension",
       export_method: "app-store",
-      codesigning_identity: "Apple Distribution",
+      xcargs: "-allowProvisioningUpdates CODE_SIGN_IDENTITY='Apple Distribution'",
       export_options: {
+        method: "app-store",
         provisioningProfiles: {
-          "com.balenet.HslWidget" => "HslWidget App Store",
-          "com.balenet.HslWidget.stopInfo" => "HslWidget stopInfo App Store"
+          "com.balenet.HslWidget" => ENV["MAIN_PROFILE_UUID"],
+          "com.balenet.HslWidget.stopInfo" => ENV["WIDGET_PROFILE_UUID"]
         }
       }
     )
