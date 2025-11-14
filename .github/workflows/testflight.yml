@@ -49,13 +49,15 @@ jobs:
           # Install provisioning profiles
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
 
-          # Main app profile
-          MAIN_PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/main.mobileprovision"
-          echo "$MAIN_PROVISIONING_PROFILE" | base64 --decode > "$MAIN_PROFILE_PATH"
+          # Main app profile - extract UUID and install
+          echo "$MAIN_PROVISIONING_PROFILE" | base64 --decode > /tmp/main.mobileprovision
+          MAIN_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i /tmp/main.mobileprovision))
+          cp /tmp/main.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${MAIN_UUID}.mobileprovision"
 
-          # Widget extension profile
-          WIDGET_PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/widget.mobileprovision"
-          echo "$WIDGET_PROVISIONING_PROFILE" | base64 --decode > "$WIDGET_PROFILE_PATH"
+          # Widget extension profile - extract UUID and install
+          echo "$WIDGET_PROVISIONING_PROFILE" | base64 --decode > /tmp/widget.mobileprovision
+          WIDGET_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i /tmp/widget.mobileprovision))
+          cp /tmp/widget.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${WIDGET_UUID}.mobileprovision"
 
       - name: Configure git for pushing
         run: |
@@ -79,5 +81,5 @@ jobs:
         if: always()
         run: |
           security delete-keychain build.keychain || true
-          rm -f cert.p12
+          rm -f cert.p12 /tmp/main.mobileprovision /tmp/widget.mobileprovision
           rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision
