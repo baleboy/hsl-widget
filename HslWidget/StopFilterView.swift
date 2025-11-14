@@ -146,8 +146,10 @@ struct StopFilterView: View {
             uniqueLines.insert(departure.routeShortName)
         }
 
+        let sortedLines = Array(uniqueLines).sorted()
+
         await MainActor.run {
-            availableLines = Array(uniqueLines).sorted()
+            availableLines = sortedLines
             isLoadingLines = false
         }
     }
