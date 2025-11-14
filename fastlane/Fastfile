@@ -44,7 +44,8 @@ platform :ios do
     # Commit the build number increment
     commit_version_bump(
       message: "Bump build number for TestFlight",
-      xcodeproj: "HslWidget.xcodeproj"
+      xcodeproj: "HslWidget.xcodeproj",
+      force: true
     )
 
     # Push the commit back to the repository
