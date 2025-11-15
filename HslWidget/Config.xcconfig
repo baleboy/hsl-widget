@@ -1,0 +1,10 @@
+//
+//  Config.xcconfig
+//  HslWidget
+//
+//  Created by Francesco Balestrieri on 15.11.2025.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+HSL_API_KEY=877adb1ee87e4aae9a7ff5fe39b2502b

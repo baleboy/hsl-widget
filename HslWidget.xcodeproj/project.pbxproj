@@ -15,6 +15,8 @@
 		2542B32D2EC44BE2002492BC /* StopPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32B2EC44BE2002492BC /* StopPickerView.swift */; };
 		2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */; };
 		2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */; };
+		2542B3342EC8594F002492BC /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2542B3332EC8594F002492BC /* Config.xcconfig */; };
+		2542B3352EC8594F002492BC /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2542B3332EC8594F002492BC /* Config.xcconfig */; };
 		25D19E582BE600920055E70E /* HslWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D19E572BE600920055E70E /* HslWidgetApp.swift */; };
 		25D19E5C2BE600930055E70E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25D19E5B2BE600930055E70E /* Assets.xcassets */; };
 		25D19E5F2BE600930055E70E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25D19E5E2BE600930055E70E /* Preview Assets.xcassets */; };
@@ -69,6 +71,7 @@
 		2542B32B2EC44BE2002492BC /* StopPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopPickerView.swift; sourceTree = "<group>"; };
 		2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignCache.swift; sourceTree = "<group>"; };
 		2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignPreloader.swift; sourceTree = "<group>"; };
+		2542B3332EC8594F002492BC /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		25D19E542BE600920055E70E /* HslWidget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HslWidget.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25D19E572BE600920055E70E /* HslWidgetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HslWidgetApp.swift; sourceTree = "<group>"; };
 		25D19E5B2BE600930055E70E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -145,6 +148,7 @@
 				25D19E572BE600920055E70E /* HslWidgetApp.swift */,
 				25D19E5B2BE600930055E70E /* Assets.xcassets */,
 				25D19E5D2BE600930055E70E /* Preview Content */,
+				2542B3332EC8594F002492BC /* Config.xcconfig */,
 			);
 			path = HslWidget;
 			sourceTree = "<group>";
@@ -282,6 +286,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				25D19E5F2BE600930055E70E /* Preview Assets.xcassets in Resources */,
+				2542B3342EC8594F002492BC /* Config.xcconfig in Resources */,
 				25D19E5C2BE600930055E70E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -290,6 +295,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2542B3352EC8594F002492BC /* Config.xcconfig in Resources */,
 				25D19E752BE755320055E70E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -346,6 +352,7 @@
 /* Begin XCBuildConfiguration section */
 		25D19E602BE600930055E70E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2542B3332EC8594F002492BC /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -409,6 +416,7 @@
 		};
 		25D19E612BE600930055E70E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2542B3332EC8594F002492BC /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -478,6 +486,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HslWidget/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to show departures for the nearest favorite stop in the widget.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -514,6 +523,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HslWidget/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to show departures for the nearest favorite stop in the widget.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -547,6 +557,7 @@
 				INFOPLIST_FILE = stopInfo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = stopInfo;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to show departures for the nearest favorite stop.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -578,6 +589,7 @@
 				INFOPLIST_FILE = stopInfo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = stopInfo;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to show departures for the nearest favorite stop.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

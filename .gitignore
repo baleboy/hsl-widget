@@ -1,5 +1,8 @@
 # Xcode .gitignore
 
+# Config file storing the HSL API key. 
+HslWidget/Config.xcconfig
+
 # Xcode Derived Data and build output
 DerivedData/
 build/

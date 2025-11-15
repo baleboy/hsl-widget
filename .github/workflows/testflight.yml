@@ -66,6 +66,10 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+      - name: Create Config.xcconfig
+        run: |
+          echo "HSL_API_KEY = ${{ secrets.HSL_API_KEY }}" > HslWidget/Config.xcconfig
+
       - name: Build and upload to TestFlight
         env:
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
@@ -84,4 +88,5 @@ jobs:
         run: |
           security delete-keychain build.keychain || true
           rm -f cert.p12 /tmp/main.mobileprovision /tmp/widget.mobileprovision
+          rm -f HslWidget/Config.xcconfig
           rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision

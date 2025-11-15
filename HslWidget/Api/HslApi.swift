@@ -10,10 +10,15 @@ import Foundation
 class HslApi {
     
     static let shared = HslApi()
-    
-    private let routingUrl = "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1?digitransit-subscription-key="
 
-    private let apiKey = "877adb1ee87e4aae9a7ff5fe39b2502b"
+    static var apiKey: String? {
+        guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "HSL_API_KEY") as? String else {
+            fatalError("Could not read HSL API Key from Info.plist")
+        }
+        return apiKey
+    }
+
+    private let routingUrl = "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1?digitransit-subscription-key="
         
     enum HslApiError: Error {
         case invalidURL
@@ -198,7 +203,7 @@ class HslApi {
     }
 
     private func buildRequest(query: String) throws -> URLRequest {
-        guard let url = URL(string: routingUrl + apiKey) else {
+        guard let url = URL(string: routingUrl + HslApi.apiKey!) else {
             print("Invalid URL")
             throw HslApiError.invalidURL
         }

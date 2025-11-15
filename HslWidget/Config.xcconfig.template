@@ -1,0 +1,9 @@
+//
+//  Config.xcconfig
+//  HslWidget
+//
+//  Created by Francesco Balestrieri on 15.11.2025.
+//
+
+// Copy this file to Config.xcconfig and add your API key below
+HSL_API_KEY=<Your Digitransit API Key here>
