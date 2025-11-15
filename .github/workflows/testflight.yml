@@ -70,6 +70,10 @@ jobs:
         run: |
           echo "HSL_API_KEY = ${{ secrets.HSL_API_KEY }}" > HslWidget/Config.xcconfig
 
+      - name: Run tests
+        run: |
+          xcodebuild test -scheme stopInfoExtension -destination 'platform=iOS Simulator,name=iPhone 16'
+
       - name: Build and upload to TestFlight
         env:
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}

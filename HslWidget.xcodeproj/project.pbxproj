@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -40,6 +40,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2542B33E2EC89D01002492BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25D19E4C2BE600920055E70E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 25D19E532BE600920055E70E;
+			remoteInfo = HslWidget;
+		};
 		25D19E772BE755320055E70E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 25D19E4C2BE600920055E70E /* Project object */;
@@ -72,6 +79,7 @@
 		2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignCache.swift; sourceTree = "<group>"; };
 		2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignPreloader.swift; sourceTree = "<group>"; };
 		2542B3332EC8594F002492BC /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		2542B33A2EC89D01002492BC /* HslWidgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HslWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		25D19E542BE600920055E70E /* HslWidget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HslWidget.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25D19E572BE600920055E70E /* HslWidgetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HslWidgetApp.swift; sourceTree = "<group>"; };
 		25D19E5B2BE600930055E70E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -94,7 +102,18 @@
 		25FA04342BEBD1BF0052A577 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2542B33B2EC89D01002492BC /* HslWidgetTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HslWidgetTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		2542B3372EC89D01002492BC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		25D19E512BE600920055E70E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -121,6 +140,7 @@
 				25FA04312BEB50F50052A577 /* stopInfoExtension.entitlements */,
 				25D19E562BE600920055E70E /* HslWidget */,
 				25D19E6F2BE755310055E70E /* stopInfo */,
+				2542B33B2EC89D01002492BC /* HslWidgetTests */,
 				25D19E6A2BE755310055E70E /* Frameworks */,
 				25D19E552BE600920055E70E /* Products */,
 			);
@@ -131,6 +151,7 @@
 			children = (
 				25D19E542BE600920055E70E /* HslWidget.app */,
 				25D19E692BE755310055E70E /* stopInfoExtension.appex */,
+				2542B33A2EC89D01002492BC /* HslWidgetTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -207,6 +228,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2542B3392EC89D01002492BC /* HslWidgetTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2542B3402EC89D01002492BC /* Build configuration list for PBXNativeTarget "HslWidgetTests" */;
+			buildPhases = (
+				2542B3362EC89D01002492BC /* Sources */,
+				2542B3372EC89D01002492BC /* Frameworks */,
+				2542B3382EC89D01002492BC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2542B33F2EC89D01002492BC /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2542B33B2EC89D01002492BC /* HslWidgetTests */,
+			);
+			name = HslWidgetTests;
+			packageProductDependencies = (
+			);
+			productName = HslWidgetTests;
+			productReference = 2542B33A2EC89D01002492BC /* HslWidgetTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		25D19E532BE600920055E70E /* HslWidget */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 25D19E622BE600930055E70E /* Build configuration list for PBXNativeTarget "HslWidget" */;
@@ -250,9 +294,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1530;
+				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1530;
 				TargetAttributes = {
+					2542B3392EC89D01002492BC = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = 25D19E532BE600920055E70E;
+					};
 					25D19E532BE600920055E70E = {
 						CreatedOnToolsVersion = 15.3;
 					};
@@ -276,11 +324,19 @@
 			targets = (
 				25D19E532BE600920055E70E /* HslWidget */,
 				25D19E682BE755310055E70E /* stopInfoExtension */,
+				2542B3392EC89D01002492BC /* HslWidgetTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2542B3382EC89D01002492BC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		25D19E522BE600920055E70E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -303,6 +359,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2542B3362EC89D01002492BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		25D19E502BE600920055E70E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -342,6 +405,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2542B33F2EC89D01002492BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 25D19E532BE600920055E70E /* HslWidget */;
+			targetProxy = 2542B33E2EC89D01002492BC /* PBXContainerItemProxy */;
+		};
 		25D19E782BE755320055E70E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 25D19E682BE755310055E70E /* stopInfoExtension */;
@@ -350,6 +418,44 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		2542B3412EC89D01002492BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8HG4D44UZQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.balenet.HslWidgetTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HslWidget.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HslWidget";
+			};
+			name = Debug;
+		};
+		2542B3422EC89D01002492BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8HG4D44UZQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.balenet.HslWidgetTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HslWidget.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HslWidget";
+			};
+			name = Release;
+		};
 		25D19E602BE600930055E70E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2542B3332EC8594F002492BC /* Config.xcconfig */;
@@ -609,6 +715,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2542B3402EC89D01002492BC /* Build configuration list for PBXNativeTarget "HslWidgetTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2542B3412EC89D01002492BC /* Debug */,
+				2542B3422EC89D01002492BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		25D19E4F2BE600920055E70E /* Build configuration list for PBXProject "HslWidget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
