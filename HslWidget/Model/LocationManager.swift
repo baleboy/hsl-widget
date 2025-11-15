@@ -70,11 +70,9 @@ class LocationManager: NSObject, ObservableObject {
     func disableBackgroundLocationUpdates() {
         print("LocationManager: Disabling significant location change monitoring")
         locationManager.stopMonitoringSignificantLocationChanges()
-        // Keep foreground updates if we still have When In Use permission
-        if authorizationStatus == .authorizedWhenInUse {
+        // Keep foreground updates if we have any location permission
+        if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
             locationManager.startUpdatingLocation()
-        } else {
-            locationManager.stopUpdatingLocation()
         }
     }
 
@@ -104,7 +102,6 @@ extension LocationManager: CLLocationManagerDelegate {
         authorizationStatus = manager.authorizationStatus
         print("LocationManager: Authorization status changed to: \(authorizationStatus.rawValue)")
 
-        let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
         let backgroundLocationEnabled = sharedDefaults?.bool(forKey: "backgroundLocationEnabled") ?? false
 
         switch authorizationStatus {
@@ -117,10 +114,12 @@ extension LocationManager: CLLocationManagerDelegate {
             }
         case .authorizedWhenInUse:
             print("LocationManager: When-in-use authorization granted")
-            startMonitoring()
             // Disable background if it was enabled (user downgraded permission)
             if backgroundLocationEnabled {
+                sharedDefaults?.set(false, forKey: "backgroundLocationEnabled")
                 disableBackgroundLocationUpdates()
+            } else {
+                startMonitoring()
             }
         case .denied, .restricted:
             print("LocationManager: Location denied/restricted, stopping monitoring")

@@ -123,9 +123,9 @@ struct SettingsView: View {
 
     private func handleBackgroundLocationToggle(enabled: Bool) {
         if enabled {
-            // Request "Always" permission
+            // Request "Always" permission - enableBackgroundLocationUpdates will be called
+            // automatically in the delegate once permission is granted
             locationManager.requestAlwaysAuthorization()
-            locationManager.enableBackgroundLocationUpdates()
         } else {
             // Switch back to foreground-only
             locationManager.disableBackgroundLocationUpdates()
