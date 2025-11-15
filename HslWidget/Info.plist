@@ -10,5 +10,13 @@
 	<array>
 		<string>ConfigureWidgetIntent</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location is used to find and sort nearby transit stops.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>With "Always Allow" permission, the widget can automatically update to show the nearest stop as you move around the city. This uses battery-efficient significant location changes (only updates when you move ~500 meters).</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>

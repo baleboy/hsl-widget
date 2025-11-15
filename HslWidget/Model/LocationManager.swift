@@ -30,13 +30,19 @@ class LocationManager: NSObject, ObservableObject {
         authorizationStatus = locationManager.authorizationStatus
     }
 
-    /// Request location permissions
+    /// Request location permissions (When In Use)
     func requestPermission() {
         print("LocationManager: Requesting when-in-use authorization")
         locationManager.requestWhenInUseAuthorization()
     }
 
-    /// Start monitoring location
+    /// Request always authorization for background location
+    func requestAlwaysAuthorization() {
+        print("LocationManager: Requesting always authorization")
+        locationManager.requestAlwaysAuthorization()
+    }
+
+    /// Start monitoring location (foreground)
     func startMonitoring() {
         print("LocationManager: Starting location updates")
         locationManager.startUpdatingLocation()
@@ -46,6 +52,28 @@ class LocationManager: NSObject, ObservableObject {
     func stopMonitoring() {
         print("LocationManager: Stopping location updates")
         locationManager.stopUpdatingLocation()
+    }
+
+    /// Enable background location updates (significant location changes)
+    func enableBackgroundLocationUpdates() {
+        guard authorizationStatus == .authorizedAlways else {
+            print("LocationManager: Cannot enable background updates without 'Always' authorization")
+            return
+        }
+        print("LocationManager: Enabling significant location change monitoring")
+        locationManager.startMonitoringSignificantLocationChanges()
+        // Also keep foreground updates for when app is open
+        locationManager.startUpdatingLocation()
+    }
+
+    /// Disable background location updates
+    func disableBackgroundLocationUpdates() {
+        print("LocationManager: Disabling significant location change monitoring")
+        locationManager.stopMonitoringSignificantLocationChanges()
+        // Keep foreground updates if we have any location permission
+        if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
+            locationManager.startUpdatingLocation()
+        }
     }
 
     /// Get the last known location from shared storage
@@ -74,13 +102,29 @@ extension LocationManager: CLLocationManagerDelegate {
         authorizationStatus = manager.authorizationStatus
         print("LocationManager: Authorization status changed to: \(authorizationStatus.rawValue)")
 
+        let backgroundLocationEnabled = sharedDefaults?.bool(forKey: "backgroundLocationEnabled") ?? false
+
         switch authorizationStatus {
-        case .authorizedWhenInUse, .authorizedAlways:
-            print("LocationManager: Location authorized, starting monitoring")
-            startMonitoring()
+        case .authorizedAlways:
+            print("LocationManager: Always authorization granted")
+            if backgroundLocationEnabled {
+                enableBackgroundLocationUpdates()
+            } else {
+                startMonitoring()
+            }
+        case .authorizedWhenInUse:
+            print("LocationManager: When-in-use authorization granted")
+            // Disable background if it was enabled (user downgraded permission)
+            if backgroundLocationEnabled {
+                sharedDefaults?.set(false, forKey: "backgroundLocationEnabled")
+                disableBackgroundLocationUpdates()
+            } else {
+                startMonitoring()
+            }
         case .denied, .restricted:
             print("LocationManager: Location denied/restricted, stopping monitoring")
             stopMonitoring()
+            disableBackgroundLocationUpdates()
         case .notDetermined:
             print("LocationManager: Location permission not determined yet")
             break
