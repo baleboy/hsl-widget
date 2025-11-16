@@ -91,7 +91,7 @@ struct FavoritesListView: View {
                     Button(action: {
                         showingSettings = true
                     }) {
-                        Image(systemName: "gear")
+                        Image(systemName: "gearshape.fill")
                     }
                 }
             }
