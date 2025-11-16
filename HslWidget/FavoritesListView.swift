@@ -99,7 +99,7 @@ struct FavoritesListView: View {
                 requestLocationPermission()
                 updateClosestStopAndDepartures()
             }
-            .onChange(of: locationManager.currentLocation) { _ in
+            .onChange(of: locationManager.currentLocation) {
                 updateClosestStopAndDepartures()
             }
             .sheet(isPresented: $showingStopPicker) {
