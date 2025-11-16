@@ -84,7 +84,8 @@ struct FavoritesListView: View {
                     }
                 }
             }
-            .navigationTitle("Favorite Stops")
+            .navigationTitle("HSL Widget")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
