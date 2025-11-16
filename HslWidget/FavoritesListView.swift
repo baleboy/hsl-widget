@@ -24,197 +24,213 @@ struct FavoritesListView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                if favorites.isEmpty {
-                    // Empty state
-                    VStack(spacing: 16) {
-                        Image(systemName: "star.slash")
-                            .font(.system(size: 60))
-                            .foregroundColor(.secondary)
-                        Text("No favorite stops selected")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                        Text("Tap the button below to select your favorite stops")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-
-                        Button(action: {
-                            showingStopPicker = true
-                        }) {
-                            Label("Add Favorite Stop", systemImage: "plus.circle.fill")
-                                .font(.headline)
-                                .padding()
-                                .background(Color.accentColor)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+            ZStack {
+                VStack(spacing: 0) {
+                    if favorites.isEmpty {
+                        // Empty state
+                        VStack(spacing: 16) {
+                            Image(systemName: "star.slash")
+                                .font(.system(size: 60))
+                                .foregroundColor(.secondary)
+                            Text("No favorite stops selected")
+                                .font(.title2)
+                                .foregroundColor(.secondary)
+                            Text("Tap the button below to select your favorite stops")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                            
+                            Button(action: {
+                                showingStopPicker = true
+                            }) {
+                                Label("Add Favorite Stop", systemImage: "plus.circle.fill")
+                                    .font(.headline)
+                                    .padding()
+                                    .background(Color.accentColor)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                            .padding(.top, 8)
                         }
-                        .padding(.top, 8)
-                    }
-                    .frame(maxHeight: .infinity)
-                } else {
-                    // Departures section and favorites list
-                    List {
-                        // Next departures section
-                        if let closestStop = closestStop {
-                            Section(header: Text("Next Departures")) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    HStack {
-                                        Image(systemName: "location.fill")
-                                            .foregroundColor(.blue)
-                                            .font(.caption)
-                                        Text(closestStop.name)
-                                            .font(.headline)
-                                    }
-
-                                    if isLoadingDepartures {
+                        .frame(maxHeight: .infinity)
+                    } else {
+                        // Departures section and favorites list
+                        List {
+                            // Next departures section
+                            if let closestStop = closestStop {
+                                Section(header: Text("Next Departures")) {
+                                    VStack(alignment: .leading, spacing: 8) {
                                         HStack {
-                                            ProgressView()
-                                                .scaleEffect(0.8)
-                                            Text("Loading...")
+                                            Image(systemName: "location.fill")
+                                                .foregroundColor(.blue)
                                                 .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                        .padding(.vertical, 4)
-                                    } else if departures.isEmpty {
-                                        Text("No departures available")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                            .padding(.vertical, 4)
-                                    } else {
-                                        ForEach(departures.prefix(3)) { departure in
-                                            HStack {
-                                                Label(departure.routeShortName, systemImage: "tram.fill")
-                                                    .font(.headline)
-                                                Spacer()
-                                                Text(departure.departureTime, style: .time)
-                                                    .font(.headline)
-                                            }
-                                            .padding(.vertical, 2)
-                                        }
-                                    }
-                                }
-                                .padding(.vertical, 4)
-                            }
-                        }
-
-                        // All favorites section
-                        Section(header:
-                            HStack {
-                                Text("All Favorites")
-                                Spacer()
-                                Button(action: {
-                                    showingStopPicker = true
-                                }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.accentColor)
-                                }
-                            }
-                        ) {
-                            ForEach(favorites) { stop in
-                                Button(action: {
-                                    editFilters(for: stop)
-                                }) {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        HStack {
-                                            Text(stop.name)
+                                            Text(closestStop.name)
                                                 .font(.headline)
-                                                .foregroundColor(.primary)
-                                            Spacer()
-                                            if stop.hasFilters {
-                                                Image(systemName: "line.3.horizontal.decrease.circle.fill")
-                                                    .foregroundColor(.blue)
-                                                    .font(.caption)
-                                            }
-                                            if stop.id == closestStop?.id {
-                                                Image(systemName: "location.fill")
-                                                    .foregroundColor(.blue)
-                                                    .font(.caption)
-                                            }
                                         }
-                                        HStack {
-                                            Text(stop.code)
+                                        
+                                        if isLoadingDepartures {
+                                            HStack {
+                                                ProgressView()
+                                                    .scaleEffect(0.8)
+                                                Text("Loading...")
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            .padding(.vertical, 4)
+                                        } else if departures.isEmpty {
+                                            Text("No departures available")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
-                                            if stop.hasFilters {
-                                                Text("• Filtered")
-                                                    .font(.caption)
-                                                    .foregroundColor(.blue)
+                                                .padding(.vertical, 4)
+                                        } else {
+                                            ForEach(departures.prefix(3)) { departure in
+                                                HStack {
+                                                    Label(departure.routeShortName, systemImage: "tram.fill")
+                                                        .font(.headline)
+                                                    Spacer()
+                                                    Text(departure.departureTime, style: .time)
+                                                        .font(.headline)
+                                                }
+                                                .padding(.vertical, 2)
                                             }
                                         }
-
-                                        // Show headsigns for filtered lines if available
-                                        if let headsigns = filteredHeadsigns[stop.id], !headsigns.isEmpty {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "arrow.right")
-                                                    .font(.caption2)
-                                                    .foregroundColor(.secondary)
-                                                Text(headsigns.prefix(3).joined(separator: ", "))
+                                    }
+                                    .padding(.vertical, 4)
+                                }
+                            }
+                            
+                            // All favorites section
+                            Section(header:
+                                        HStack {
+                                Text("All Favorites")
+                            }
+                            ) {
+                                ForEach(favorites) { stop in
+                                    Button(action: {
+                                        editFilters(for: stop)
+                                    }) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            HStack {
+                                                Text(stop.name)
+                                                    .font(.headline)
+                                                    .foregroundColor(.primary)
+                                                Spacer()
+                                                if stop.hasFilters {
+                                                    Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                                                        .foregroundColor(.blue)
+                                                        .font(.caption)
+                                                }
+                                                if stop.id == closestStop?.id {
+                                                    Image(systemName: "location.fill")
+                                                        .foregroundColor(.blue)
+                                                        .font(.caption)
+                                                }
+                                            }
+                                            HStack {
+                                                Text(stop.code)
                                                     .font(.caption)
                                                     .foregroundColor(.secondary)
-                                                    .lineLimit(1)
+                                                if stop.hasFilters {
+                                                    Text("• Filtered")
+                                                        .font(.caption)
+                                                        .foregroundColor(.blue)
+                                                }
                                             }
-                                            .padding(.top, 2)
-                                        }
-                                        // Show all headsigns if no line filter
-                                        else if let headsigns = stop.headsigns, !headsigns.isEmpty,
-                                                stop.filteredLines == nil || stop.filteredLines!.isEmpty {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "arrow.right")
-                                                    .font(.caption2)
-                                                    .foregroundColor(.secondary)
-                                                Text(headsigns.prefix(3).joined(separator: ", "))
-                                                    .font(.caption)
-                                                    .foregroundColor(.secondary)
-                                                    .lineLimit(1)
+                                            
+                                            // Show headsigns for filtered lines if available
+                                            if let headsigns = filteredHeadsigns[stop.id], !headsigns.isEmpty {
+                                                HStack(spacing: 4) {
+                                                    Image(systemName: "arrow.right")
+                                                        .font(.caption2)
+                                                        .foregroundColor(.secondary)
+                                                    Text(headsigns.prefix(3).joined(separator: ", "))
+                                                        .font(.caption)
+                                                        .foregroundColor(.secondary)
+                                                        .lineLimit(1)
+                                                }
+                                                .padding(.top, 2)
                                             }
-                                            .padding(.top, 2)
-                                        }
-
-                                        // Show lines grouped by mode if available
-                                        if let linesByMode = filteredLinesByMode[stop.id], !linesByMode.isEmpty {
-                                            HStack(spacing: 6) {
-                                                ForEach(Array(linesByMode.keys.sorted()), id: \.self) { mode in
-                                                    if let lines = linesByMode[mode], !lines.isEmpty {
-                                                        HStack(spacing: 2) {
-                                                            modeIcon(for: mode)
-                                                            Text(lines.sorted().joined(separator: ", "))
-                                                                .font(.caption)
-                                                                .foregroundColor(stop.hasFilters ? .blue : .secondary)
+                                            // Show all headsigns if no line filter
+                                            else if let headsigns = stop.headsigns, !headsigns.isEmpty,
+                                                    stop.filteredLines == nil || stop.filteredLines!.isEmpty {
+                                                HStack(spacing: 4) {
+                                                    Image(systemName: "arrow.right")
+                                                        .font(.caption2)
+                                                        .foregroundColor(.secondary)
+                                                    Text(headsigns.prefix(3).joined(separator: ", "))
+                                                        .font(.caption)
+                                                        .foregroundColor(.secondary)
+                                                        .lineLimit(1)
+                                                }
+                                                .padding(.top, 2)
+                                            }
+                                            
+                                            // Show lines grouped by mode if available
+                                            if let linesByMode = filteredLinesByMode[stop.id], !linesByMode.isEmpty {
+                                                HStack(spacing: 6) {
+                                                    ForEach(Array(linesByMode.keys.sorted()), id: \.self) { mode in
+                                                        if let lines = linesByMode[mode], !lines.isEmpty {
+                                                            HStack(spacing: 2) {
+                                                                modeIcon(for: mode)
+                                                                Text(lines.sorted().joined(separator: ", "))
+                                                                    .font(.caption)
+                                                                    .foregroundColor(stop.hasFilters ? .blue : .secondary)
+                                                            }
                                                         }
                                                     }
                                                 }
+                                                .padding(.top, 2)
                                             }
-                                            .padding(.top, 2)
-                                        }
-
-                                        // Show filtered headsign pattern if configured
-                                        if let pattern = stop.filteredHeadsignPattern, !pattern.isEmpty {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "arrow.right")
-                                                    .font(.caption2)
-                                                    .foregroundColor(.blue)
-                                                Text("To: \(pattern)")
-                                                    .font(.caption)
-                                                    .foregroundColor(.blue)
-                                                    .lineLimit(1)
+                                            
+                                            // Show filtered headsign pattern if configured
+                                            if let pattern = stop.filteredHeadsignPattern, !pattern.isEmpty {
+                                                HStack(spacing: 4) {
+                                                    Image(systemName: "arrow.right")
+                                                        .font(.caption2)
+                                                        .foregroundColor(.blue)
+                                                    Text("To: \(pattern)")
+                                                        .font(.caption)
+                                                        .foregroundColor(.blue)
+                                                        .lineLimit(1)
+                                                }
+                                                .padding(.top, 2)
                                             }
-                                            .padding(.top, 2)
                                         }
                                     }
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        removeFavorite(stop)
-                                    } label: {
-                                        Label("Remove", systemImage: "trash")
+                                    .buttonStyle(PlainButtonStyle())
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            removeFavorite(stop)
+                                        } label: {
+                                            Label("Remove", systemImage: "trash")
+                                        }
                                     }
                                 }
                             }
                         }
+                    }
+                }
+                
+                // Fixed floating button at the bottom
+                if !favorites.isEmpty {
+                    VStack {
+                        Spacer()
+                        Button(action: {
+                            showingStopPicker = true
+                        }) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color(.systemBackground))
+                                    .frame(width: 64, height: 64)
+                                    .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 64))
+                                    .foregroundColor(.accentColor)
+                            }
+                        }
+                        .padding(.bottom, 30)
                     }
                 }
             }
