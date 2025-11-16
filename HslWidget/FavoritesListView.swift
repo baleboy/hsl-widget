@@ -40,7 +40,7 @@ struct FavoritesListView: View {
                             }
 
                             // All favorites section
-                            Section(header: Text("All Favorites")) {
+                            Section(header: Text("Favorite stops")) {
                                 ForEach(favorites) { stop in
                                     FavoriteStopRow(
                                         stop: stop,
