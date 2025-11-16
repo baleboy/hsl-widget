@@ -17,6 +17,7 @@ struct FavoritesListView: View {
     @State private var isLoadingDepartures = false
     @State private var filteredHeadsigns: [String: [String]] = [:] // stopId -> headsigns for filtered lines
     @State private var filteredLinesByMode: [String: [String: [String]]] = [:] // stopId -> [mode: [lines]]
+    @State private var showingSettings = false
     @StateObject private var locationManager = LocationManager.shared
 
     private let favoritesManager = FavoritesManager.shared
@@ -218,6 +219,15 @@ struct FavoritesListView: View {
                 }
             }
             .navigationTitle("Favorite Stops")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingSettings = true
+                    }) {
+                        Image(systemName: "gear")
+                    }
+                }
+            }
             .onAppear {
                 loadFavorites()
                 requestLocationPermission()
@@ -244,6 +254,9 @@ struct FavoritesListView: View {
                         stopToEdit = nil
                     }
                 )
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
             }
         }
     }
