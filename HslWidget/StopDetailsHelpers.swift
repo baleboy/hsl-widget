@@ -15,10 +15,10 @@ struct HeadsignList: View {
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: "arrow.right")
-                .font(.caption2)
+                .font(.roundedCaption2)
                 .foregroundColor(isFiltered ? .blue : .secondary)
             Text(headsigns.prefix(3).joined(separator: ", "))
-                .font(.caption)
+                .font(.roundedCaption)
                 .foregroundColor(isFiltered ? .blue : .secondary)
                 .lineLimit(1)
         }
@@ -33,10 +33,10 @@ struct HeadsignPattern: View {
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: "arrow.right")
-                .font(.caption2)
+                .font(.roundedCaption2)
                 .foregroundColor(.blue)
             Text("To: \(pattern)")
-                .font(.caption)
+                .font(.roundedCaption)
                 .foregroundColor(.blue)
                 .lineLimit(1)
         }
@@ -56,7 +56,7 @@ struct LinesByMode: View {
                     HStack(spacing: 2) {
                         TransitModeIcon(mode: mode)
                         Text(lines.sorted().joined(separator: ", "))
-                            .font(.caption)
+                            .font(.roundedCaption)
                             .foregroundColor(isFiltered ? .blue : .secondary)
                     }
                 }
@@ -93,7 +93,7 @@ struct TransitModeIcon: View {
                     .foregroundColor(.gray)
             }
         }
-        .font(.caption)
+        .font(.roundedCaption)
     }
 }
 

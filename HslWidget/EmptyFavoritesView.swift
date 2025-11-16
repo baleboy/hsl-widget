@@ -13,20 +13,20 @@ struct EmptyFavoritesView: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "star.slash")
-                .font(.system(size: 60))
+                .font(.rounded(size: 60))
                 .foregroundColor(.secondary)
             Text("No favorite stops selected")
-                .font(.title2)
+                .font(.roundedTitle2)
                 .foregroundColor(.secondary)
             Text("Tap the button below to select your favorite stops")
-                .font(.body)
+                .font(.roundedBody)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
             Button(action: onAddStop) {
                 Label("Add Favorite Stop", systemImage: "plus.circle.fill")
-                    .font(.headline)
+                    .font(.roundedHeadline)
                     .padding()
                     .background(Color.accentColor)
                     .foregroundColor(.white)

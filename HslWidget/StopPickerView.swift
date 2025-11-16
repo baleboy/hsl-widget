@@ -53,7 +53,7 @@ struct StopPickerView: View {
                 VStack(spacing: 16) {
                     ProgressView()
                     Text("Loading stops...")
-                        .font(.headline)
+                        .font(.roundedHeadline)
                 }
             } else if preloader.isLoading && isInitialLoad {
                 // Show loading screen with progress during initial headsign preload
@@ -64,14 +64,14 @@ struct StopPickerView: View {
 
                     VStack(spacing: 8) {
                         Text("Loading nearby stops")
-                            .font(.headline)
+                            .font(.roundedHeadline)
                         Text(preloader.loadingMessage)
-                            .font(.subheadline)
+                            .font(.roundedSubheadline)
                             .foregroundColor(.secondary)
                     }
 
                     Text("This only happens once")
-                        .font(.caption)
+                        .font(.roundedCaption)
                         .foregroundColor(.secondary)
                 }
                 .padding()
@@ -134,23 +134,23 @@ struct StopPickerView: View {
                         .foregroundColor(.primary)
                     HStack(spacing: 4) {
                         Text(stop.code)
-                            .font(.caption)
+                            .font(.roundedCaption)
                             .foregroundColor(.secondary)
 
                         // Show distance if available
                         if let distance = formattedDistance(to: stop) {
                             Text("•")
-                                .font(.caption)
+                                .font(.roundedCaption)
                                 .foregroundColor(.secondary)
                             Text(distance)
-                                .font(.caption)
+                                .font(.roundedCaption)
                                 .foregroundColor(.secondary)
                         }
 
                         // Show transport mode icons
                         if let modes = stop.vehicleModes, !modes.isEmpty {
                             Text("•")
-                                .font(.caption)
+                                .font(.roundedCaption)
                                 .foregroundColor(.secondary)
                             HStack(spacing: 2) {
                                 ForEach(Array(modes.sorted()), id: \.self) { mode in
@@ -164,10 +164,10 @@ struct StopPickerView: View {
                     if let headsigns = stopHeadsigns[stop.id], !headsigns.isEmpty {
                         HStack(spacing: 4) {
                             Image(systemName: "arrow.right")
-                                .font(.caption2)
+                                .font(.roundedCaption2)
                                 .foregroundColor(.secondary)
                             Text(headsigns.joined(separator: ", "))
-                                .font(.caption)
+                                .font(.roundedCaption)
                                 .foregroundColor(.secondary)
                                 .lineLimit(1)
                         }
@@ -206,7 +206,7 @@ struct StopPickerView: View {
                     .foregroundColor(.gray)
             }
         }
-        .font(.caption)
+        .font(.roundedCaption)
     }
 
     private func toggleFavorite(_ stop: Stop) {

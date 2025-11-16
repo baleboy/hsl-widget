@@ -20,29 +20,29 @@ struct FavoriteStopRow: View {
                 // Header with stop name and indicators
                 HStack {
                     Text(stop.name)
-                        .font(.headline)
+                        .font(.roundedHeadline)
                         .foregroundColor(.primary)
                     Spacer()
                     if stop.hasFilters {
                         Image(systemName: "line.3.horizontal.decrease.circle.fill")
                             .foregroundColor(.blue)
-                            .font(.caption)
+                            .font(.roundedCaption)
                     }
                     if isClosest {
                         Image(systemName: "location.fill")
                             .foregroundColor(.blue)
-                            .font(.caption)
+                            .font(.roundedCaption)
                     }
                 }
 
                 // Stop code and filter indicator
                 HStack {
                     Text(stop.code)
-                        .font(.caption)
+                        .font(.roundedCaption)
                         .foregroundColor(.secondary)
                     if stop.hasFilters {
                         Text("• Filtered")
-                            .font(.caption)
+                            .font(.roundedCaption)
                             .foregroundColor(.blue)
                     }
                 }

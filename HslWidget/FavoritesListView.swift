@@ -76,7 +76,7 @@ struct FavoritesListView: View {
                                     .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
 
                                 Image(systemName: "plus.circle.fill")
-                                    .font(.system(size: 64))
+                                    .font(.rounded(size: 64))
                                     .foregroundColor(.accentColor)
                             }
                         }

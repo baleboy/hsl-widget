@@ -21,9 +21,9 @@ struct SettingsView: View {
                     Toggle(isOn: $backgroundLocationEnabled) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Background Location Updates")
-                                .font(.headline)
+                                .font(.roundedHeadline)
                             Text("Automatically update widget when you move")
-                                .font(.caption)
+                                .font(.roundedCaption)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -37,11 +37,11 @@ struct SettingsView: View {
                         Text("When enabled, the widget will automatically update to show the nearest stop as you move around the city.")
 
                         Text("Battery Impact: Minimal")
-                            .font(.caption)
+                            .font(.roundedCaption)
                             .fontWeight(.semibold)
 
                         Text("This feature uses \"significant location changes\" which only triggers when you move approximately 500 meters. It does not continuously track your location.")
-                            .font(.caption)
+                            .font(.roundedCaption)
                     }
                 }
 
@@ -60,7 +60,7 @@ struct SettingsView: View {
                                 Text("Open Settings")
                                 Spacer()
                                 Image(systemName: "arrow.up.right.square")
-                                    .font(.caption)
+                                    .font(.roundedCaption)
                             }
                         }
                     }

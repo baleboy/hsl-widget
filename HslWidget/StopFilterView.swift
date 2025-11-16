@@ -24,9 +24,9 @@ struct StopFilterView: View {
                 Section(header: Text("Stop Information")) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(stop.name)
-                            .font(.headline)
+                            .font(.roundedHeadline)
                         Text(stop.code)
-                            .font(.caption)
+                            .font(.roundedCaption)
                             .foregroundColor(.secondary)
                     }
                 }
@@ -79,7 +79,7 @@ struct StopFilterView: View {
                     HStack {
                         Spacer()
                         Text("Filters Active")
-                            .font(.caption)
+                            .font(.roundedCaption)
                             .foregroundColor(.secondary)
                         Image(systemName: hasActiveFilters ? "checkmark.circle.fill" : "xmark.circle")
                             .foregroundColor(hasActiveFilters ? .green : .secondary)

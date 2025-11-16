@@ -18,9 +18,9 @@ struct NextDeparturesView: View {
                 HStack {
                     Image(systemName: "location.fill")
                         .foregroundColor(.blue)
-                        .font(.caption)
+                        .font(.roundedCaption)
                     Text(stop.name)
-                        .font(.headline)
+                        .font(.roundedHeadline)
                 }
 
                 if isLoading {
@@ -28,23 +28,23 @@ struct NextDeparturesView: View {
                         ProgressView()
                             .scaleEffect(0.8)
                         Text("Loading...")
-                            .font(.caption)
+                            .font(.roundedCaption)
                             .foregroundColor(.secondary)
                     }
                     .padding(.vertical, 4)
                 } else if departures.isEmpty {
                     Text("No departures available")
-                        .font(.caption)
+                        .font(.roundedCaption)
                         .foregroundColor(.secondary)
                         .padding(.vertical, 4)
                 } else {
                     ForEach(departures.prefix(3)) { departure in
                         HStack {
                             Label(departure.routeShortName, systemImage: "tram.fill")
-                                .font(.headline)
+                                .font(.roundedHeadline)
                             Spacer()
                             Text(departure.departureTime, style: .time)
-                                .font(.headline)
+                                .font(.roundedHeadline)
                                 .monospacedDigit()
                         }
                         .padding(.vertical, 2)

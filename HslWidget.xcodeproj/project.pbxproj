@@ -16,6 +16,8 @@
 		2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */; };
 		2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */; };
 		2542B3482EC8BA32002492BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3472EC8BA32002492BC /* SettingsView.swift */; };
+		256460E82ECA470A00C60F8A /* Font+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256460E72ECA470A00C60F8A /* Font+Rounded.swift */; };
+		256460E92ECA470A00C60F8A /* Font+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256460E72ECA470A00C60F8A /* Font+Rounded.swift */; };
 		25906F442EC9CD1400A113DA /* FavoriteStopRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */; };
 		25906F452EC9CD1400A113DA /* StopDetailsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F432EC9CD1400A113DA /* StopDetailsHelpers.swift */; };
 		25906F462EC9CD1400A113DA /* NextDeparturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F422EC9CD1400A113DA /* NextDeparturesView.swift */; };
@@ -84,6 +86,7 @@
 		2542B3332EC8594F002492BC /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		2542B33A2EC89D01002492BC /* HslWidgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HslWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2542B3472EC8BA32002492BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		256460E72ECA470A00C60F8A /* Font+Rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Rounded.swift"; sourceTree = "<group>"; };
 		25906F402EC9CD1400A113DA /* EmptyFavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFavoritesView.swift; sourceTree = "<group>"; };
 		25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteStopRow.swift; sourceTree = "<group>"; };
 		25906F422EC9CD1400A113DA /* NextDeparturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextDeparturesView.swift; sourceTree = "<group>"; };
@@ -167,6 +170,7 @@
 		25D19E562BE600920055E70E /* HslWidget */ = {
 			isa = PBXGroup;
 			children = (
+				256460E72ECA470A00C60F8A /* Font+Rounded.swift */,
 				25906F402EC9CD1400A113DA /* EmptyFavoritesView.swift */,
 				25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */,
 				25906F422EC9CD1400A113DA /* NextDeparturesView.swift */,
@@ -383,6 +387,7 @@
 			files = (
 				2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */,
 				2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */,
+				256460E92ECA470A00C60F8A /* Font+Rounded.swift in Sources */,
 				25FA041D2BE7F5990052A577 /* HslApi.swift in Sources */,
 				25D19E852BE79FFA0055E70E /* Departure.swift in Sources */,
 				2542B3262EC3D25B002492BC /* LocationManager.swift in Sources */,
@@ -406,6 +411,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				256460E82ECA470A00C60F8A /* Font+Rounded.swift in Sources */,
 				25FA04272BEA16ED0052A577 /* Stop.swift in Sources */,
 				25FA04242BEA16AB0052A577 /* DepartureTimesQueryResponse.swift in Sources */,
 				25FA04222BEA14010052A577 /* HslApi.swift in Sources */,
