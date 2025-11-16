@@ -15,8 +15,6 @@
 		2542B32D2EC44BE2002492BC /* StopPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32B2EC44BE2002492BC /* StopPickerView.swift */; };
 		2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */; };
 		2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */; };
-		2542B3342EC8594F002492BC /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2542B3332EC8594F002492BC /* Config.xcconfig */; };
-		2542B3352EC8594F002492BC /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2542B3332EC8594F002492BC /* Config.xcconfig */; };
 		2542B3482EC8BA32002492BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3472EC8BA32002492BC /* SettingsView.swift */; };
 		25906F442EC9CD1400A113DA /* FavoriteStopRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */; };
 		25906F452EC9CD1400A113DA /* StopDetailsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F432EC9CD1400A113DA /* StopDetailsHelpers.swift */; };
@@ -310,7 +308,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1610;
-				LastUpgradeCheck = 1530;
+				LastUpgradeCheck = 1610;
 				TargetAttributes = {
 					2542B3392EC89D01002492BC = {
 						CreatedOnToolsVersion = 16.1;
@@ -357,7 +355,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				25D19E5F2BE600930055E70E /* Preview Assets.xcassets in Resources */,
-				2542B3342EC8594F002492BC /* Config.xcconfig in Resources */,
 				25D19E5C2BE600930055E70E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,7 +363,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2542B3352EC8594F002492BC /* Config.xcconfig in Resources */,
 				25D19E752BE755320055E70E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -600,7 +596,6 @@
 		25D19E632BE600930055E70E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = HslWidget/HslWidget.entitlements;
@@ -635,7 +630,6 @@
 		25D19E642BE600930055E70E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = HslWidget/HslWidget.entitlements;
