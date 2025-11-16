@@ -135,22 +135,22 @@ struct stopInfoEntryView : View {
                 // Show message when no favorites are selected
                 VStack(alignment: .leading, spacing: 2) {
                     Text("No favorites")
-                        .font(.roundedHeadline)
+                        .font(.headline)
                         .widgetAccentable()
                     Text("Open the app to select favorite stops")
-                        .font(.roundedCaption2)
+                        .font(.caption2)
                         .foregroundColor(.secondary)
                 }
             } else {
                 // Show stop name and departures
                 Text(entry.stopName)
-                    .font(.roundedHeadline)
+                    .font(.headline)
                     .widgetAccentable()
 
                 ForEach(entry.departures) { departure in
                     HStack(spacing: 4) {
                         Label(departure.routeShortName, systemImage: "tram.fill")
-                            .font(.roundedHeadline)
+                            .font(.headline)
                         Spacer()
                         Label {
                             Text(departure.departureTime, style: .time)
