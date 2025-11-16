@@ -148,14 +148,17 @@ struct stopInfoEntryView : View {
                     .widgetAccentable()
 
                 ForEach(entry.departures) { departure in
-                    HStack {
+                    HStack(spacing: 4) {
                         Label(departure.routeShortName, systemImage: "tram.fill")
                             .font(.headline)
+                        Spacer()
                         Label {
                             Text(departure.departureTime, style: .time)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                         } icon: {
                             Image(systemName: "clock")
-                        }.padding(.leading)
+                        }
                     }
                 }
             }
@@ -188,3 +191,10 @@ struct stopInfo: Widget {
 } timeline: {
     Provider.TimetableEntry.example
 }
+
+#Preview(as: .systemSmall) {
+    stopInfo()
+} timeline: {
+    Provider.TimetableEntry.example
+}
+
