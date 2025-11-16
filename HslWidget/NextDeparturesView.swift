@@ -54,3 +54,37 @@ struct NextDeparturesView: View {
         }
     }
 }
+
+#Preview("With Departures") {
+    List {
+        NextDeparturesView(
+            stop: Stop.defaultStop,
+            departures: [
+                Departure(departureTime: Date().addingTimeInterval(180), routeShortName: "9", headsign: "Pasila", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(420), routeShortName: "9", headsign: "Pasila", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(600), routeShortName: "6", headsign: "Arabianranta", mode: "TRAM")
+            ],
+            isLoading: false
+        )
+    }
+}
+
+#Preview("Loading") {
+    List {
+        NextDeparturesView(
+            stop: Stop.defaultStop,
+            departures: [],
+            isLoading: true
+        )
+    }
+}
+
+#Preview("Empty") {
+    List {
+        NextDeparturesView(
+            stop: Stop.defaultStop,
+            departures: [],
+            isLoading: false
+        )
+    }
+}

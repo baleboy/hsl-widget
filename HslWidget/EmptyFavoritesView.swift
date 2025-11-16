@@ -37,3 +37,7 @@ struct EmptyFavoritesView: View {
         .frame(maxHeight: .infinity)
     }
 }
+
+#Preview {
+    EmptyFavoritesView(onAddStop: {})
+}

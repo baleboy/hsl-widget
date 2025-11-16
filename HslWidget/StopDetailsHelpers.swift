@@ -96,3 +96,71 @@ struct TransitModeIcon: View {
         .font(.caption)
     }
 }
+
+#Preview("Headsign List - Filtered") {
+    VStack(alignment: .leading) {
+        HeadsignList(headsigns: ["Pasila", "Kamppi", "Erottaja"], isFiltered: true)
+    }
+    .padding()
+}
+
+#Preview("Headsign List - Unfiltered") {
+    VStack(alignment: .leading) {
+        HeadsignList(headsigns: ["Pasila", "Kamppi", "Erottaja"], isFiltered: false)
+    }
+    .padding()
+}
+
+#Preview("Headsign Pattern") {
+    VStack(alignment: .leading) {
+        HeadsignPattern(pattern: "Kamppi")
+    }
+    .padding()
+}
+
+#Preview("Lines By Mode - Single") {
+    VStack(alignment: .leading) {
+        LinesByMode(linesByMode: ["TRAM": ["6", "9"]], isFiltered: false)
+    }
+    .padding()
+}
+
+#Preview("Lines By Mode - Multiple") {
+    VStack(alignment: .leading) {
+        LinesByMode(
+            linesByMode: [
+                "BUS": ["40", "55"],
+                "TRAM": ["2", "3", "4", "5", "6", "7", "9"],
+                "SUBWAY": ["M1", "M2"]
+            ],
+            isFiltered: true
+        )
+    }
+    .padding()
+}
+
+#Preview("Transit Mode Icons") {
+    VStack(alignment: .leading, spacing: 8) {
+        HStack {
+            TransitModeIcon(mode: "BUS")
+            Text("Bus")
+        }
+        HStack {
+            TransitModeIcon(mode: "TRAM")
+            Text("Tram")
+        }
+        HStack {
+            TransitModeIcon(mode: "RAIL")
+            Text("Rail")
+        }
+        HStack {
+            TransitModeIcon(mode: "SUBWAY")
+            Text("Subway")
+        }
+        HStack {
+            TransitModeIcon(mode: "FERRY")
+            Text("Ferry")
+        }
+    }
+    .padding()
+}

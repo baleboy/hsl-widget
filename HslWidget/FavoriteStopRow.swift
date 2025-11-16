@@ -72,3 +72,73 @@ struct FavoriteStopRow: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
+
+#Preview("Basic Stop") {
+    List {
+        FavoriteStopRow(
+            stop: Stop.defaultStop,
+            isClosest: false,
+            filteredHeadsigns: nil,
+            linesByMode: ["TRAM": ["6", "9"]],
+            onTap: {}
+        )
+    }
+}
+
+#Preview("Closest Stop") {
+    List {
+        FavoriteStopRow(
+            stop: Stop.defaultStop,
+            isClosest: true,
+            filteredHeadsigns: nil,
+            linesByMode: ["TRAM": ["6", "9"]],
+            onTap: {}
+        )
+    }
+}
+
+#Preview("Filtered Stop") {
+    List {
+        FavoriteStopRow(
+            stop: Stop(
+                id: "HSL:1080416",
+                name: "Merisotilaantori",
+                code: "H0421",
+                latitude: 60.159,
+                longitude: 24.9208,
+                vehicleModes: ["TRAM"],
+                headsigns: ["Pasila", "Arabianranta"],
+                allStopIds: nil,
+                filteredLines: ["9"],
+                filteredHeadsignPattern: nil
+            ),
+            isClosest: false,
+            filteredHeadsigns: ["Pasila"],
+            linesByMode: ["TRAM": ["9"]],
+            onTap: {}
+        )
+    }
+}
+
+#Preview("Multiple Modes") {
+    List {
+        FavoriteStopRow(
+            stop: Stop(
+                id: "HSL:1020450",
+                name: "Rautatientori",
+                code: "H0011",
+                latitude: 60.169,
+                longitude: 24.940,
+                vehicleModes: ["BUS", "TRAM"],
+                headsigns: ["Erottaja", "Kamppi", "Pasila"],
+                allStopIds: nil,
+                filteredLines: nil,
+                filteredHeadsignPattern: nil
+            ),
+            isClosest: true,
+            filteredHeadsigns: nil,
+            linesByMode: ["BUS": ["40", "55"], "TRAM": ["2", "3", "4", "5", "6", "7", "9"]],
+            onTap: {}
+        )
+    }
+}
