@@ -45,6 +45,7 @@ struct NextDeparturesView: View {
                             Spacer()
                             Text(departure.departureTime, style: .time)
                                 .font(.headline)
+                                .monospacedDigit()
                         }
                         .padding(.vertical, 2)
                     }

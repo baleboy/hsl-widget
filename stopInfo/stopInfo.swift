@@ -154,6 +154,7 @@ struct stopInfoEntryView : View {
                         Spacer()
                         Label {
                             Text(departure.departureTime, style: .time)
+                                .monospacedDigit()
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
                         } icon: {
