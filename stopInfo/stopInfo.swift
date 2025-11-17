@@ -83,17 +83,27 @@ struct Provider: TimelineProvider {
             print("Widget: Filtered departures: \(departures.count) of \(allDepartures.count)")
 
             var entries: [TimetableEntry] = []
+            let now = Date()
             let lastValidIndex = max(0, departures.count - Provider.maxNumberOfShownResults)
 
             // Iterate over the fetched departures to create timeline entries
             for index in 0..<lastValidIndex {
-                let entryDate = (index == 0 ? Date() : departures[index-1].departureTime)
+                let entryDate = (index == 0 ? now : departures[index-1].departureTime)
+
+                // Filter out any departures that have already passed
                 let nextDepartures = Array(departures[index..<(index + Provider.maxNumberOfShownResults)])
-                let entry = TimetableEntry(date: entryDate, stopName: closestStop.name, departures: nextDepartures)
-                entries.append(entry)
+                    .filter { $0.departureTime > now }
+
+                // Only add entry if we have at least one future departure
+                if !nextDepartures.isEmpty {
+                    let entry = TimetableEntry(date: entryDate, stopName: closestStop.name, departures: nextDepartures)
+                    entries.append(entry)
+                }
             }
 
-            let timeline = Timeline(entries: entries, policy: .atEnd)
+            // Refresh after 15 minutes or when entries end (whichever comes first)
+            let refreshDate = now.addingTimeInterval(15 * 60)
+            let timeline = Timeline(entries: entries, policy: .after(refreshDate))
             completion(timeline)
         }
     }
