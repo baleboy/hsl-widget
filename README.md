@@ -126,7 +126,7 @@ Code in `HslWidget/` is shared between targets via Target Membership. Check the 
 
 ### Timeline Strategy
 
-The widget uses a multi-entry timeline where each entry represents a different departure window. Entries are staggered at each departure time, allowing the widget to automatically advance as departures pass. The timeline policy is `.atEnd`, triggering a refresh when all entries expire.
+The widget uses a multi-entry timeline where each entry represents a different departure window. Entries are staggered at each departure time, allowing the widget to automatically advance as departures pass. The timeline policy is `.after()`, triggering a refresh shortly after the last shown departure to ensure fresh data and prevent stale times from being displayed.
 
 ### App Group
 
