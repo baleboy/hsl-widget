@@ -79,8 +79,13 @@ struct Provider: TimelineProvider {
             let allDepartures = await HslApi.shared.fetchDepartures(stationId: closestStop.id, numberOfResults: Provider.numberOfFetchedResults)
 
             // Apply filters if configured
-            let departures = allDepartures.filter { closestStop.matchesFilters(departure: $0) }
-            print("Widget: Filtered departures: \(departures.count) of \(allDepartures.count)")
+            let filteredDepartures = allDepartures.filter { closestStop.matchesFilters(departure: $0) }
+            print("Widget: Filtered departures: \(filteredDepartures.count) of \(allDepartures.count)")
+
+            // Filter out past departures to prevent showing stale data
+            let now = Date()
+            let departures = filteredDepartures.filter { $0.departureTime > now }
+            print("Widget: Future departures: \(departures.count) of \(filteredDepartures.count)")
 
             var entries: [TimetableEntry] = []
             let lastValidIndex = max(0, departures.count - Provider.maxNumberOfShownResults)
@@ -93,7 +98,18 @@ struct Provider: TimelineProvider {
                 entries.append(entry)
             }
 
-            let timeline = Timeline(entries: entries, policy: .atEnd)
+            // Determine when to refresh the timeline
+            // Refresh after the last shown departure, or in 15 minutes if no departures
+            let refreshDate: Date
+            if let lastDeparture = departures.last {
+                // Add a small buffer (30 seconds) after the last departure to ensure fresh data
+                refreshDate = lastDeparture.departureTime.addingTimeInterval(30)
+            } else {
+                // No departures available, try again in 15 minutes
+                refreshDate = Date().addingTimeInterval(15 * 60)
+            }
+
+            let timeline = Timeline(entries: entries, policy: .after(refreshDate))
             completion(timeline)
         }
     }
