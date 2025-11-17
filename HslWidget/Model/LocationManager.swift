@@ -28,6 +28,20 @@ class LocationManager: NSObject, ObservableObject {
         locationManager.distanceFilter = 100 // Update every 100 meters
 
         authorizationStatus = locationManager.authorizationStatus
+
+        // Resume background location monitoring if it was enabled
+        // This is critical for iOS automatic relaunch: when iOS relaunches the app
+        // due to a significant location change, we need to restart monitoring so
+        // future location changes continue to be received
+        let backgroundLocationEnabled = sharedDefaults?.bool(forKey: "backgroundLocationEnabled") ?? false
+
+        if backgroundLocationEnabled && authorizationStatus == .authorizedAlways {
+            print("LocationManager: Resuming background location monitoring on app launch")
+            enableBackgroundLocationUpdates()
+        } else if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
+            print("LocationManager: Starting foreground location monitoring on app launch")
+            startMonitoring()
+        }
     }
 
     /// Request location permissions (When In Use)
