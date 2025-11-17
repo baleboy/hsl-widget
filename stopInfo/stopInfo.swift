@@ -98,6 +98,13 @@ struct Provider: TimelineProvider {
                 entries.append(entry)
             }
 
+            // Handle case where no future departures are available
+            if entries.isEmpty {
+                print("Widget: No future departures available, showing empty state")
+                let entry = TimetableEntry(date: Date(), stopName: closestStop.name, departures: [])
+                entries.append(entry)
+            }
+
             // Determine when to refresh the timeline
             // Refresh after the last shown departure, or in 15 minutes if no departures
             let refreshDate: Date
