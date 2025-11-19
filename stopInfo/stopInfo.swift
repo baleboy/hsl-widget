@@ -325,7 +325,7 @@ struct stopInfoEntryView : View {
     private var spacing: CGFloat {
         switch entry.departures.count {
         case 1, 2:
-            return 4
+            return 3
         case 3:
             return 0
         default:
