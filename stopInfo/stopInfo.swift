@@ -442,3 +442,8 @@ struct stopInfo: Widget {
     Provider.TimetableEntry.example1Departure
 }
 
+#Preview("System Small", as: .systemSmall) {
+    stopInfo()
+} timeline: {
+    Provider.TimetableEntry.example3Departures
+}
