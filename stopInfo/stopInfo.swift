@@ -31,7 +31,7 @@ struct Provider: TimelineProvider {
             stopName: "Merisotilaantori",
             departures: [
                 Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi"),
-                Departure(departureTime: Date(), routeShortName: "5", headsign: "Munkkiniemi")
+                Departure(departureTime: Date(), routeShortName: "550", headsign: "Munkkiniemi")
             ]
         )
 
@@ -48,7 +48,7 @@ struct Provider: TimelineProvider {
             stopName: "Merisotilaantori",
             departures: [
                 Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi"),
-                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi")
+                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "550H", headsign: "Kamppi")
             ]
         )
 
@@ -334,41 +334,65 @@ struct stopInfoEntryView : View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: spacing) {
-            if entry.departures.isEmpty {
-                // Show message when no favorites are selected
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("No favorites")
-                        .font(.headline)
+        // Inline widget shows only the next departure in compact format
+        if family == .accessoryInline {
+            inlineView
+        } else {
+            // Rectangular and small widgets show multiple departures
+            VStack(alignment: .leading, spacing: spacing) {
+                if entry.departures.isEmpty {
+                    // Show message when no favorites are selected
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("No favorites")
+                            .font(.headline)
+                            .widgetAccentable()
+                        Text("Open the app to select favorite stops")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                } else {
+                    // Show stop name and departures
+                    Text(entry.stopName)
+                        .font(titleFont)
                         .widgetAccentable()
-                    Text("Open the app to select favorite stops")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-            } else {
-                // Show stop name and departures
-                Text(entry.stopName)
-                    .font(titleFont)
-                    .widgetAccentable()
-                    .lineLimit(1)
+                        .lineLimit(1)
 
-                ForEach(entry.departures) { departure in
-                    HStack(spacing: 4) {
-                        Label(departure.routeShortName, systemImage: "tram.fill")
-                            .font(routeFont)
-                            .lineLimit(1)
-                        Spacer()
-                        Label {
-                            Text(departure.departureTime, style: .time)
-                                .font(timeFont)
-                                .monospacedDigit()
+                    ForEach(entry.departures) { departure in
+                        HStack(spacing: 4) {
+                            Label(departure.routeShortName, systemImage: "tram.fill")
+                                .font(routeFont)
                                 .lineLimit(1)
-                                .minimumScaleFactor(0.7)
-                        } icon: {
-                            Image(systemName: "clock")
+                            Spacer()
+                            Label {
+                                Text(departure.departureTime, style: .time)
+                                    .font(timeFont)
+                                    .monospacedDigit()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                            } icon: {
+                                Image(systemName: "clock")
+                            }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /// Compact view for inline widget showing only the next departure
+    @ViewBuilder
+    private var inlineView: some View {
+        if let nextDeparture = entry.departures.first {
+            Label {
+                Text("\(nextDeparture.routeShortName): \(nextDeparture.departureTime, style: .time)")
+            } icon: {
+                Image(systemName: "tram.fill")
+            }
+        } else {
+            Label {
+                Text("No departures")
+            } icon: {
+                Image(systemName: "tram.fill")
             }
         }
     }
@@ -390,7 +414,7 @@ struct stopInfo: Widget {
         }
         .configurationDisplayName("My Widget")
         .description("This is an example widget.")
-        .supportedFamilies([.accessoryRectangular, .systemSmall])
+        .supportedFamilies([.accessoryRectangular, .accessoryInline, .systemSmall])
     }
 }
 
@@ -412,9 +436,9 @@ struct stopInfo: Widget {
     Provider.TimetableEntry.example3Departures
 }
 
-#Preview(as: .systemSmall) {
+#Preview("Inline", as: .accessoryInline) {
     stopInfo()
 } timeline: {
-    Provider.TimetableEntry.example
+    Provider.TimetableEntry.example1Departure
 }
 
