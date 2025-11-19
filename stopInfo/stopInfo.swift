@@ -11,11 +11,15 @@ import CoreLocation
 
 struct Provider: TimelineProvider {
 
-    static let maxNumberOfShownResults = 2
     static let numberOfFetchedResults = 20
 
     private let favoritesManager = FavoritesManager.shared
     private let locationManager = LocationManager.shared
+
+    /// Read the number of departures to show from settings
+    private var maxNumberOfShownResults: Int {
+        UserDefaults(suiteName: "group.balenet.widget")?.integer(forKey: "numberOfDepartures") ?? 2
+    }
 
     struct TimetableEntry: TimelineEntry {
         let date: Date
@@ -28,6 +32,33 @@ struct Provider: TimelineProvider {
             departures: [
                 Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi"),
                 Departure(departureTime: Date(), routeShortName: "5", headsign: "Munkkiniemi")
+            ]
+        )
+
+        static let example1Departure = TimetableEntry(
+            date: Date(),
+            stopName: "Merisotilaantori",
+            departures: [
+                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi")
+            ]
+        )
+
+        static let example2Departures = TimetableEntry(
+            date: Date(),
+            stopName: "Merisotilaantori",
+            departures: [
+                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi"),
+                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi")
+            ]
+        )
+
+        static let example3Departures = TimetableEntry(
+            date: Date(),
+            stopName: "Merisotilaantori",
+            departures: [
+                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi"),
+                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi"),
+                Departure(departureTime: Date().addingTimeInterval(18 * 60), routeShortName: "7", headsign: "Töölö")
             ]
         )
     }
@@ -68,7 +99,8 @@ struct Provider: TimelineProvider {
                 let entries = buildTimelineEntries(
                     for: closestStop,
                     departures: departures,
-                    now: now
+                    now: now,
+                    maxShown: maxNumberOfShownResults
                 )
 
                 // 4. Always return at least one entry to avoid stale widget content
@@ -152,12 +184,13 @@ struct Provider: TimelineProvider {
     /// Build the list of timeline entries from a sorted departures list.
     /// - Ensures:
     ///   - Only future departures are shown
-    ///   - At most `maxNumberOfShownResults` per entry
+    ///   - At most `maxShown` per entry
     ///   - Multiple entries as a sliding window over the list
     private func buildTimelineEntries(
         for stop: Stop,
         departures: [Departure],
-        now: Date
+        now: Date,
+        maxShown: Int
     ) -> [TimetableEntry] {
 
         // Keep only departures in the future
@@ -167,8 +200,6 @@ struct Provider: TimelineProvider {
             print("Widget: No future departures for \(stop.name)")
             return []
         }
-
-        let maxShown = Self.maxNumberOfShownResults
 
         // If fewer than we can show, just one entry with all
         if futureDepartures.count <= maxShown {
@@ -249,9 +280,61 @@ struct Provider: TimelineProvider {
 
 struct stopInfoEntryView : View {
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
+
+    /// Dynamic font sizes based on number of departures
+    private var titleFont: Font {
+        switch entry.departures.count {
+        case 1:
+            return .headline
+        case 2:
+            return .headline
+        case 3:
+            return .caption
+        default:
+            return .headline
+        }
+    }
+
+    private var routeFont: Font {
+        switch entry.departures.count {
+        case 1:
+            return .headline
+        case 2:
+            return .headline
+        case 3:
+            return .caption
+        default:
+            return .headline
+        }
+    }
+
+    private var timeFont: Font {
+        switch entry.departures.count {
+        case 1:
+            return .headline
+        case 2:
+            return .headline
+        case 3:
+            return .caption
+        default:
+            return .headline
+        }
+    }
+
+    private var spacing: CGFloat {
+        switch entry.departures.count {
+        case 1, 2:
+            return 4
+        case 3:
+            return 0
+        default:
+            return 4
+        }
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: spacing) {
             if entry.departures.isEmpty {
                 // Show message when no favorites are selected
                 VStack(alignment: .leading, spacing: 2) {
@@ -265,19 +348,22 @@ struct stopInfoEntryView : View {
             } else {
                 // Show stop name and departures
                 Text(entry.stopName)
-                    .font(.headline)
+                    .font(titleFont)
                     .widgetAccentable()
+                    .lineLimit(1)
 
                 ForEach(entry.departures) { departure in
                     HStack(spacing: 4) {
                         Label(departure.routeShortName, systemImage: "tram.fill")
-                            .font(.headline)
+                            .font(routeFont)
+                            .lineLimit(1)
                         Spacer()
                         Label {
                             Text(departure.departureTime, style: .time)
+                                .font(timeFont)
                                 .monospacedDigit()
                                 .lineLimit(1)
-                                .minimumScaleFactor(0.8)
+                                .minimumScaleFactor(0.7)
                         } icon: {
                             Image(systemName: "clock")
                         }
@@ -308,10 +394,22 @@ struct stopInfo: Widget {
     }
 }
 
-#Preview(as: .accessoryRectangular) {
+#Preview("1 Departure", as: .accessoryRectangular) {
     stopInfo()
 } timeline: {
-    Provider.TimetableEntry.example
+    Provider.TimetableEntry.example1Departure
+}
+
+#Preview("2 Departures", as: .accessoryRectangular) {
+    stopInfo()
+} timeline: {
+    Provider.TimetableEntry.example2Departures
+}
+
+#Preview("3 Departures", as: .accessoryRectangular) {
+    stopInfo()
+} timeline: {
+    Provider.TimetableEntry.example3Departures
 }
 
 #Preview(as: .systemSmall) {

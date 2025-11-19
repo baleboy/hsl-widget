@@ -7,16 +7,40 @@
 
 import SwiftUI
 import CoreLocation
+import WidgetKit
 
 struct SettingsView: View {
     @StateObject private var locationManager = LocationManager.shared
     @Environment(\.dismiss) private var dismiss
     @AppStorage("backgroundLocationEnabled", store: UserDefaults(suiteName: "group.balenet.widget"))
     private var backgroundLocationEnabled = false
+    @AppStorage("numberOfDepartures", store: UserDefaults(suiteName: "group.balenet.widget"))
+    private var numberOfDepartures = 2
 
     var body: some View {
         NavigationView {
             Form {
+                Section {
+                    Picker(selection: $numberOfDepartures) {
+                        ForEach(1...3, id: \.self) { count in
+                            Text("\(count)").tag(count)
+                        }
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Number of departures")
+                                .font(.roundedHeadline)
+                            Text("How many departures to show in the widget")
+                                .font(.roundedCaption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .onChange(of: numberOfDepartures) { _, _ in
+                        WidgetCenter.shared.reloadAllTimelines()
+                    }
+                } header: {
+                    Text("Widget Display")
+                }
+
                 Section {
                     Toggle(isOn: $backgroundLocationEnabled) {
                         VStack(alignment: .leading, spacing: 4) {
