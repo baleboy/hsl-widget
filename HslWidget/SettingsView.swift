@@ -29,7 +29,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Number of departures")
                                 .font(.roundedHeadline)
-                            Text("How many departures to show in the widget")
+                            Text("How many departures to show in the lock screen")
                                 .font(.roundedCaption)
                                 .foregroundColor(.secondary)
                         }
