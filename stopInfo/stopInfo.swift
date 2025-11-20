@@ -18,7 +18,8 @@ struct Provider: TimelineProvider {
 
     /// Read the number of departures to show from settings
     private var maxNumberOfShownResults: Int {
-        UserDefaults(suiteName: "group.balenet.widget")?.integer(forKey: "numberOfDepartures") ?? 2
+        let value = UserDefaults(suiteName: "group.balenet.widget")?.integer(forKey: "numberOfDepartures") ?? 0
+        return value > 0 ? value : 2
     }
 
     struct TimetableEntry: TimelineEntry {
