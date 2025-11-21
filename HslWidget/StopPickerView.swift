@@ -70,7 +70,7 @@ struct StopPickerView: View {
                             .foregroundColor(.secondary)
                     }
 
-                    Text("This only happens once")
+                    Text("This only happens once in a while")
                         .font(.roundedCaption)
                         .foregroundColor(.secondary)
                 }
