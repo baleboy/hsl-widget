@@ -31,8 +31,8 @@ struct Provider: TimelineProvider {
             date: Date(),
             stopName: "Merisotilaantori",
             departures: [
-                Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi"),
-                Departure(departureTime: Date(), routeShortName: "550", headsign: "Munkkiniemi")
+                Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
+                Departure(departureTime: Date(), routeShortName: "550", headsign: "Munkkiniemi", mode: "BUS")
             ]
         )
 
@@ -40,7 +40,7 @@ struct Provider: TimelineProvider {
             date: Date(),
             stopName: "Merisotilaantori",
             departures: [
-                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi")
+                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM")
             ]
         )
 
@@ -48,8 +48,8 @@ struct Provider: TimelineProvider {
             date: Date(),
             stopName: "Merisotilaantori",
             departures: [
-                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi"),
-                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "550H", headsign: "Kamppi")
+                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "550H", headsign: "Kamppi", mode: "BUS")
             ]
         )
 
@@ -57,9 +57,9 @@ struct Provider: TimelineProvider {
             date: Date(),
             stopName: "Merisotilaantori",
             departures: [
-                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi"),
-                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi"),
-                Departure(departureTime: Date().addingTimeInterval(18 * 60), routeShortName: "7", headsign: "Töölö")
+                Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(18 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM")
             ]
         )
 
@@ -67,10 +67,10 @@ struct Provider: TimelineProvider {
             date: Date(),
             stopName: "Merisotilaantori",
             departures: [
-                Departure(departureTime: Date().addingTimeInterval(3 * 60), routeShortName: "4", headsign: "Munkkiniemi"),
-                Departure(departureTime: Date().addingTimeInterval(8 * 60), routeShortName: "550", headsign: "Westendinasema"),
-                Departure(departureTime: Date().addingTimeInterval(15 * 60), routeShortName: "7", headsign: "Töölö"),
-                Departure(departureTime: Date().addingTimeInterval(22 * 60), routeShortName: "4", headsign: "Katajanokka")
+                Departure(departureTime: Date().addingTimeInterval(3 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(8 * 60), routeShortName: "550", headsign: "Westendinasema", mode: "BUS"),
+                Departure(departureTime: Date().addingTimeInterval(15 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(22 * 60), routeShortName: "4", headsign: "Katajanokka", mode: "TRAM")
             ]
         )
     }
@@ -380,7 +380,7 @@ struct stopInfoEntryView : View {
 
                 ForEach(entry.departures) { departure in
                     HStack(spacing: 4) {
-                        Label(departure.routeShortName, systemImage: "tram.fill")
+                        Label(departure.routeShortName, systemImage: transitModeIconName(for: departure.mode))
                             .font(routeFont)
                             .lineLimit(1)
                         Spacer()
@@ -419,7 +419,7 @@ struct stopInfoEntryView : View {
                     VStack(alignment: .leading, spacing: 1) {
                         HStack(spacing: 4) {
                             // Route with icon
-                            Label(departure.routeShortName, systemImage: "tram.fill")
+                            Label(departure.routeShortName, systemImage: transitModeIconName(for: departure.mode))
                                 .font(.caption)
                                 .fontWeight(.medium)
 
@@ -461,13 +461,13 @@ struct stopInfoEntryView : View {
             Label {
                 Text("\(nextDeparture.routeShortName)  \(Self.timeFormatter.string(from: nextDeparture.departureTime))")
             } icon: {
-                Image(systemName: "tram.fill")
+                Image(systemName: transitModeIconName(for: nextDeparture.mode, filled: false))
             }
         } else {
             Label {
                 Text("No departures")
             } icon: {
-                Image(systemName: "tram.fill")
+                Image(systemName: "tram")
             }
         }
     }

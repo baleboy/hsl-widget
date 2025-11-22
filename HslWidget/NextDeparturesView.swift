@@ -40,7 +40,7 @@ struct NextDeparturesView: View {
                 } else {
                     ForEach(departures.prefix(3)) { departure in
                         HStack {
-                            Label(departure.routeShortName, systemImage: "tram.fill")
+                            Label(departure.routeShortName, systemImage: transitModeIconName(for: departure.mode))
                                 .font(.roundedHeadline)
                             Spacer()
                             Text(departure.departureTime, style: .time)
