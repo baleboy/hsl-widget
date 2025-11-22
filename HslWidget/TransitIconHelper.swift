@@ -5,7 +5,7 @@
 //  UI helper for transit mode icons
 //
 
-import Foundation
+import SwiftUI
 
 /// Get SF Symbol icon name based on transportation mode
 /// - Parameters:
@@ -29,5 +29,27 @@ func transitModeIconName(for mode: String?, filled: Bool = true) -> String {
         return "ferry\(suffix)"
     default:
         return "tram\(suffix)"
+    }
+}
+
+/// Get color for transportation mode
+/// - Parameter mode: The transportation mode (BUS, TRAM, RAIL, etc.)
+/// - Returns: SwiftUI Color for the mode
+func transitModeColor(for mode: String?) -> Color {
+    let modeUpper = mode?.uppercased() ?? ""
+
+    switch modeUpper {
+    case "BUS":
+        return .blue
+    case "TRAM":
+        return .green
+    case "RAIL":
+        return .purple
+    case "SUBWAY":
+        return .orange
+    case "FERRY":
+        return .cyan
+    default:
+        return .gray
     }
 }

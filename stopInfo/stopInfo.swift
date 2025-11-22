@@ -419,9 +419,14 @@ struct stopInfoEntryView : View {
                     VStack(alignment: .leading, spacing: 1) {
                         HStack(spacing: 4) {
                             // Route with icon
-                            Label(departure.routeShortName, systemImage: transitModeIconName(for: departure.mode))
-                                .font(.caption)
-                                .fontWeight(.medium)
+                            Label {
+                                Text(departure.routeShortName)
+                            } icon: {
+                                Image(systemName: transitModeIconName(for: departure.mode))
+                                    .foregroundColor(transitModeColor(for: departure.mode))
+                            }
+                            .font(.caption)
+                            .fontWeight(.medium)
 
                             Spacer()
 
