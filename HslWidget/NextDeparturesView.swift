@@ -39,18 +39,26 @@ struct NextDeparturesView: View {
                         .padding(.vertical, 4)
                 } else {
                     ForEach(departures.prefix(3)) { departure in
-                        HStack {
-                            Label {
-                                Text(departure.routeShortName)
-                            } icon: {
-                                Image(systemName: transitModeIconName(for: departure.mode))
-                                    .foregroundColor(transitModeColor(for: departure.mode))
-                            }
-                            .font(.roundedHeadline)
-                            Spacer()
-                            Text(departure.departureTime, style: .time)
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack {
+                                Label {
+                                    Text(departure.routeShortName)
+                                } icon: {
+                                    Image(systemName: transitModeIconName(for: departure.mode))
+                                        .foregroundColor(transitModeColor(for: departure.mode))
+                                }
                                 .font(.roundedHeadline)
-                                .monospacedDigit()
+                                Spacer()
+                                Text(departure.departureTime, style: .time)
+                                    .font(.roundedHeadline)
+                                    .monospacedDigit()
+                            }
+
+                            // Destination
+                            Text(departure.headsign)
+                                .font(.roundedCaption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
                         }
                         .padding(.vertical, 2)
                     }
