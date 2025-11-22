@@ -23,9 +23,21 @@ struct Provider: TimelineProvider {
     }
 
     struct TimetableEntry: TimelineEntry {
+        enum WidgetState {
+            case normal
+            case noFavorites
+            case noDepartures
+        }
+
         let date: Date
         let stopName: String
         let departures: [Departure]
+        let state: WidgetState
+
+        /// Convenience computed property to check if widget has normal content
+        var hasContent: Bool {
+            state == .normal && !departures.isEmpty
+        }
 
         static let example = TimetableEntry(
             date: Date(),
@@ -33,7 +45,8 @@ struct Provider: TimelineProvider {
             departures: [
                 Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
                 Departure(departureTime: Date(), routeShortName: "550", headsign: "Munkkiniemi", mode: "BUS")
-            ]
+            ],
+            state: .normal
         )
 
         static let example1Departure = TimetableEntry(
@@ -41,7 +54,8 @@ struct Provider: TimelineProvider {
             stopName: "Merisotilaantori",
             departures: [
                 Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM")
-            ]
+            ],
+            state: .normal
         )
 
         static let example2Departures = TimetableEntry(
@@ -50,7 +64,8 @@ struct Provider: TimelineProvider {
             departures: [
                 Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
                 Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "550H", headsign: "Kamppi", mode: "BUS")
-            ]
+            ],
+            state: .normal
         )
 
         static let example3Departures = TimetableEntry(
@@ -60,7 +75,8 @@ struct Provider: TimelineProvider {
                 Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
                 Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi", mode: "TRAM"),
                 Departure(departureTime: Date().addingTimeInterval(18 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM")
-            ]
+            ],
+            state: .normal
         )
 
         static let example4Departures = TimetableEntry(
@@ -71,7 +87,8 @@ struct Provider: TimelineProvider {
                 Departure(departureTime: Date().addingTimeInterval(8 * 60), routeShortName: "550", headsign: "Westendinasema", mode: "BUS"),
                 Departure(departureTime: Date().addingTimeInterval(15 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM"),
                 Departure(departureTime: Date().addingTimeInterval(22 * 60), routeShortName: "4", headsign: "Katajanokka", mode: "TRAM")
-            ]
+            ],
+            state: .normal
         )
     }
 
@@ -122,7 +139,8 @@ struct Provider: TimelineProvider {
                 let safeEntries = entries.isEmpty
                     ? [TimetableEntry(date: now,
                                       stopName: closestStop.name,
-                                      departures: [])]
+                                      departures: [],
+                                      state: .noDepartures)]
                     : entries
 
                 // 6. Refresh after 15 minutes
@@ -145,8 +163,9 @@ struct Provider: TimelineProvider {
 
             let entry = TimetableEntry(
                 date: now,
-                stopName: "No favorites",
-                departures: []
+                stopName: "",
+                departures: [],
+                state: .noFavorites
             )
 
             let timeline = Timeline(
@@ -222,7 +241,8 @@ struct Provider: TimelineProvider {
             let entry = TimetableEntry(
                 date: now,
                 stopName: stop.name,
-                departures: futureDepartures
+                departures: futureDepartures,
+                state: .normal
             )
             return [entry]
         }
@@ -243,7 +263,8 @@ struct Provider: TimelineProvider {
             let entry = TimetableEntry(
                 date: entryDate,
                 stopName: stop.name,
-                departures: validDepartures
+                departures: validDepartures,
+                state: .normal
             )
             entries.append(entry)
 
@@ -450,7 +471,7 @@ struct stopInfoEntryView : View {
     /// Empty state when no favorites are configured or no departures available
     private var emptyStateView: some View {
         VStack(alignment: .leading, spacing: 2) {
-            if entry.stopName == "No favorites" {
+            if entry.state == .noFavorites {
                 Text("No favorites")
                     .font(.headline)
                     .widgetAccentable()
@@ -480,7 +501,7 @@ struct stopInfoEntryView : View {
             }
         } else {
             Label {
-                Text(entry.stopName == "No favorites" ? "No favorites" : "No departures")
+                Text(entry.state == .noFavorites ? "No favorites" : "No departures")
             } icon: {
                 Image(systemName: "tram")
             }
