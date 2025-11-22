@@ -54,6 +54,7 @@ Response models are in `Api/DepartureTimesQueryResponse.swift` and `Api/StopsQue
 - Preview data is hardcoded in `Provider.TimetableEntry.example` and fallback constants at the top of `stopInfo.swift`
 - The API key placeholder "API_KEY_HERE" needs replacement with a valid Digitransit subscription key
 - Widget supports `.accessoryRectangular` (lock screen) and `.systemSmall` (home screen) families
+- If new files are needed, don't try to add them to the project yourself, it will be done manually using XCode. Just ask the user to add the new file. 
 
 ## Coding Style
 
@@ -75,6 +76,7 @@ When writing or modifying code in this project, follow these guidelines:
 - **Separate concerns**: Split UI, business logic, and data layers clearly
 - **Reusable components**: Extract common patterns into shared utilities or extensions
 - **Testability**: Smaller, focused classes and methods are easier to test
+- Avoid duplicated code
 
 When reviewing existing code, proactively suggest refactoring opportunities for long or complex methods and classes. Always check if a class file exceeds 200 lines and recommend splitting it.
 
