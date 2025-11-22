@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		253BB89E2ED1EB2B000D30CC /* TimetableEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB89D2ED1EB2B000D30CC /* TimetableEntry.swift */; };
+		253BB89F2ED1EB2B000D30CC /* TimetableEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB89D2ED1EB2B000D30CC /* TimetableEntry.swift */; };
+		253BB8A92ED1EB3E000D30CC /* TimelineBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A02ED1EB3E000D30CC /* TimelineBuilder.swift */; };
+		253BB8AA2ED1EB3E000D30CC /* SystemSmallWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A62ED1EB3E000D30CC /* SystemSmallWidgetView.swift */; };
+		253BB8AB2ED1EB3E000D30CC /* RectangularWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A52ED1EB3E000D30CC /* RectangularWidgetView.swift */; };
+		253BB8AC2ED1EB3E000D30CC /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A32ED1EB3E000D30CC /* EmptyStateView.swift */; };
+		253BB8AD2ED1EB3E000D30CC /* InlineWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A42ED1EB3E000D30CC /* InlineWidgetView.swift */; };
+		253BB8AE2ED1EB3E000D30CC /* WidgetViewFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A72ED1EB3E000D30CC /* WidgetViewFormatters.swift */; };
+		253BB8AF2ED1EB3E000D30CC /* WidgetTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A12ED1EB3E000D30CC /* WidgetTimelineProvider.swift */; };
 		2542B3262EC3D25B002492BC /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3252EC3D25B002492BC /* LocationManager.swift */; };
 		2542B3272EC3D25B002492BC /* FavoritesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3242EC3D25B002492BC /* FavoritesManager.swift */; };
 		2542B3282EC3D25B002492BC /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3252EC3D25B002492BC /* LocationManager.swift */; };
@@ -79,6 +88,14 @@
 
 /* Begin PBXFileReference section */
 		1310A15C5EED4213B1784DA8 /* StopFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopFilterView.swift; sourceTree = "<group>"; };
+		253BB89D2ED1EB2B000D30CC /* TimetableEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEntry.swift; sourceTree = "<group>"; };
+		253BB8A02ED1EB3E000D30CC /* TimelineBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBuilder.swift; sourceTree = "<group>"; };
+		253BB8A12ED1EB3E000D30CC /* WidgetTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTimelineProvider.swift; sourceTree = "<group>"; };
+		253BB8A32ED1EB3E000D30CC /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		253BB8A42ED1EB3E000D30CC /* InlineWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineWidgetView.swift; sourceTree = "<group>"; };
+		253BB8A52ED1EB3E000D30CC /* RectangularWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangularWidgetView.swift; sourceTree = "<group>"; };
+		253BB8A62ED1EB3E000D30CC /* SystemSmallWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSmallWidgetView.swift; sourceTree = "<group>"; };
+		253BB8A72ED1EB3E000D30CC /* WidgetViewFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetViewFormatters.swift; sourceTree = "<group>"; };
 		2542B3242EC3D25B002492BC /* FavoritesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesManager.swift; sourceTree = "<group>"; };
 		2542B3252EC3D25B002492BC /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2542B32A2EC44BE2002492BC /* FavoritesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesListView.swift; sourceTree = "<group>"; };
@@ -147,6 +164,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		253BB8A22ED1EB3E000D30CC /* Timeline */ = {
+			isa = PBXGroup;
+			children = (
+				253BB8A02ED1EB3E000D30CC /* TimelineBuilder.swift */,
+				253BB8A12ED1EB3E000D30CC /* WidgetTimelineProvider.swift */,
+			);
+			path = Timeline;
+			sourceTree = "<group>";
+		};
+		253BB8A82ED1EB3E000D30CC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				253BB8A32ED1EB3E000D30CC /* EmptyStateView.swift */,
+				253BB8A42ED1EB3E000D30CC /* InlineWidgetView.swift */,
+				253BB8A52ED1EB3E000D30CC /* RectangularWidgetView.swift */,
+				253BB8A62ED1EB3E000D30CC /* SystemSmallWidgetView.swift */,
+				253BB8A72ED1EB3E000D30CC /* WidgetViewFormatters.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		25D19E4B2BE600920055E70E = {
 			isa = PBXGroup;
 			children = (
@@ -215,6 +253,8 @@
 		25D19E6F2BE755310055E70E /* stopInfo */ = {
 			isa = PBXGroup;
 			children = (
+				253BB8A22ED1EB3E000D30CC /* Timeline */,
+				253BB8A82ED1EB3E000D30CC /* Views */,
 				25D19E702BE755310055E70E /* stopInfoBundle.swift */,
 				25D19E722BE755310055E70E /* stopInfo.swift */,
 				25D19E742BE755320055E70E /* Assets.xcassets */,
@@ -236,6 +276,7 @@
 		25FA04262BEA16DA0052A577 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				253BB89D2ED1EB2B000D30CC /* TimetableEntry.swift */,
 				2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */,
 				2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */,
 				2542B3242EC3D25B002492BC /* FavoritesManager.swift */,
@@ -398,6 +439,7 @@
 				2542B32C2EC44BE2002492BC /* FavoritesListView.swift in Sources */,
 				2542B32D2EC44BE2002492BC /* StopPickerView.swift in Sources */,
 				2559EF912ED1B93900B7289E /* TransitIconHelper.swift in Sources */,
+				253BB89E2ED1EB2B000D30CC /* TimetableEntry.swift in Sources */,
 				2542B3482EC8BA32002492BC /* SettingsView.swift in Sources */,
 				6D8B0758AC954E5091A7E004 /* StopFilterView.swift in Sources */,
 				2542B3272EC3D25B002492BC /* FavoritesManager.swift in Sources */,
@@ -416,6 +458,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				253BB8A92ED1EB3E000D30CC /* TimelineBuilder.swift in Sources */,
+				253BB8AA2ED1EB3E000D30CC /* SystemSmallWidgetView.swift in Sources */,
+				253BB8AB2ED1EB3E000D30CC /* RectangularWidgetView.swift in Sources */,
+				253BB8AC2ED1EB3E000D30CC /* EmptyStateView.swift in Sources */,
+				253BB8AD2ED1EB3E000D30CC /* InlineWidgetView.swift in Sources */,
+				253BB8AE2ED1EB3E000D30CC /* WidgetViewFormatters.swift in Sources */,
+				253BB8AF2ED1EB3E000D30CC /* WidgetTimelineProvider.swift in Sources */,
+				253BB89F2ED1EB2B000D30CC /* TimetableEntry.swift in Sources */,
 				256460E82ECA470A00C60F8A /* Font+Rounded.swift in Sources */,
 				25FA04272BEA16ED0052A577 /* Stop.swift in Sources */,
 				25FA04242BEA16AB0052A577 /* DepartureTimesQueryResponse.swift in Sources */,
