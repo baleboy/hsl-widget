@@ -470,7 +470,7 @@ struct stopInfoEntryView : View {
             }
         } else {
             Label {
-                Text("No departures")
+                Text(entry.stopName == "No favorites" ? "No favorites" : "No departures")
             } icon: {
                 Image(systemName: "tram")
             }
