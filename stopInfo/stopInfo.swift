@@ -474,7 +474,7 @@ struct stopInfoEntryView : View {
     private var inlineView: some View {
         if let nextDeparture = entry.departures.first {
             Label {
-                Text("\(nextDeparture.routeShortName)  \(Self.timeFormatter.string(from: nextDeparture.departureTime))")
+                Text("\(nextDeparture.routeShortName)•\(Self.timeFormatter.string(from: nextDeparture.departureTime))")
             } icon: {
                 Image(systemName: transitModeIconName(for: nextDeparture.mode, filled: false))
             }
