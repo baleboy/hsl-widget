@@ -51,6 +51,12 @@ fastlane/screenshots
 fastlane/test_output
 fastlane/README.md
 
+# Test results
+TestResults.xcresult
+*.xcresult
+xcodebuild-test.log
+coverage.json
+
 # Bundler
 vendor/bundle/
 .bundle/

@@ -1,5 +1,8 @@
 # HSL Widget
 
+[![Unit Tests](https://github.com/baleboy/hsl-widget/actions/workflows/test.yml/badge.svg)](https://github.com/baleboy/hsl-widget/actions/workflows/test.yml)
+[![TestFlight](https://github.com/baleboy/hsl-widget/actions/workflows/testflight.yml/badge.svg)](https://github.com/baleboy/hsl-widget/actions/workflows/testflight.yml)
+
 An iOS lock screen widget that displays real-time departure times for Helsinki Region Transport (HSL) stops. Never miss your bus or tram again with departure information right on your lock screen.
 
 ## Features
@@ -49,11 +52,20 @@ An iOS lock screen widget that displays real-time departure times for Helsinki R
 
 ### Running Tests
 
+The project includes 57 unit tests covering:
+- API response parsing and error handling
+- Favorites management and persistence
+- Stop filtering logic (line filters, headsign patterns)
+- Timeline building logic
+- Model encoding/decoding
+
 Run the test suite via Xcode (⌘+U) or command line:
 ```bash
 xcodebuild test -scheme stopInfoExtension \
   -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
+
+Tests automatically run on every push to `main` and on pull requests via GitHub Actions. The TestFlight deployment will only proceed if all tests pass.
 
 ## Usage
 

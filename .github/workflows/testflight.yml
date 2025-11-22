@@ -6,7 +6,80 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install xcbeautify (optional)
+        run: |
+          brew install xcbeautify || echo "xcbeautify not available, skipping"
+        continue-on-error: true
+
+      - name: Create Config.xcconfig
+        run: |
+          echo "HSL_API_KEY = ${{ secrets.HSL_API_KEY }}" > HslWidget/Config.xcconfig
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -scheme stopInfoExtension \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -resultBundlePath TestResults \
+            -enableCodeCoverage YES \
+            | tee xcodebuild-test.log \
+            | xcbeautify --renderer github-actions || true
+
+      - name: Check test results
+        run: |
+          # Extract test results
+          if grep -q "TEST FAILED" xcodebuild-test.log; then
+            echo "❌ Tests failed!"
+            exit 1
+          elif grep -q "TEST SUCCEEDED" xcodebuild-test.log; then
+            echo "✅ All tests passed!"
+          else
+            echo "⚠️  Could not determine test status"
+            exit 1
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            TestResults.xcresult
+            xcodebuild-test.log
+          retention-days: 30
+
+      - name: Generate code coverage report
+        if: success()
+        run: |
+          xcrun xccov view --report --json TestResults.xcresult > coverage.json
+          echo "## Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+          cat coverage.json | head -20 >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f HslWidget/Config.xcconfig
+
   deploy:
+    name: Deploy to TestFlight
+    needs: test # Only run if tests pass
     runs-on: macos-15
 
     steps:
@@ -69,10 +142,6 @@ jobs:
       - name: Create Config.xcconfig
         run: |
           echo "HSL_API_KEY = ${{ secrets.HSL_API_KEY }}" > HslWidget/Config.xcconfig
-
-      - name: Run tests
-        run: |
-          xcodebuild test -scheme stopInfoExtension -destination 'platform=iOS Simulator,name=iPhone 16'
 
       - name: Build and upload to TestFlight
         env:
