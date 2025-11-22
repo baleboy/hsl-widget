@@ -1,7 +1,6 @@
 # HSL Widget
 
-[![Unit Tests](https://github.com/baleboy/hsl-widget/actions/workflows/test.yml/badge.svg)](https://github.com/baleboy/hsl-widget/actions/workflows/test.yml)
-[![TestFlight](https://github.com/baleboy/hsl-widget/actions/workflows/testflight.yml/badge.svg)](https://github.com/baleboy/hsl-widget/actions/workflows/testflight.yml)
+[![Tests & Deploy](https://github.com/baleboy/hsl-widget/actions/workflows/testflight.yml/badge.svg)](https://github.com/baleboy/hsl-widget/actions/workflows/testflight.yml)
 
 An iOS lock screen widget that displays real-time departure times for Helsinki Region Transport (HSL) stops. Never miss your bus or tram again with departure information right on your lock screen.
 
