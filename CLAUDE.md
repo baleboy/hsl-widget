@@ -55,6 +55,29 @@ Response models are in `Api/DepartureTimesQueryResponse.swift` and `Api/StopsQue
 - The API key placeholder "API_KEY_HERE" needs replacement with a valid Digitransit subscription key
 - Widget supports `.accessoryRectangular` (lock screen) and `.systemSmall` (home screen) families
 
+## Coding Style
+
+When writing or modifying code in this project, follow these guidelines:
+
+### Methods
+- **Keep methods short**: Methods should ideally be ≤20 lines. If a method exceeds this, extract logical blocks into separate helper methods
+- **Single Responsibility Principle**: Each method should do one thing well. Extract complex logic into well-named helper methods
+- **Meaningful names**: Use descriptive method names that clearly indicate what the method does, making the code self-documenting
+
+### Classes and Files
+- **Keep classes focused**: Each class should have a single, well-defined purpose. If a class is doing too much, split it into multiple classes
+- **Limit file length**: Class files should ideally be ≤200 lines. Long files indicate too many responsibilities
+- **Extract related functionality**: Group related methods into separate helper classes, extensions, or utility types
+- **Use composition over inheritance**: Prefer smaller, composable types over large monolithic classes
+- **SwiftUI Views**: Break down complex views into smaller subviews. Each view component should be in its own file or clearly separated with `// MARK:` comments
+
+### Modularization
+- **Separate concerns**: Split UI, business logic, and data layers clearly
+- **Reusable components**: Extract common patterns into shared utilities or extensions
+- **Testability**: Smaller, focused classes and methods are easier to test
+
+When reviewing existing code, proactively suggest refactoring opportunities for long or complex methods and classes. Always check if a class file exceeds 200 lines and recommend splitting it.
+
 ## Commit Style
 
 Follow existing imperative, sentence-case style with subjects ≤72 chars:
