@@ -20,10 +20,10 @@ class FavoritesManager {
     func getFavorites() -> [Stop] {
         guard let data = sharedDefaults?.data(forKey: favoritesKey),
               let stops = try? JSONDecoder().decode([Stop].self, from: data) else {
-            print("FavoritesManager: No favorites found or decode failed")
+            debugLog("FavoritesManager: No favorites found or decode failed")
             return []
         }
-        print("FavoritesManager: Loaded \(stops.count) favorites: \(stops.map { $0.name })")
+        debugLog("FavoritesManager: Loaded \(stops.count) favorites: \(stops.map { $0.name })")
         return stops
     }
 
@@ -69,9 +69,9 @@ class FavoritesManager {
         if let index = favorites.firstIndex(where: { $0.id == stop.id }) {
             favorites[index] = stop
             saveFavorites(favorites)
-            print("FavoritesManager: Updated favorite: \(stop.name)")
+            debugLog("FavoritesManager: Updated favorite: \(stop.name)")
         } else {
-            print("FavoritesManager: Warning - tried to update non-existent favorite: \(stop.name)")
+            debugLog("FavoritesManager: Warning - tried to update non-existent favorite: \(stop.name)")
         }
     }
 
@@ -79,12 +79,12 @@ class FavoritesManager {
     private func saveFavorites(_ favorites: [Stop]) {
         if let encoded = try? JSONEncoder().encode(favorites) {
             sharedDefaults?.set(encoded, forKey: favoritesKey)
-            print("FavoritesManager: Saved \(favorites.count) favorites: \(favorites.map { $0.name })")
+            debugLog("FavoritesManager: Saved \(favorites.count) favorites: \(favorites.map { $0.name })")
 
             // Reload widget timelines when favorites change
             WidgetCenter.shared.reloadAllTimelines()
         } else {
-            print("FavoritesManager: Failed to encode favorites")
+            debugLog("FavoritesManager: Failed to encode favorites")
         }
     }
 }

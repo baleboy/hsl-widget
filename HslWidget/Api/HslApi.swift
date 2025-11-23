@@ -48,7 +48,7 @@ class HslApi {
             if let decodedResponse = try? JSONDecoder().decode(StopsQueryResponse.self, from: data) {
                 var result = [Stop]()
                 let stops = decodedResponse.data.stops
-                print("HslApi: Received \(stops.count) stops from API")
+                debugLog("HslApi: Received \(stops.count) stops from API")
 
                 // Deduplicate by code, merging vehicle modes from all occurrences
                 // This collects ALL stop IDs that share the same code (for multi-direction stops)
@@ -90,7 +90,7 @@ class HslApi {
                             allStopIds: allIds
                         )
 
-                        print("HslApi: Merging \(code): collected IDs \(allIds), modes: \(mergedModes)")
+                        debugLog("HslApi: Merging \(code): collected IDs \(allIds), modes: \(mergedModes)")
                         stopsByCode[code] = mergedStop
                     } else {
                         // First occurrence of this code
@@ -100,16 +100,16 @@ class HslApi {
                 }
 
                 result = Array(stopsByCode.values)
-                print("HslApi: Returning \(result.count) stops after deduplication")
+                debugLog("HslApi: Returning \(result.count) stops after deduplication")
                 return result
             } else {
-                print("HslApi: Failed to decode stops response")
+                debugLog("HslApi: Failed to decode stops response")
                 if let jsonString = String(data: data, encoding: .utf8) {
-                    print("HslApi: Raw response (first 500 chars): \(jsonString.prefix(500))")
+                    debugLog("HslApi: Raw response (first 500 chars): \(jsonString.prefix(500))")
                 }
             }
         } catch {
-            print("HslApi: Error requesting stops: \(error)")
+            debugLog("HslApi: Error requesting stops: \(error)")
         }
         return []
     }
@@ -151,7 +151,7 @@ class HslApi {
             // Ignore cancellation errors - they're expected when user types/scrolls quickly
             let nsError = error as NSError
             if nsError.domain != NSURLErrorDomain || nsError.code != NSURLErrorCancelled {
-                print("HslApi: Error fetching headsigns for stop \(stopId): \(error)")
+                debugLog("HslApi: Error fetching headsigns for stop \(stopId): \(error)")
             }
         }
         return []
@@ -191,26 +191,27 @@ class HslApi {
                         headsign: headsign ?? "No headsign", mode: mode)
                     result.append(departure)
                 }
-                print("HslApi: Fetched \(result.count) departures for stop \(stationId)")
+                debugLog("HslApi: Fetched \(result.count) departures for stop \(stationId)")
                 return result
             } else {
-                print("HslApi: Failed to decode departures for stop \(stationId)")
+                debugLog("HslApi: Failed to decode departures for stop \(stationId)")
             }
         } catch {
-            print("HslApi: Error fetching departures for stop \(stationId): \(error)")
+            debugLog("HslApi: Error fetching departures for stop \(stationId): \(error)")
         }
         return []
     }
 
     private func buildRequest(query: String) throws -> URLRequest {
         guard let url = URL(string: routingUrl + HslApi.apiKey!) else {
-            print("Invalid URL")
+            debugLog("Invalid URL")
             throw HslApiError.invalidURL
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = query.data(using: .utf8)
         request.setValue("application/graphql", forHTTPHeaderField: "Content-Type")
+        request.cachePolicy = .reloadIgnoringLocalCacheData // Disable caching
         return request
     }
 

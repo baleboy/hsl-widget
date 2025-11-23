@@ -15,7 +15,7 @@ struct TimelineBuilder {
     static let numberOfFetchedResults = 20
 
     private let favoritesManager = FavoritesManager.shared
-    private let locationManager = LocationManager.shared
+    private let locationReader = SharedLocationReader()
 
     /// Either returns a ready-made "no favorites" timeline, or a resolved closest stop
     enum FavoritesResolutionResult {
@@ -31,7 +31,7 @@ struct TimelineBuilder {
         maxShown: Int,
         completion: @escaping (Timeline<TimetableEntry>) -> Void
     ) {
-        Task {
+        Task { [completion] in
             // 1. Resolve favorite stop (or return "no favorites" timeline)
             guard let favoritesTimelineOrStop = makeFavoritesOrStop(now: now) else {
                 return
@@ -75,10 +75,10 @@ struct TimelineBuilder {
     /// Either returns a ready-made "no favorites" timeline, or a resolved closest stop
     private func makeFavoritesOrStop(now: Date) -> FavoritesResolutionResult? {
         let favorites = favoritesManager.getFavorites()
-        print("Widget: Retrieved \(favorites.count) favorites from FavoritesManager")
+        debugLog("Widget: Retrieved \(favorites.count) favorites from FavoritesManager")
 
         guard !favorites.isEmpty else {
-            print("Widget: No favorites found, showing empty state")
+            debugLog("Widget: No favorites found, showing empty state")
 
             let entry = TimetableEntry(
                 date: now,
@@ -95,11 +95,11 @@ struct TimelineBuilder {
             return .timeline(timeline)
         }
 
-        let currentLocation = locationManager.getSharedLocation()
+        let currentLocation = locationReader.getSharedLocation()
         if let loc = currentLocation {
-            print("Widget: Current location: \(loc.coordinate.latitude), \(loc.coordinate.longitude)")
+            debugLog("Widget: Current location: \(loc.coordinate.latitude), \(loc.coordinate.longitude)")
         } else {
-            print("Widget: No location available, will use alphabetical fallback")
+            debugLog("Widget: No location available, will use alphabetical fallback")
         }
 
         let closestStop = findClosestStop(
@@ -107,17 +107,17 @@ struct TimelineBuilder {
             currentLocation: currentLocation
         )
 
-        print("Widget: Selected stop: \(closestStop.name) (ID: \(closestStop.id))")
+        debugLog("Widget: Selected stop: \(closestStop.name) (ID: \(closestStop.id))")
         if closestStop.hasFilters {
-            print("Widget: Stop has filters configured")
+            debugLog("Widget: Stop has filters configured")
             if let lines = closestStop.filteredLines {
-                print("Widget: Filtered lines: \(lines.joined(separator: ", "))")
+                debugLog("Widget: Filtered lines: \(lines.joined(separator: ", "))")
             }
             if let pattern = closestStop.filteredHeadsignPattern {
-                print("Widget: Filtered headsign pattern: \(pattern)")
+                debugLog("Widget: Filtered headsign pattern: \(pattern)")
             }
         }
-        print("==========================================")
+        debugLog("==========================================")
 
         return .stop(closestStop)
     }
@@ -130,7 +130,7 @@ struct TimelineBuilder {
         )
 
         let departures = allDepartures.filter { stop.matchesFilters(departure: $0) }
-        print("Widget: Filtered departures: \(departures.count) of \(allDepartures.count)")
+        debugLog("Widget: Filtered departures: \(departures.count) of \(allDepartures.count)")
         return departures.sorted { $0.departureTime < $1.departureTime }
     }
 
@@ -150,13 +150,13 @@ struct TimelineBuilder {
         let futureDepartures = departures.filter { $0.departureTime > now }
 
         guard !futureDepartures.isEmpty else {
-            print("Widget: No future departures for \(stop.name)")
+            debugLog("Widget: No future departures for \(stop.name)")
             return []
         }
 
         // If fewer than we can show, just one entry with all
         if futureDepartures.count <= maxShown {
-            print("Widget: Only \(futureDepartures.count) future departures, single entry")
+            debugLog("Widget: Only \(futureDepartures.count) future departures, single entry")
             let entry = TimetableEntry(
                 date: now,
                 stopName: stop.name,
@@ -193,7 +193,7 @@ struct TimelineBuilder {
             }
         }
 
-        print("Widget: Created \(entries.count) timeline entries")
+        debugLog("Widget: Created \(entries.count) timeline entries")
         return entries
     }
 
