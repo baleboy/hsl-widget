@@ -201,6 +201,7 @@ struct StopPickerView: View {
                         .foregroundColor(.yellow)
                 }
             }
+            .animation(.none, value: favoriteStopIds)
         }
         .buttonStyle(PlainButtonStyle())
     }
