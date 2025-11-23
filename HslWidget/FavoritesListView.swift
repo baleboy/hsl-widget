@@ -18,6 +18,8 @@ struct FavoritesListView: View {
     @State private var filteredHeadsigns: [String: [String]] = [:] // stopId -> headsigns for filtered lines
     @State private var filteredLinesByMode: [String: [String: [String]]] = [:] // stopId -> [mode: [lines]]
     @State private var showingSettings = false
+    @State private var isInitialLoad = true
+    @State private var isRefreshing = false
     @StateObject private var locationManager = LocationManager.shared
 
     private let favoritesManager = FavoritesManager.shared
@@ -26,7 +28,15 @@ struct FavoritesListView: View {
         NavigationView {
             ZStack {
                 VStack(spacing: 0) {
-                    if favorites.isEmpty {
+                    if (isInitialLoad || isRefreshing) && !favorites.isEmpty {
+                        // Show loading indicator during data fetch
+                        VStack(spacing: 16) {
+                            ProgressView()
+                            Text("Loading departures...")
+                                .font(.roundedHeadline)
+                                .foregroundColor(.secondary)
+                        }
+                    } else if favorites.isEmpty {
                         EmptyFavoritesView(onAddStop: { showingStopPicker = true })
                     } else {
                         List {
@@ -96,18 +106,68 @@ struct FavoritesListView: View {
                 }
             }
             .onAppear {
-                loadFavorites()
                 requestLocationPermission()
-                updateClosestStopAndDepartures()
+                loadAllData()
             }
             .onChange(of: locationManager.currentLocation) {
-                updateClosestStopAndDepartures()
+                // When location changes, update the closest stop
+                // but fetch all data together to avoid incremental UI updates
+                Task {
+                    guard !favorites.isEmpty else { return }
+
+                    let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
+                    let newClosest = findClosestStop(favorites: favorites, currentLocation: currentLocation)
+
+                    // Only update if the closest stop changed
+                    guard newClosest.id != closestStop?.id else { return }
+
+                    // Fetch departures for the new closest stop
+                    let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+                    let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
+
+                    // Update UI with all data at once
+                    await MainActor.run {
+                        self.closestStop = newClosest
+                        self.departures = filteredDepartures
+                        self.isLoadingDepartures = false
+                    }
+                }
             }
             .sheet(isPresented: $showingStopPicker) {
                 StopPickerView(onDismiss: {
                     showingStopPicker = false
-                    loadFavorites()
-                    updateClosestStopAndDepartures()
+                    // Reload data after adding/removing favorites (coordinated update)
+                    Task {
+                        let newFavorites = favoritesManager.getFavorites()
+
+                        // Fetch headsigns for all stops
+                        var newFilteredHeadsigns: [String: [String]] = [:]
+                        var newFilteredLinesByMode: [String: [String: [String]]] = [:]
+
+                        for stop in newFavorites {
+                            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+                            let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
+                            if let headsigns = result.headsigns {
+                                newFilteredHeadsigns[stop.id] = headsigns
+                            }
+                            newFilteredLinesByMode[stop.id] = result.linesByMode
+                        }
+
+                        // Find closest and fetch its departures
+                        let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
+                        let newClosest = findClosestStop(favorites: newFavorites, currentLocation: currentLocation)
+                        let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+                        let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
+
+                        // Update all UI state at once
+                        await MainActor.run {
+                            favorites = newFavorites
+                            filteredHeadsigns = newFilteredHeadsigns
+                            filteredLinesByMode = newFilteredLinesByMode
+                            closestStop = newClosest
+                            departures = filteredDepartures
+                        }
+                    }
                 })
             }
             .sheet(item: $stopToEdit) { stop in
@@ -128,6 +188,50 @@ struct FavoritesListView: View {
         }
     }
 
+    /// Load all data (favorites, headsigns, and departures) before showing the UI
+    private func loadAllData() {
+        Task {
+            // If we're not on initial load, set refreshing state
+            if !isInitialLoad {
+                await MainActor.run {
+                    isRefreshing = true
+                }
+            }
+
+            // Load favorites synchronously first
+            favorites = favoritesManager.getFavorites()
+            print("FavoritesListView: Loaded \(favorites.count) favorites")
+
+            guard !favorites.isEmpty else {
+                await MainActor.run {
+                    isInitialLoad = false
+                    isRefreshing = false
+                }
+                return
+            }
+
+            // Fetch headsigns for all stops
+            await fetchFilteredHeadsigns()
+
+            // Find closest stop and fetch its departures
+            let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
+            let closest = findClosestStop(favorites: favorites, currentLocation: currentLocation)
+
+            // Fetch departures for closest stop
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: closest.id, numberOfResults: 20)
+            let filteredDepartures = allDepartures.filter { closest.matchesFilters(departure: $0) }
+
+            await MainActor.run {
+                self.closestStop = closest
+                self.departures = filteredDepartures
+                self.isLoadingDepartures = false
+                self.isInitialLoad = false
+                self.isRefreshing = false  // Clear refresh state after ALL data is ready
+                print("FavoritesListView: All data loaded, showing UI")
+            }
+        }
+    }
+
     private func editFilters(for stop: Stop) {
         stopToEdit = stop
     }
@@ -135,156 +239,181 @@ struct FavoritesListView: View {
     private func saveFilteredStop(_ stop: Stop) {
         favoritesManager.updateFavorite(stop)
 
-        loadFavorites()
-        updateClosestStopAndDepartures()
-
-        // Refresh data for this stop (fetches lines for all stops now)
+        // Refresh all data after saving filters (coordinated update)
         Task {
-            await fetchFilteredHeadsigns()
+            let newFavorites = favoritesManager.getFavorites()
+
+            // Fetch headsigns for all stops
+            var newFilteredHeadsigns: [String: [String]] = [:]
+            var newFilteredLinesByMode: [String: [String: [String]]] = [:]
+
+            for stop in newFavorites {
+                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+                let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
+                if let headsigns = result.headsigns {
+                    newFilteredHeadsigns[stop.id] = headsigns
+                }
+                newFilteredLinesByMode[stop.id] = result.linesByMode
+            }
+
+            // Find closest and fetch its departures
+            let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
+            let newClosest = findClosestStop(favorites: newFavorites, currentLocation: currentLocation)
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+            let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
+
+            // Update all UI state at once
+            await MainActor.run {
+                favorites = newFavorites
+                filteredHeadsigns = newFilteredHeadsigns
+                filteredLinesByMode = newFilteredLinesByMode
+                closestStop = newClosest
+                departures = filteredDepartures
+            }
         }
     }
 
-    private func loadFavorites() {
-        favorites = favoritesManager.getFavorites()
-        print("FavoritesListView: Loaded \(favorites.count) favorites")
+    /// Process departures for a stop and return headsigns and lines
+    private func processStopDepartures(stop: Stop, allDepartures: [Departure]) async -> (headsigns: [String]?, linesByMode: [String: [String]]) {
+        let filteredLines = stop.filteredLines
 
-        // Clean up stale entries for stops no longer in favorites
-        let favoriteIds = Set(favorites.map { $0.id })
-        filteredHeadsigns = filteredHeadsigns.filter { favoriteIds.contains($0.key) }
-        filteredLinesByMode = filteredLinesByMode.filter { favoriteIds.contains($0.key) }
+        // Extract headsigns and lines
+        var headsignsForLines: [String] = []
+        var seenHeadsigns = Set<String>()
 
-        // Fetch headsigns for filtered stops
-        Task {
-            await fetchFilteredHeadsigns()
+        // Group ALL lines by mode (for display)
+        var allLinesByMode: [String: Set<String>] = [:] // mode -> set of lines
+
+        // Group filtered lines by mode (for headsigns)
+        var filteredLinesByModeSet: [String: Set<String>] = [:] // mode -> set of lines
+
+        for departure in allDepartures {
+            // Collect all lines by mode for display
+            if let mode = departure.mode {
+                var lines = allLinesByMode[mode] ?? Set<String>()
+                lines.insert(departure.routeShortName)
+                allLinesByMode[mode] = lines
+            }
+
+            // If this stop has filters, collect headsigns and filtered lines
+            if let filteredLines = filteredLines, !filteredLines.isEmpty {
+                if filteredLines.contains(departure.routeShortName) {
+                    // Collect headsigns for filtered lines
+                    if !seenHeadsigns.contains(departure.headsign) {
+                        headsignsForLines.append(departure.headsign)
+                        seenHeadsigns.insert(departure.headsign)
+                    }
+
+                    // Group filtered lines by mode
+                    if let mode = departure.mode {
+                        var lines = filteredLinesByModeSet[mode] ?? Set<String>()
+                        lines.insert(departure.routeShortName)
+                        filteredLinesByModeSet[mode] = lines
+                    }
+                }
+            }
         }
+
+        // Decide which lines to display
+        var linesToDisplay: [String: [String]]
+        if let filteredLines = filteredLines, !filteredLines.isEmpty {
+            // Show only filtered lines
+            var linesByModeArrays: [String: [String]] = [:]
+            for (mode, linesSet) in filteredLinesByModeSet {
+                linesByModeArrays[mode] = Array(linesSet)
+            }
+            linesToDisplay = linesByModeArrays
+        } else {
+            // Show all lines
+            var linesByModeArrays: [String: [String]] = [:]
+            for (mode, linesSet) in allLinesByMode {
+                linesByModeArrays[mode] = Array(linesSet)
+            }
+            linesToDisplay = linesByModeArrays
+        }
+
+        // Return headsigns and lines
+        let headsigns: [String]? = (filteredLines != nil && !filteredLines!.isEmpty) ? headsignsForLines : nil
+        return (headsigns: headsigns, linesByMode: linesToDisplay)
     }
 
     /// Fetch headsigns and lines for all favorite stops
     private func fetchFilteredHeadsigns() async {
+        // Collect all data first before updating UI
+        var newFilteredHeadsigns: [String: [String]] = [:]
+        var newFilteredLinesByMode: [String: [String: [String]]] = [:]
+
         // Fetch for all favorite stops
         for stop in favorites {
             // Fetch departures for this stop
             let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+            let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
 
-            let filteredLines = stop.filteredLines
-
-            // Extract headsigns and lines
-            var headsignsForLines: [String] = []
-            var seenHeadsigns = Set<String>()
-
-            // Group ALL lines by mode (for display)
-            var allLinesByMode: [String: Set<String>] = [:] // mode -> set of lines
-
-            // Group filtered lines by mode (for headsigns)
-            var filteredLinesByModeSet: [String: Set<String>] = [:] // mode -> set of lines
-
-            for departure in allDepartures {
-                // Collect all lines by mode for display
-                if let mode = departure.mode {
-                    var lines = allLinesByMode[mode] ?? Set<String>()
-                    lines.insert(departure.routeShortName)
-                    allLinesByMode[mode] = lines
-                }
-
-                // If this stop has filters, collect headsigns and filtered lines
-                if let filteredLines = filteredLines, !filteredLines.isEmpty {
-                    if filteredLines.contains(departure.routeShortName) {
-                        // Collect headsigns for filtered lines
-                        if !seenHeadsigns.contains(departure.headsign) {
-                            headsignsForLines.append(departure.headsign)
-                            seenHeadsigns.insert(departure.headsign)
-                        }
-
-                        // Group filtered lines by mode
-                        if let mode = departure.mode {
-                            var lines = filteredLinesByModeSet[mode] ?? Set<String>()
-                            lines.insert(departure.routeShortName)
-                            filteredLinesByModeSet[mode] = lines
-                        }
-                    }
-                }
+            if let headsigns = result.headsigns {
+                newFilteredHeadsigns[stop.id] = headsigns
             }
+            newFilteredLinesByMode[stop.id] = result.linesByMode
+        }
 
-            // Decide which lines to display
-            var linesToDisplay: [String: [String]]
-            if let filteredLines = filteredLines, !filteredLines.isEmpty {
-                // Show only filtered lines
-                var linesByModeArrays: [String: [String]] = [:]
-                for (mode, linesSet) in filteredLinesByModeSet {
-                    linesByModeArrays[mode] = Array(linesSet)
-                }
-                linesToDisplay = linesByModeArrays
-            } else {
-                // Show all lines
-                var linesByModeArrays: [String: [String]] = [:]
-                for (mode, linesSet) in allLinesByMode {
-                    linesByModeArrays[mode] = Array(linesSet)
-                }
-                linesToDisplay = linesByModeArrays
-            }
-
-            // Store the headsigns and lines by mode
-            await MainActor.run {
-                if let filteredLines = filteredLines, !filteredLines.isEmpty {
-                    filteredHeadsigns[stop.id] = headsignsForLines
-                } else {
-                    filteredHeadsigns[stop.id] = nil
-                }
-                filteredLinesByMode[stop.id] = linesToDisplay
-            }
+        // Update UI once with all collected data
+        await MainActor.run {
+            filteredHeadsigns = newFilteredHeadsigns
+            filteredLinesByMode = newFilteredLinesByMode
         }
     }
 
     private func removeFavorite(_ stop: Stop) {
         favoritesManager.removeFavorite(stop)
 
-        // Clear filtered data for this stop
-        filteredHeadsigns[stop.id] = nil
-        filteredLinesByMode[stop.id] = nil
+        // Reload data after removing favorite (coordinated update)
+        Task {
+            let newFavorites = favoritesManager.getFavorites()
 
-        loadFavorites()
-        updateClosestStopAndDepartures()
+            guard !newFavorites.isEmpty else {
+                // If no favorites left, just clear everything
+                await MainActor.run {
+                    favorites = []
+                    filteredHeadsigns = [:]
+                    filteredLinesByMode = [:]
+                    closestStop = nil
+                    departures = []
+                }
+                return
+            }
+
+            // Fetch headsigns for all remaining stops
+            var newFilteredHeadsigns: [String: [String]] = [:]
+            var newFilteredLinesByMode: [String: [String: [String]]] = [:]
+
+            for stop in newFavorites {
+                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+                let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
+                if let headsigns = result.headsigns {
+                    newFilteredHeadsigns[stop.id] = headsigns
+                }
+                newFilteredLinesByMode[stop.id] = result.linesByMode
+            }
+
+            // Find closest and fetch its departures
+            let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
+            let newClosest = findClosestStop(favorites: newFavorites, currentLocation: currentLocation)
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+            let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
+
+            // Update all UI state at once
+            await MainActor.run {
+                favorites = newFavorites
+                filteredHeadsigns = newFilteredHeadsigns
+                filteredLinesByMode = newFilteredLinesByMode
+                closestStop = newClosest
+                departures = filteredDepartures
+            }
+        }
     }
 
     private func requestLocationPermission() {
         print("FavoritesListView: Requesting location permission")
         locationManager.requestPermission()
-    }
-
-    private func updateClosestStopAndDepartures() {
-        guard !favorites.isEmpty else {
-            closestStop = nil
-            departures = []
-            return
-        }
-
-        // Find closest favorite stop
-        let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
-        closestStop = findClosestStop(favorites: favorites, currentLocation: currentLocation)
-
-        // Fetch departures for closest stop
-        if let stop = closestStop {
-            Task {
-                await fetchDepartures(for: stop)
-            }
-        }
-    }
-
-    private func fetchDepartures(for stop: Stop) async {
-        isLoadingDepartures = true
-        print("FavoritesListView: Fetching departures for \(stop.name)")
-
-        let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 20)
-
-        // Apply filters if configured
-        let filteredDepartures = allDepartures.filter { stop.matchesFilters(departure: $0) }
-        print("FavoritesListView: Filtered departures: \(filteredDepartures.count) of \(allDepartures.count)")
-
-        await MainActor.run {
-            self.departures = filteredDepartures
-            self.isLoadingDepartures = false
-            print("FavoritesListView: Loaded \(filteredDepartures.count) departures")
-        }
     }
 
     /// Find the closest stop to the current location
