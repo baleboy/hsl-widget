@@ -17,6 +17,7 @@ struct StopPickerView: View {
     @StateObject private var locationManager = LocationManager.shared
     @StateObject private var preloader = HeadsignPreloader()
     @State private var isInitialLoad = true
+    @State private var isFetchingInitialHeadsigns = false
 
     private let favoritesManager = FavoritesManager.shared
     let onDismiss: () -> Void
@@ -75,6 +76,14 @@ struct StopPickerView: View {
                         .foregroundColor(.secondary)
                 }
                 .padding()
+            } else if isFetchingInitialHeadsigns {
+                // Show loading screen while fetching headsigns for visible stops
+                VStack(spacing: 16) {
+                    ProgressView()
+                    Text("Loading stop details...")
+                        .font(.roundedHeadline)
+                        .foregroundColor(.secondary)
+                }
             } else {
                 List {
                     ForEach(sortedStops) { stop in
@@ -107,6 +116,11 @@ struct StopPickerView: View {
             }
         }
         .task {
+            // Set fetching state immediately at the start to prevent showing incomplete UI
+            await MainActor.run {
+                isFetchingInitialHeadsigns = true
+            }
+
             // Load all stops first
             stops = await HslApi.shared.fetchAllStops()
 
@@ -120,7 +134,15 @@ struct StopPickerView: View {
 
             // Populate stopHeadsigns with cached data
             stopHeadsigns = cachedHeadsigns
-            isInitialLoad = false
+
+            // Fetch headsigns for initially visible stops before showing the list
+            await fetchHeadsignsForVisibleStops(sortedStops)
+
+            // Now show the list with all data ready
+            await MainActor.run {
+                isFetchingInitialHeadsigns = false
+                isInitialLoad = false
+            }
         }
     }
 
@@ -274,6 +296,9 @@ struct StopPickerView: View {
         // Fetch headsigns for top 20 stops to avoid too many API calls
         let stopsToFetch = Array(stops.prefix(20))
 
+        // Collect all headsigns before updating UI
+        var newHeadsigns: [String: [String]] = [:]
+
         for stop in stopsToFetch {
             // Skip if we already have headsigns for this stop
             if stopHeadsigns[stop.id] != nil {
@@ -300,9 +325,14 @@ struct StopPickerView: View {
             }
 
             if !uniqueHeadsigns.isEmpty {
-                await MainActor.run {
-                    stopHeadsigns[stop.id] = Array(uniqueHeadsigns.prefix(4)) // Show up to 4 headsigns
-                }
+                newHeadsigns[stop.id] = Array(uniqueHeadsigns.prefix(4)) // Show up to 4 headsigns
+            }
+        }
+
+        // Update UI once with all collected headsigns
+        await MainActor.run {
+            for (stopId, headsigns) in newHeadsigns {
+                stopHeadsigns[stopId] = headsigns
             }
         }
     }
