@@ -234,23 +234,32 @@ struct StopPickerView: View {
     private func toggleFavorite(_ stop: Stop) {
         print("StopPicker: Toggling favorite for: \(stop.name)")
 
-        // Create a new Stop with headsigns included if available
-        let stopWithHeadsigns = Stop(
-            id: stop.id,
-            name: stop.name,
-            code: stop.code,
-            latitude: stop.latitude,
-            longitude: stop.longitude,
-            vehicleModes: stop.vehicleModes,
-            headsigns: stopHeadsigns[stop.id] ?? stop.headsigns,
-            allStopIds: stop.allStopIds,
-            filteredLines: stop.filteredLines,
-            filteredHeadsignPattern: stop.filteredHeadsignPattern
-        )
-
-        favoritesManager.toggleFavorite(stopWithHeadsigns)
-        loadFavorites()
+        // Update UI optimistically FIRST for instant feedback
+        let isCurrentlyFavorite = favoriteStopIds.contains(stop.id)
+        if isCurrentlyFavorite {
+            favoriteStopIds.remove(stop.id)
+        } else {
+            favoriteStopIds.insert(stop.id)
+        }
         print("StopPicker: Current favorites count: \(favoriteStopIds.count)")
+
+        // Then do the I/O operations asynchronously
+        Task {
+            let stopWithHeadsigns = Stop(
+                id: stop.id,
+                name: stop.name,
+                code: stop.code,
+                latitude: stop.latitude,
+                longitude: stop.longitude,
+                vehicleModes: stop.vehicleModes,
+                headsigns: stopHeadsigns[stop.id] ?? stop.headsigns,
+                allStopIds: stop.allStopIds,
+                filteredLines: stop.filteredLines,
+                filteredHeadsignPattern: stop.filteredHeadsignPattern
+            )
+
+            favoritesManager.toggleFavorite(stopWithHeadsigns)
+        }
 
         // Dismiss the search keyboard so the "Done" button becomes clear
         hideKeyboard()
