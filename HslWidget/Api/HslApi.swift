@@ -8,7 +8,7 @@
 import Foundation
 
 class HslApi {
-    
+
     static let shared = HslApi()
 
     static var apiKey: String? {
@@ -19,6 +19,14 @@ class HslApi {
     }
 
     private let routingUrl = "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1?digitransit-subscription-key="
+
+    /// Create ephemeral URLSession that doesn't cache and can be cleaned up
+    private func createSession() -> URLSession {
+        let config = URLSessionConfiguration.ephemeral
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.urlCache = nil
+        return URLSession(configuration: config)
+    }
         
     enum HslApiError: Error {
         case invalidURL
@@ -42,8 +50,11 @@ class HslApi {
         }
         """
         do {
+            let session = createSession()
+            defer { session.invalidateAndCancel() }
+
             let request = try buildRequest(query: query)
-            let (data, _) = try await URLSession.shared.data(for: request)
+            let (data, _) = try await session.data(for: request)
 
             if let decodedResponse = try? JSONDecoder().decode(StopsQueryResponse.self, from: data) {
                 var result = [Stop]()
@@ -126,8 +137,11 @@ class HslApi {
             }
             """
         do {
+            let session = createSession()
+            defer { session.invalidateAndCancel() }
+
             let request = try buildRequest(query: query)
-            let (data, _) = try await URLSession.shared.data(for: request)
+            let (data, _) = try await session.data(for: request)
 
             if let decodedResponse = try? JSONDecoder().decode(HeadsignsQueryResponse.self, from: data) {
                 // Extract unique headsigns
@@ -177,8 +191,11 @@ class HslApi {
             }
             """
         do {
+            let session = createSession()
+            defer { session.invalidateAndCancel() }
+
             let request = try buildRequest(query: query)
-            let (data, _) = try await URLSession.shared.data(for: request)
+            let (data, _) = try await session.data(for: request)
             if let decodedResponse = try? JSONDecoder().decode(DepartureTimesQueryResponse.self, from: data) {
                 var result = [Departure]()
                 for stopTime in decodedResponse.data.stop.stoptimesWithoutPatterns {
@@ -211,7 +228,6 @@ class HslApi {
         request.httpMethod = "POST"
         request.httpBody = query.data(using: .utf8)
         request.setValue("application/graphql", forHTTPHeaderField: "Content-Type")
-        request.cachePolicy = .reloadIgnoringLocalCacheData // Disable caching
         return request
     }
 
