@@ -202,6 +202,7 @@ struct StopPickerView: View {
                 }
             }
             .animation(.none, value: favoriteStopIds)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }
