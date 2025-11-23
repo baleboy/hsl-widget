@@ -38,6 +38,8 @@
 		25979FE02ED3211F00D81D27 /* StopsQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA042B2BEB32E70052A577 /* StopsQueryResponse.swift */; };
 		25979FE22ED3281800D81D27 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FE12ED3281800D81D27 /* DebugLogger.swift */; };
 		25979FE32ED3281800D81D27 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FE12ED3281800D81D27 /* DebugLogger.swift */; };
+		25979FE52ED35DFA00D81D27 /* MemoryLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FE42ED35DFA00D81D27 /* MemoryLogger.swift */; };
+		25979FE62ED35DFA00D81D27 /* MemoryLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FE42ED35DFA00D81D27 /* MemoryLogger.swift */; };
 		25D19E582BE600920055E70E /* HslWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D19E572BE600920055E70E /* HslWidgetApp.swift */; };
 		25D19E5C2BE600930055E70E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25D19E5B2BE600930055E70E /* Assets.xcassets */; };
 		25D19E5F2BE600930055E70E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25D19E5E2BE600930055E70E /* Preview Assets.xcassets */; };
@@ -117,6 +119,7 @@
 		25906F432EC9CD1400A113DA /* StopDetailsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopDetailsHelpers.swift; sourceTree = "<group>"; };
 		25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedLocationReader.swift; sourceTree = "<group>"; };
 		25979FE12ED3281800D81D27 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
+		25979FE42ED35DFA00D81D27 /* MemoryLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryLogger.swift; sourceTree = "<group>"; };
 		25D19E542BE600920055E70E /* HslWidget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HslWidget.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25D19E572BE600920055E70E /* HslWidgetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HslWidgetApp.swift; sourceTree = "<group>"; };
 		25D19E5B2BE600930055E70E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -217,6 +220,7 @@
 		25D19E562BE600920055E70E /* HslWidget */ = {
 			isa = PBXGroup;
 			children = (
+				25979FE42ED35DFA00D81D27 /* MemoryLogger.swift */,
 				25979FE12ED3281800D81D27 /* DebugLogger.swift */,
 				2559EF8F2ED1B93900B7289E /* TransitIconHelper.swift */,
 				256460E72ECA470A00C60F8A /* Font+Rounded.swift */,
@@ -453,6 +457,7 @@
 				2542B3482EC8BA32002492BC /* SettingsView.swift in Sources */,
 				6D8B0758AC954E5091A7E004 /* StopFilterView.swift in Sources */,
 				2542B3272EC3D25B002492BC /* FavoritesManager.swift in Sources */,
+				25979FE52ED35DFA00D81D27 /* MemoryLogger.swift in Sources */,
 				25906F442EC9CD1400A113DA /* FavoriteStopRow.swift in Sources */,
 				25906F452EC9CD1400A113DA /* StopDetailsHelpers.swift in Sources */,
 				25906F462EC9CD1400A113DA /* NextDeparturesView.swift in Sources */,
@@ -489,6 +494,7 @@
 				25D19E862BE79FFA0055E70E /* Departure.swift in Sources */,
 				25D19E712BE755310055E70E /* stopInfoBundle.swift in Sources */,
 				25D19E732BE755310055E70E /* stopInfo.swift in Sources */,
+				25979FE62ED35DFA00D81D27 /* MemoryLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -707,13 +713,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = HslWidget/HslWidget.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"HslWidget/Preview Content\"";
 				DEVELOPMENT_TEAM = 8HG4D44UZQ;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 8HG4D44UZQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HslWidget/Info.plist;
@@ -731,7 +735,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.balenet.HslWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HSL Widget app";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -773,12 +776,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = stopInfoExtension.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8HG4D44UZQ;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 8HG4D44UZQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = stopInfo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = stopInfo;
@@ -792,7 +793,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.balenet.HslWidget.stopInfo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "HSL Widget widget";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

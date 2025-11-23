@@ -13,15 +13,10 @@ import WidgetKit
 struct TimelineBuilder {
 
     static let numberOfFetchedResults = 20
+    static let refreshInterval: TimeInterval = 15 * 60 // 15 minutes
 
     private let favoritesManager = FavoritesManager.shared
     private let locationReader = SharedLocationReader()
-
-    /// Either returns a ready-made "no favorites" timeline, or a resolved closest stop
-    enum FavoritesResolutionResult {
-        case timeline(Timeline<TimetableEntry>)
-        case stop(Stop)
-    }
 
     // MARK: - Public API
 
@@ -31,177 +26,91 @@ struct TimelineBuilder {
         maxShown: Int,
         completion: @escaping (Timeline<TimetableEntry>) -> Void
     ) {
-        Task { [completion] in
-            // 1. Resolve favorite stop (or return "no favorites" timeline)
-            guard let favoritesTimelineOrStop = makeFavoritesOrStop(now: now) else {
+        // Use Task.detached to avoid capturing self and prevent retain cycles
+        Task.detached { [weak favoritesManager, locationReader] in
+            MemoryLogger.log("Timeline Start")
+
+            guard let favoritesManager = favoritesManager else {
                 return
             }
 
-            switch favoritesTimelineOrStop {
-            case .timeline(let timeline):
-                completion(timeline)
-                return
+            // 1. Get favorites
+            let favorites = favoritesManager.getFavorites()
+            debugLog("Widget: Retrieved \(favorites.count) favorites from FavoritesManager")
 
-            case .stop(let closestStop):
-                // 2. Fetch departures
-                let departures = await fetchFilteredDepartures(for: closestStop)
-
-                // 3. Build entries from departures
-                let entries = buildTimelineEntries(
-                    for: closestStop,
-                    departures: departures,
-                    now: now,
-                    maxShown: maxShown
+            guard !favorites.isEmpty else {
+                debugLog("Widget: No favorites found, showing empty state")
+                let entry = TimetableEntry(
+                    date: now,
+                    stopName: "",
+                    departures: [],
+                    state: .noFavorites
                 )
+                let timeline = Timeline(
+                    entries: [entry],
+                    policy: .after(now.addingTimeInterval(Self.refreshInterval))
+                )
+                await MainActor.run {
+                    completion(timeline)
+                }
+                MemoryLogger.log("Timeline End (No Favorites)")
+                return
+            }
 
-                // 4. Always return at least one entry to avoid stale widget content
-                let safeEntries = entries.isEmpty
-                    ? [TimetableEntry(date: now,
-                                      stopName: closestStop.name,
-                                      departures: [],
-                                      state: .noDepartures)]
-                    : entries
+            // 2. Find closest stop
+            let currentLocation = locationReader.getSharedLocation()
+            let closestStop = TimelineBuilder.findClosestStop(
+                favorites: favorites,
+                currentLocation: currentLocation
+            )
 
-                // 5. Refresh after 15 minutes
-                let refreshDate = now.addingTimeInterval(15 * 60)
-                let timeline = Timeline(entries: safeEntries, policy: .after(refreshDate))
+            debugLog("Widget: Selected stop: \(closestStop.name) (ID: \(closestStop.id))")
+
+            MemoryLogger.log("Before API Call")
+
+            // 3. Fetch departures
+            let allDepartures = await HslApi.shared.fetchDepartures(
+                stationId: closestStop.id,
+                numberOfResults: Self.numberOfFetchedResults
+            )
+            let departures = allDepartures
+                .filter { closestStop.matchesFilters(departure: $0) }
+                .sorted { $0.departureTime < $1.departureTime }
+
+            MemoryLogger.log("After API Call")
+
+            // 4. Build entries
+            let entries = self.buildTimelineEntries(
+                for: closestStop,
+                departures: departures,
+                now: now,
+                maxShown: maxShown
+            )
+
+            MemoryLogger.log("After Building Entries")
+
+            // 5. Create timeline
+            let safeEntries = entries.isEmpty
+                ? [TimetableEntry(date: now,
+                                  stopName: closestStop.name,
+                                  departures: [],
+                                  state: .noDepartures)]
+                : entries
+
+            let refreshDate = now.addingTimeInterval(Self.refreshInterval)
+            let timeline = Timeline(entries: safeEntries, policy: .after(refreshDate))
+
+            MemoryLogger.log("Before Completion")
+            await MainActor.run {
                 completion(timeline)
             }
+            MemoryLogger.log("Timeline End")
         }
     }
 
-    // MARK: - Private Helpers
-
-    /// Either returns a ready-made "no favorites" timeline, or a resolved closest stop
-    private func makeFavoritesOrStop(now: Date) -> FavoritesResolutionResult? {
-        let favorites = favoritesManager.getFavorites()
-        debugLog("Widget: Retrieved \(favorites.count) favorites from FavoritesManager")
-
-        guard !favorites.isEmpty else {
-            debugLog("Widget: No favorites found, showing empty state")
-
-            let entry = TimetableEntry(
-                date: now,
-                stopName: "",
-                departures: [],
-                state: .noFavorites
-            )
-
-            let timeline = Timeline(
-                entries: [entry],
-                policy: .after(now.addingTimeInterval(60 * 60))
-            )
-
-            return .timeline(timeline)
-        }
-
-        let currentLocation = locationReader.getSharedLocation()
-        if let loc = currentLocation {
-            debugLog("Widget: Current location: \(loc.coordinate.latitude), \(loc.coordinate.longitude)")
-        } else {
-            debugLog("Widget: No location available, will use alphabetical fallback")
-        }
-
-        let closestStop = findClosestStop(
-            favorites: favorites,
-            currentLocation: currentLocation
-        )
-
-        debugLog("Widget: Selected stop: \(closestStop.name) (ID: \(closestStop.id))")
-        if closestStop.hasFilters {
-            debugLog("Widget: Stop has filters configured")
-            if let lines = closestStop.filteredLines {
-                debugLog("Widget: Filtered lines: \(lines.joined(separator: ", "))")
-            }
-            if let pattern = closestStop.filteredHeadsignPattern {
-                debugLog("Widget: Filtered headsign pattern: \(pattern)")
-            }
-        }
-        debugLog("==========================================")
-
-        return .stop(closestStop)
-    }
-
-    /// Fetch departures and apply stop-specific filters
-    private func fetchFilteredDepartures(for stop: Stop) async -> [Departure] {
-        let allDepartures = await HslApi.shared.fetchDepartures(
-            stationId: stop.id,
-            numberOfResults: Self.numberOfFetchedResults
-        )
-
-        let departures = allDepartures.filter { stop.matchesFilters(departure: $0) }
-        debugLog("Widget: Filtered departures: \(departures.count) of \(allDepartures.count)")
-        return departures.sorted { $0.departureTime < $1.departureTime }
-    }
-
-    /// Build the list of timeline entries from a sorted departures list
-    /// - Ensures:
-    ///   - Only future departures are shown
-    ///   - At most `maxShown` per entry
-    ///   - Multiple entries as a sliding window over the list
-    private func buildTimelineEntries(
-        for stop: Stop,
-        departures: [Departure],
-        now: Date,
-        maxShown: Int
-    ) -> [TimetableEntry] {
-
-        // Keep only departures in the future
-        let futureDepartures = departures.filter { $0.departureTime > now }
-
-        guard !futureDepartures.isEmpty else {
-            debugLog("Widget: No future departures for \(stop.name)")
-            return []
-        }
-
-        // If fewer than we can show, just one entry with all
-        if futureDepartures.count <= maxShown {
-            debugLog("Widget: Only \(futureDepartures.count) future departures, single entry")
-            let entry = TimetableEntry(
-                date: now,
-                stopName: stop.name,
-                departures: futureDepartures,
-                state: .normal
-            )
-            return [entry]
-        }
-
-        // Sliding window: [0,1], [1,2], [2,3], ...
-        var entries: [TimetableEntry] = []
-        var entryDate = now
-        let lastStartIndex = futureDepartures.count - maxShown
-
-        for startIndex in 0...lastStartIndex {
-            let slice = Array(futureDepartures[startIndex..<(startIndex + maxShown)])
-
-            // Filter relative to the time this entry becomes active
-            let validDepartures = slice.filter { $0.departureTime > entryDate }
-
-            guard !validDepartures.isEmpty else { continue }
-
-            let entry = TimetableEntry(
-                date: entryDate,
-                stopName: stop.name,
-                departures: validDepartures,
-                state: .normal
-            )
-            entries.append(entry)
-
-            // Next entry starts at the time of the first departure in this entry
-            if let first = validDepartures.first {
-                entryDate = first.departureTime
-            }
-        }
-
-        debugLog("Widget: Created \(entries.count) timeline entries")
-        return entries
-    }
-
-    /// Find the closest stop to the current location
-    /// If location is unavailable, return the first favorite alphabetically
-    private func findClosestStop(favorites: [Stop], currentLocation: CLLocation?) -> Stop {
+    /// Moved to static to avoid capturing self
+    private static func findClosestStop(favorites: [Stop], currentLocation: CLLocation?) -> Stop {
         guard let currentLocation = currentLocation else {
-            // Fallback: return first favorite alphabetically by name
             return favorites.sorted(by: { $0.name < $1.name }).first!
         }
 
@@ -222,4 +131,59 @@ struct TimelineBuilder {
 
         return closestStop
     }
+
+    // MARK: - Private Helpers
+
+    /// Build the list of timeline entries from a sorted departures list
+    /// Creates entries at departure times to update exactly when vehicles leave
+    /// Limited to first 6 departures to minimize memory usage
+    private func buildTimelineEntries(
+        for stop: Stop,
+        departures: [Departure],
+        now: Date,
+        maxShown: Int
+    ) -> [TimetableEntry] {
+
+        // Keep only departures in the future
+        let futureDepartures = departures.filter { $0.departureTime > now }
+
+        guard !futureDepartures.isEmpty else {
+            debugLog("Widget: No future departures for \(stop.name)")
+            return []
+        }
+
+        // Create entries at departure times (widget updates when vehicles leave)
+        // Limit to 6 entries for memory efficiency
+        var entries: [TimetableEntry] = []
+        let maxEntries = 6
+        var entryDate = now
+
+        for startIndex in 0..<min(futureDepartures.count - maxShown + 1, maxEntries) {
+            // Get the slice of departures to show in this entry
+            let endIndex = min(startIndex + maxShown, futureDepartures.count)
+            let slice = Array(futureDepartures[startIndex..<endIndex])
+
+            // Filter to only future departures relative to when this entry becomes active
+            let validDepartures = slice.filter { $0.departureTime > entryDate }
+
+            guard !validDepartures.isEmpty else { break }
+
+            let entry = TimetableEntry(
+                date: entryDate,
+                stopName: stop.name,
+                departures: validDepartures,
+                state: .normal
+            )
+            entries.append(entry)
+
+            // Next entry starts when the first departure in current entry leaves
+            if let firstDeparture = validDepartures.first {
+                entryDate = firstDeparture.departureTime
+            }
+        }
+
+        debugLog("Widget: Created \(entries.count) timeline entries")
+        return entries
+    }
+
 }
