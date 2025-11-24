@@ -68,6 +68,7 @@ struct FavoriteStopRow: View {
                     HeadsignPattern(pattern: pattern)
                 }
             }
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }
