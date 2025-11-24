@@ -135,7 +135,7 @@ struct FavoritesListView: View {
                     guard newClosest.id != closestStop?.id else { return }
 
                     // Fetch departures for the new closest stop
-                    let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+                    let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 10)
                     let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
 
                     // Update UI with all data at once
@@ -158,7 +158,7 @@ struct FavoritesListView: View {
                         var newFilteredLinesByMode: [String: [String: [String]]] = [:]
 
                         for stop in newFavorites {
-                            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+                            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
                             let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
                             if let headsigns = result.headsigns {
                                 newFilteredHeadsigns[stop.id] = headsigns
@@ -169,7 +169,7 @@ struct FavoritesListView: View {
                         // Find closest and fetch its departures
                         let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
                         let newClosest = findClosestStop(favorites: newFavorites, currentLocation: currentLocation)
-                        let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+                        let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 10)
                         let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
 
                         // Update all UI state at once
@@ -231,7 +231,7 @@ struct FavoritesListView: View {
             let closest = findClosestStop(favorites: favorites, currentLocation: currentLocation)
 
             // Fetch departures for closest stop
-            let allDepartures = await HslApi.shared.fetchDepartures(stationId: closest.id, numberOfResults: 20)
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: closest.id, numberOfResults: 10)
             let filteredDepartures = allDepartures.filter { closest.matchesFilters(departure: $0) }
 
             await MainActor.run {
@@ -261,7 +261,7 @@ struct FavoritesListView: View {
             var newFilteredLinesByMode: [String: [String: [String]]] = [:]
 
             for stop in newFavorites {
-                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
                 let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
                 if let headsigns = result.headsigns {
                     newFilteredHeadsigns[stop.id] = headsigns
@@ -272,7 +272,7 @@ struct FavoritesListView: View {
             // Find closest and fetch its departures
             let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
             let newClosest = findClosestStop(favorites: newFavorites, currentLocation: currentLocation)
-            let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 10)
             let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
 
             // Update all UI state at once
@@ -359,7 +359,7 @@ struct FavoritesListView: View {
         // Fetch for all favorite stops
         for stop in favorites {
             // Fetch departures for this stop
-            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
             let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
 
             if let headsigns = result.headsigns {
@@ -399,7 +399,7 @@ struct FavoritesListView: View {
             var newFilteredLinesByMode: [String: [String: [String]]] = [:]
 
             for stop in newFavorites {
-                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 30)
+                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
                 let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
                 if let headsigns = result.headsigns {
                     newFilteredHeadsigns[stop.id] = headsigns
@@ -410,7 +410,7 @@ struct FavoritesListView: View {
             // Find closest and fetch its departures
             let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
             let newClosest = findClosestStop(favorites: newFavorites, currentLocation: currentLocation)
-            let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 20)
+            let allDepartures = await HslApi.shared.fetchDepartures(stationId: newClosest.id, numberOfResults: 10)
             let filteredDepartures = allDepartures.filter { newClosest.matchesFilters(departure: $0) }
 
             // Update all UI state at once

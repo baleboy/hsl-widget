@@ -12,7 +12,7 @@ import WidgetKit
 /// Builds widget timeline entries from favorites and departures data
 struct TimelineBuilder {
 
-    static let numberOfFetchedResults = 20
+    static let numberOfFetchedResults = 12
 
     private let favoritesManager = FavoritesManager.shared
     private let locationReader = SharedLocationReader()
