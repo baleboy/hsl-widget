@@ -24,6 +24,19 @@ struct FavoritesListView: View {
 
     private let favoritesManager = FavoritesManager.shared
 
+    var sortedFavorites: [Stop] {
+        guard let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation() else {
+            // No location available, return favorites in original order
+            return favorites
+        }
+
+        return favorites.sorted { stop1, stop2 in
+            let distance1 = distanceToStop(stop1, from: currentLocation)
+            let distance2 = distanceToStop(stop2, from: currentLocation)
+            return distance1 < distance2
+        }
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -51,7 +64,7 @@ struct FavoritesListView: View {
 
                             // All favorites section
                             Section(header: Text("Favorite stops")) {
-                                ForEach(favorites) { stop in
+                                ForEach(sortedFavorites) { stop in
                                     FavoriteStopRow(
                                         stop: stop,
                                         isClosest: stop.id == closestStop?.id,
@@ -440,6 +453,14 @@ struct FavoritesListView: View {
         }
 
         return closestStop
+    }
+
+    private func distanceToStop(_ stop: Stop, from location: CLLocation) -> Double {
+        guard let lat = stop.latitude, let lon = stop.longitude else {
+            return Double.greatestFiniteMagnitude
+        }
+        let stopLocation = CLLocation(latitude: lat, longitude: lon)
+        return location.distance(from: stopLocation)
     }
 }
 
