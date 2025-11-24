@@ -19,37 +19,13 @@
 		2542B3262EC3D25B002492BC /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3252EC3D25B002492BC /* LocationManager.swift */; };
 		2542B3272EC3D25B002492BC /* FavoritesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3242EC3D25B002492BC /* FavoritesManager.swift */; };
 		2542B3292EC3D25B002492BC /* FavoritesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3242EC3D25B002492BC /* FavoritesManager.swift */; };
-		2542B32C2EC44BE2002492BC /* FavoritesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32A2EC44BE2002492BC /* FavoritesListView.swift */; };
-		2542B32D2EC44BE2002492BC /* StopPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32B2EC44BE2002492BC /* StopPickerView.swift */; };
 		2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */; };
 		2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */; };
-		2542B3482EC8BA32002492BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3472EC8BA32002492BC /* SettingsView.swift */; };
-		2559EF902ED1B93900B7289E /* TransitIconHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2559EF8F2ED1B93900B7289E /* TransitIconHelper.swift */; };
-		2559EF912ED1B93900B7289E /* TransitIconHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2559EF8F2ED1B93900B7289E /* TransitIconHelper.swift */; };
-		256460E82ECA470A00C60F8A /* Font+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256460E72ECA470A00C60F8A /* Font+Rounded.swift */; };
-		256460E92ECA470A00C60F8A /* Font+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256460E72ECA470A00C60F8A /* Font+Rounded.swift */; };
-		25906F442EC9CD1400A113DA /* FavoriteStopRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */; };
-		25906F452EC9CD1400A113DA /* StopDetailsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F432EC9CD1400A113DA /* StopDetailsHelpers.swift */; };
-		25906F462EC9CD1400A113DA /* NextDeparturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F422EC9CD1400A113DA /* NextDeparturesView.swift */; };
-		25906F472EC9CD1400A113DA /* EmptyFavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F402EC9CD1400A113DA /* EmptyFavoritesView.swift */; };
 		25979FDD2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
 		25979FDE2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
 		25979FDF2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
 		25979FE02ED3211F00D81D27 /* StopsQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA042B2BEB32E70052A577 /* StopsQueryResponse.swift */; };
-		25979FE22ED3281800D81D27 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FE12ED3281800D81D27 /* DebugLogger.swift */; };
-		25979FE32ED3281800D81D27 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FE12ED3281800D81D27 /* DebugLogger.swift */; };
 		2597A02B2ED36EFC00D81D27 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D19E6B2BE755310055E70E /* WidgetKit.framework */; };
-		2597A02E2ED36F9200D81D27 /* NextDeparturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F422EC9CD1400A113DA /* NextDeparturesView.swift */; };
-		2597A02F2ED36F9200D81D27 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FE12ED3281800D81D27 /* DebugLogger.swift */; };
-		2597A0302ED36F9200D81D27 /* StopDetailsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F432EC9CD1400A113DA /* StopDetailsHelpers.swift */; };
-		2597A0312ED36F9200D81D27 /* TransitIconHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2559EF8F2ED1B93900B7289E /* TransitIconHelper.swift */; };
-		2597A0322ED36F9200D81D27 /* EmptyFavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F402EC9CD1400A113DA /* EmptyFavoritesView.swift */; };
-		2597A0332ED36F9200D81D27 /* StopFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310A15C5EED4213B1784DA8 /* StopFilterView.swift */; };
-		2597A0342ED36F9200D81D27 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3472EC8BA32002492BC /* SettingsView.swift */; };
-		2597A0352ED36F9200D81D27 /* FavoritesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32A2EC44BE2002492BC /* FavoritesListView.swift */; };
-		2597A0362ED36F9200D81D27 /* Font+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256460E72ECA470A00C60F8A /* Font+Rounded.swift */; };
-		2597A0372ED36F9200D81D27 /* StopPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32B2EC44BE2002492BC /* StopPickerView.swift */; };
-		2597A0382ED36F9200D81D27 /* FavoriteStopRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */; };
 		2597A0392ED36FA300D81D27 /* TimelineBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A02ED1EB3E000D30CC /* TimelineBuilder.swift */; };
 		2597A03A2ED36FA300D81D27 /* WidgetTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253BB8A12ED1EB3E000D30CC /* WidgetTimelineProvider.swift */; };
 		2597A03B2ED36FB500D81D27 /* HeadsignPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */; };
@@ -86,7 +62,6 @@
 		25FA04242BEA16AB0052A577 /* DepartureTimesQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA041A2BE7DC130052A577 /* DepartureTimesQueryResponse.swift */; };
 		25FA04272BEA16ED0052A577 /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA04142BE7CB890052A577 /* Stop.swift */; };
 		25FA042C2BEB32E70052A577 /* StopsQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA042B2BEB32E70052A577 /* StopsQueryResponse.swift */; };
-		6D8B0758AC954E5091A7E004 /* StopFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310A15C5EED4213B1784DA8 /* StopFilterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,7 +110,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1310A15C5EED4213B1784DA8 /* StopFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopFilterView.swift; sourceTree = "<group>"; };
 		253BB89D2ED1EB2B000D30CC /* TimetableEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEntry.swift; sourceTree = "<group>"; };
 		253BB8A02ED1EB3E000D30CC /* TimelineBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBuilder.swift; sourceTree = "<group>"; };
 		253BB8A12ED1EB3E000D30CC /* WidgetTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTimelineProvider.swift; sourceTree = "<group>"; };
@@ -146,21 +120,11 @@
 		253BB8A72ED1EB3E000D30CC /* WidgetViewFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetViewFormatters.swift; sourceTree = "<group>"; };
 		2542B3242EC3D25B002492BC /* FavoritesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesManager.swift; sourceTree = "<group>"; };
 		2542B3252EC3D25B002492BC /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		2542B32A2EC44BE2002492BC /* FavoritesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesListView.swift; sourceTree = "<group>"; };
-		2542B32B2EC44BE2002492BC /* StopPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopPickerView.swift; sourceTree = "<group>"; };
 		2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignCache.swift; sourceTree = "<group>"; };
 		2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignPreloader.swift; sourceTree = "<group>"; };
 		2542B3332EC8594F002492BC /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		2542B33A2EC89D01002492BC /* HslWidgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HslWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2542B3472EC8BA32002492BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		2559EF8F2ED1B93900B7289E /* TransitIconHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitIconHelper.swift; sourceTree = "<group>"; };
-		256460E72ECA470A00C60F8A /* Font+Rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Rounded.swift"; sourceTree = "<group>"; };
-		25906F402EC9CD1400A113DA /* EmptyFavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFavoritesView.swift; sourceTree = "<group>"; };
-		25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteStopRow.swift; sourceTree = "<group>"; };
-		25906F422EC9CD1400A113DA /* NextDeparturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextDeparturesView.swift; sourceTree = "<group>"; };
-		25906F432EC9CD1400A113DA /* StopDetailsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopDetailsHelpers.swift; sourceTree = "<group>"; };
 		25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedLocationReader.swift; sourceTree = "<group>"; };
-		25979FE12ED3281800D81D27 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		2597A0012ED36EAF00D81D27 /* WidgetDebugger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WidgetDebugger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2597A0102ED36EB000D81D27 /* WidgetDebuggerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WidgetDebuggerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2597A01A2ED36EB000D81D27 /* WidgetDebuggerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WidgetDebuggerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -194,6 +158,21 @@
 			);
 			target = 2597A0002ED36EAF00D81D27 /* WidgetDebugger */;
 		};
+		25EB23812ED4BA3800B1CEB3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DebugLogger.swift,
+				TransitIconHelper.swift,
+			);
+			target = 25D19E682BE755310055E70E /* stopInfoExtension */;
+		};
+		25EB23822ED4BA3E00B1CEB3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Font+Rounded.swift",
+			);
+			target = 25D19E682BE755310055E70E /* stopInfoExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -201,6 +180,8 @@
 		2597A0022ED36EAF00D81D27 /* WidgetDebugger */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2597A04D2ED3708700D81D27 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = WidgetDebugger; sourceTree = "<group>"; };
 		2597A0132ED36EB000D81D27 /* WidgetDebuggerTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = WidgetDebuggerTests; sourceTree = "<group>"; };
 		2597A01D2ED36EB000D81D27 /* WidgetDebuggerUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = WidgetDebuggerUITests; sourceTree = "<group>"; };
+		25EB237F2ED4BA2000B1CEB3 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (25EB23822ED4BA3E00B1CEB3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
+		25EB23802ED4BA3100B1CEB3 /* Utils */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (25EB23812ED4BA3800B1CEB3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Utils; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -305,17 +286,8 @@
 		25D19E562BE600920055E70E /* HslWidget */ = {
 			isa = PBXGroup;
 			children = (
-				25979FE12ED3281800D81D27 /* DebugLogger.swift */,
-				2559EF8F2ED1B93900B7289E /* TransitIconHelper.swift */,
-				256460E72ECA470A00C60F8A /* Font+Rounded.swift */,
-				25906F402EC9CD1400A113DA /* EmptyFavoritesView.swift */,
-				25906F412EC9CD1400A113DA /* FavoriteStopRow.swift */,
-				25906F422EC9CD1400A113DA /* NextDeparturesView.swift */,
-				25906F432EC9CD1400A113DA /* StopDetailsHelpers.swift */,
-				2542B3472EC8BA32002492BC /* SettingsView.swift */,
-				2542B32A2EC44BE2002492BC /* FavoritesListView.swift */,
-				2542B32B2EC44BE2002492BC /* StopPickerView.swift */,
-				1310A15C5EED4213B1784DA8 /* StopFilterView.swift */,
+				25EB23802ED4BA3100B1CEB3 /* Utils */,
+				25EB237F2ED4BA2000B1CEB3 /* Views */,
 				25FA04302BEB50D30052A577 /* HslWidget.entitlements */,
 				25FA042A2BEA527C0052A577 /* Info.plist */,
 				25FA04262BEA16DA0052A577 /* Model */,
@@ -423,6 +395,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				2597A0022ED36EAF00D81D27 /* WidgetDebugger */,
+				25EB237F2ED4BA2000B1CEB3 /* Views */,
+				25EB23802ED4BA3100B1CEB3 /* Utils */,
 			);
 			name = WidgetDebugger;
 			packageProductDependencies = (
@@ -490,6 +464,10 @@
 			);
 			dependencies = (
 				25D19E782BE755320055E70E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				25EB237F2ED4BA2000B1CEB3 /* Views */,
+				25EB23802ED4BA3100B1CEB3 /* Utils */,
 			);
 			name = HslWidget;
 			productName = HslWidget;
@@ -630,7 +608,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2597A02E2ED36F9200D81D27 /* NextDeparturesView.swift in Sources */,
 				2597A03B2ED36FB500D81D27 /* HeadsignPreloader.swift in Sources */,
 				2597A03C2ED36FB500D81D27 /* SharedLocationReader.swift in Sources */,
 				2597A03D2ED36FB500D81D27 /* TimetableEntry.swift in Sources */,
@@ -639,21 +616,11 @@
 				2597A0402ED36FB500D81D27 /* LocationManager.swift in Sources */,
 				2597A0412ED36FB500D81D27 /* Departure.swift in Sources */,
 				2597A0422ED36FB500D81D27 /* Stop.swift in Sources */,
-				2597A02F2ED36F9200D81D27 /* DebugLogger.swift in Sources */,
-				2597A0302ED36F9200D81D27 /* StopDetailsHelpers.swift in Sources */,
-				2597A0312ED36F9200D81D27 /* TransitIconHelper.swift in Sources */,
-				2597A0322ED36F9200D81D27 /* EmptyFavoritesView.swift in Sources */,
-				2597A0332ED36F9200D81D27 /* StopFilterView.swift in Sources */,
-				2597A0342ED36F9200D81D27 /* SettingsView.swift in Sources */,
-				2597A0352ED36F9200D81D27 /* FavoritesListView.swift in Sources */,
 				2597A0392ED36FA300D81D27 /* TimelineBuilder.swift in Sources */,
 				2597A03A2ED36FA300D81D27 /* WidgetTimelineProvider.swift in Sources */,
-				2597A0362ED36F9200D81D27 /* Font+Rounded.swift in Sources */,
-				2597A0372ED36F9200D81D27 /* StopPickerView.swift in Sources */,
 				2597A0432ED36FBE00D81D27 /* DepartureTimesQueryResponse.swift in Sources */,
 				2597A0442ED36FBE00D81D27 /* StopsQueryResponse.swift in Sources */,
 				2597A0452ED36FBE00D81D27 /* HslApi.swift in Sources */,
-				2597A0382ED36F9200D81D27 /* FavoriteStopRow.swift in Sources */,
 				2597A0462ED36FDD00D81D27 /* WidgetViewFormatters.swift in Sources */,
 				2597A0472ED36FDD00D81D27 /* EmptyStateView.swift in Sources */,
 				2597A0482ED36FDD00D81D27 /* InlineWidgetView.swift in Sources */,
@@ -682,22 +649,11 @@
 			files = (
 				2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */,
 				2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */,
-				256460E92ECA470A00C60F8A /* Font+Rounded.swift in Sources */,
 				25FA041D2BE7F5990052A577 /* HslApi.swift in Sources */,
-				25979FE22ED3281800D81D27 /* DebugLogger.swift in Sources */,
 				25D19E852BE79FFA0055E70E /* Departure.swift in Sources */,
 				2542B3262EC3D25B002492BC /* LocationManager.swift in Sources */,
-				2542B32C2EC44BE2002492BC /* FavoritesListView.swift in Sources */,
-				2542B32D2EC44BE2002492BC /* StopPickerView.swift in Sources */,
-				2559EF912ED1B93900B7289E /* TransitIconHelper.swift in Sources */,
 				253BB89E2ED1EB2B000D30CC /* TimetableEntry.swift in Sources */,
-				2542B3482EC8BA32002492BC /* SettingsView.swift in Sources */,
-				6D8B0758AC954E5091A7E004 /* StopFilterView.swift in Sources */,
 				2542B3272EC3D25B002492BC /* FavoritesManager.swift in Sources */,
-				25906F442EC9CD1400A113DA /* FavoriteStopRow.swift in Sources */,
-				25906F452EC9CD1400A113DA /* StopDetailsHelpers.swift in Sources */,
-				25906F462EC9CD1400A113DA /* NextDeparturesView.swift in Sources */,
-				25906F472EC9CD1400A113DA /* EmptyFavoritesView.swift in Sources */,
 				25FA042C2BEB32E70052A577 /* StopsQueryResponse.swift in Sources */,
 				25FA041B2BE7DC130052A577 /* DepartureTimesQueryResponse.swift in Sources */,
 				25D19E582BE600920055E70E /* HslWidgetApp.swift in Sources */,
@@ -713,19 +669,16 @@
 				25979FDF2ED3201700D81D27 /* SharedLocationReader.swift in Sources */,
 				253BB8A92ED1EB3E000D30CC /* TimelineBuilder.swift in Sources */,
 				253BB8AA2ED1EB3E000D30CC /* SystemSmallWidgetView.swift in Sources */,
-				25979FE32ED3281800D81D27 /* DebugLogger.swift in Sources */,
 				253BB8AB2ED1EB3E000D30CC /* RectangularWidgetView.swift in Sources */,
 				253BB8AC2ED1EB3E000D30CC /* EmptyStateView.swift in Sources */,
 				253BB8AD2ED1EB3E000D30CC /* InlineWidgetView.swift in Sources */,
 				253BB8AE2ED1EB3E000D30CC /* WidgetViewFormatters.swift in Sources */,
 				253BB8AF2ED1EB3E000D30CC /* WidgetTimelineProvider.swift in Sources */,
 				253BB89F2ED1EB2B000D30CC /* TimetableEntry.swift in Sources */,
-				256460E82ECA470A00C60F8A /* Font+Rounded.swift in Sources */,
 				25FA04272BEA16ED0052A577 /* Stop.swift in Sources */,
 				25FA04242BEA16AB0052A577 /* DepartureTimesQueryResponse.swift in Sources */,
 				25FA04222BEA14010052A577 /* HslApi.swift in Sources */,
 				2542B3292EC3D25B002492BC /* FavoritesManager.swift in Sources */,
-				2559EF902ED1B93900B7289E /* TransitIconHelper.swift in Sources */,
 				25979FE02ED3211F00D81D27 /* StopsQueryResponse.swift in Sources */,
 				25D19E862BE79FFA0055E70E /* Departure.swift in Sources */,
 				25D19E712BE755310055E70E /* stopInfoBundle.swift in Sources */,
