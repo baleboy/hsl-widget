@@ -196,10 +196,8 @@ struct StopPickerView: View {
                     }
                 }
                 Spacer()
-                if favoriteStopIds.contains(stop.id) {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                }
+                Image(systemName: favoriteStopIds.contains(stop.id) ? "star.fill" : "star")
+                    .foregroundColor(favoriteStopIds.contains(stop.id) ? .yellow : .gray)
             }
             .animation(.none, value: favoriteStopIds)
             .contentShape(Rectangle())
