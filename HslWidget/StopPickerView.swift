@@ -204,7 +204,6 @@ struct StopPickerView: View {
             .animation(.none, value: favoriteStopIds)
             .contentShape(Rectangle())
         }
-        .buttonStyle(PlainButtonStyle())
     }
 
     private func modeIcon(for mode: String) -> some View {
