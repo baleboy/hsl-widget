@@ -54,11 +54,18 @@ struct NextDeparturesView: View {
                                     .monospacedDigit()
                             }
 
-                            // Destination
-                            Text(departure.headsign)
-                                .font(.roundedCaption)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
+                            // Destination with optional delay info
+                            if departure.shouldShowDelay {
+                                Text("\(departure.headsign) · \(departure.delayMinutes) min late")
+                                    .font(.roundedCaption)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                            } else {
+                                Text(departure.headsign)
+                                    .font(.roundedCaption)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                            }
                         }
                         .padding(.vertical, 2)
                     }
@@ -74,9 +81,9 @@ struct NextDeparturesView: View {
         NextDeparturesView(
             stop: Stop.defaultStop,
             departures: [
-                Departure(departureTime: Date().addingTimeInterval(180), routeShortName: "9", headsign: "Pasila", mode: "TRAM"),
+                Departure(departureTime: Date().addingTimeInterval(180), routeShortName: "9", headsign: "Pasila", mode: "TRAM", delaySeconds: 240),
                 Departure(departureTime: Date().addingTimeInterval(420), routeShortName: "9", headsign: "Pasila", mode: "TRAM"),
-                Departure(departureTime: Date().addingTimeInterval(600), routeShortName: "6", headsign: "Arabianranta", mode: "TRAM")
+                Departure(departureTime: Date().addingTimeInterval(600), routeShortName: "6", headsign: "Arabianranta", mode: "TRAM", delaySeconds: 180)
             ],
             isLoading: false
         )

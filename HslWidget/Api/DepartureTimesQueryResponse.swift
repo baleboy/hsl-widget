@@ -18,8 +18,10 @@ struct DepartureTimesQueryResponse: Codable {
     }
     
     struct Stoptime: Codable {
+        let scheduledDeparture: Double
         let realtimeDeparture: Double
         let serviceDay: Double
+        let departureDelay: Int
         let headsign: String?
         let trip: Trip
     }

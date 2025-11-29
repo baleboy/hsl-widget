@@ -139,7 +139,9 @@ struct TestFixtures {
                 "stoptimesWithoutPatterns": [
                     {
                         "serviceDay": 1700000000,
+                        "scheduledDeparture": 3600,
                         "realtimeDeparture": 3600,
+                        "departureDelay": 0,
                         "headsign": "Munkkiniemi",
                         "trip": {
                             "route": {
@@ -150,7 +152,9 @@ struct TestFixtures {
                     },
                     {
                         "serviceDay": 1700000000,
+                        "scheduledDeparture": 7200,
                         "realtimeDeparture": 7200,
+                        "departureDelay": 0,
                         "headsign": "Kamppi",
                         "trip": {
                             "route": {

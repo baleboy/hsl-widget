@@ -27,12 +27,12 @@ final class TimelineBuilderTests: XCTestCase {
             TestFixtures.departure(minutesFromNow: 5),
         ]
 
-        // When: Filtering to future only
-        let futureDepartures = departures.filter { $0.departureTime > now }
+        // When: Filtering to future only (using realtime departure)
+        let futureDepartures = departures.filter { $0.realtimeDepartureTime > now }
 
         // Then: Only future departures should be included
         XCTAssertEqual(futureDepartures.count, 2)
-        XCTAssertTrue(futureDepartures.allSatisfy { $0.departureTime > now })
+        XCTAssertTrue(futureDepartures.allSatisfy { $0.realtimeDepartureTime > now })
     }
 
     func testSortsDeparturesByTime() {
@@ -43,13 +43,13 @@ final class TimelineBuilderTests: XCTestCase {
             TestFixtures.departure(minutesFromNow: 8),
         ]
 
-        // When: Sorting by departure time
-        let sorted = departures.sorted { $0.departureTime < $1.departureTime }
+        // When: Sorting by realtime departure time
+        let sorted = departures.sorted { $0.realtimeDepartureTime < $1.realtimeDepartureTime }
 
         // Then: Should be in chronological order
-        XCTAssertEqual(sorted[0].departureTime.timeIntervalSince1970, departures[1].departureTime.timeIntervalSince1970, accuracy: 1.0)
-        XCTAssertEqual(sorted[1].departureTime.timeIntervalSince1970, departures[2].departureTime.timeIntervalSince1970, accuracy: 1.0)
-        XCTAssertEqual(sorted[2].departureTime.timeIntervalSince1970, departures[0].departureTime.timeIntervalSince1970, accuracy: 1.0)
+        XCTAssertEqual(sorted[0].realtimeDepartureTime.timeIntervalSince1970, departures[1].realtimeDepartureTime.timeIntervalSince1970, accuracy: 1.0)
+        XCTAssertEqual(sorted[1].realtimeDepartureTime.timeIntervalSince1970, departures[2].realtimeDepartureTime.timeIntervalSince1970, accuracy: 1.0)
+        XCTAssertEqual(sorted[2].realtimeDepartureTime.timeIntervalSince1970, departures[0].realtimeDepartureTime.timeIntervalSince1970, accuracy: 1.0)
     }
 
     // MARK: - Closest Stop Selection Tests

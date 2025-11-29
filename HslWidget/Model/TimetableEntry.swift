@@ -29,7 +29,7 @@ struct TimetableEntry: TimelineEntry {
         date: Date(),
         stopName: "Merisotilaantori",
         departures: [
-            Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
+            Departure(departureTime: Date(), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM", delaySeconds: 180),
             Departure(departureTime: Date(), routeShortName: "550", headsign: "Munkkiniemi", mode: "BUS")
         ],
         state: .normal
@@ -39,7 +39,7 @@ struct TimetableEntry: TimelineEntry {
         date: Date(),
         stopName: "Merisotilaantori",
         departures: [
-            Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM")
+            Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM", delaySeconds: 300)
         ],
         state: .normal
     )
@@ -48,7 +48,7 @@ struct TimetableEntry: TimelineEntry {
         date: Date(),
         stopName: "Merisotilaantori",
         departures: [
-            Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
+            Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM", delaySeconds: 180),
             Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "550H", headsign: "Kamppi", mode: "BUS")
         ],
         state: .normal
@@ -59,7 +59,7 @@ struct TimetableEntry: TimelineEntry {
         stopName: "Merisotilaantori",
         departures: [
             Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
-            Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi", mode: "TRAM"),
+            Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "5", headsign: "Kamppi", mode: "TRAM", delaySeconds: 240),
             Departure(departureTime: Date().addingTimeInterval(18 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM")
         ],
         state: .normal
@@ -69,9 +69,9 @@ struct TimetableEntry: TimelineEntry {
         date: Date(),
         stopName: "Merisotilaantori",
         departures: [
-            Departure(departureTime: Date().addingTimeInterval(3 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM"),
+            Departure(departureTime: Date().addingTimeInterval(3 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM", delaySeconds: 240),
             Departure(departureTime: Date().addingTimeInterval(8 * 60), routeShortName: "550", headsign: "Westendinasema", mode: "BUS"),
-            Departure(departureTime: Date().addingTimeInterval(15 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM"),
+            Departure(departureTime: Date().addingTimeInterval(15 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM", delaySeconds: 180),
             Departure(departureTime: Date().addingTimeInterval(22 * 60), routeShortName: "4", headsign: "Katajanokka", mode: "TRAM")
         ],
         state: .normal

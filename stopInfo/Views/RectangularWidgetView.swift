@@ -27,11 +27,19 @@ struct RectangularWidgetView: View {
                             .font(entry.routeFont)
                             .lineLimit(1)
                         Spacer()
-                        Text(WidgetViewFormatters.timeFormatter.string(from: departure.departureTime))
-                            .font(entry.timeFont)
-                            .monospacedDigit()
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
+                        HStack(spacing: 2) {
+                            Text(WidgetViewFormatters.timeFormatter.string(from: departure.departureTime))
+                                .font(entry.timeFont)
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                            if departure.shouldShowDelay {
+                                Text("+\(departure.delayMinutes)")
+                                    .font(entry.timeFont)
+                                    .foregroundColor(.red)
+                                    .lineLimit(1)
+                            }
+                        }
                     }
                 }
             }

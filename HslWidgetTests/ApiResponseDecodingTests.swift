@@ -152,7 +152,9 @@ final class ApiResponseDecodingTests: XCTestCase {
                     "stoptimesWithoutPatterns": [
                         {
                             "serviceDay": 1700000000,
+                            "scheduledDeparture": 3600,
                             "realtimeDeparture": 3600,
+                            "departureDelay": 0,
                             "headsign": null,
                             "trip": {
                                 "route": {

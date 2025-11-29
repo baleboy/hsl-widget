@@ -131,7 +131,8 @@ struct TimelineBuilder {
 
         let departures = allDepartures.filter { stop.matchesFilters(departure: $0) }
         debugLog("Widget: Filtered departures: \(departures.count) of \(allDepartures.count)")
-        return departures.sorted { $0.departureTime < $1.departureTime }
+        // Sort by realtime departure to show actual order
+        return departures.sorted { $0.realtimeDepartureTime < $1.realtimeDepartureTime }
     }
 
     /// Build the list of timeline entries from a sorted departures list
@@ -146,8 +147,8 @@ struct TimelineBuilder {
         maxShown: Int
     ) -> [TimetableEntry] {
 
-        // Keep only departures in the future
-        let futureDepartures = departures.filter { $0.departureTime > now }
+        // Keep only departures in the future (based on realtime departure)
+        let futureDepartures = departures.filter { $0.realtimeDepartureTime > now }
 
         guard !futureDepartures.isEmpty else {
             debugLog("Widget: No future departures for \(stop.name)")
@@ -174,8 +175,8 @@ struct TimelineBuilder {
         for startIndex in 0...lastStartIndex {
             let slice = Array(futureDepartures[startIndex..<(startIndex + maxShown)])
 
-            // Filter relative to the time this entry becomes active
-            let validDepartures = slice.filter { $0.departureTime > entryDate }
+            // Filter relative to the time this entry becomes active (based on realtime departure)
+            let validDepartures = slice.filter { $0.realtimeDepartureTime > entryDate }
 
             guard !validDepartures.isEmpty else { continue }
 
@@ -187,9 +188,9 @@ struct TimelineBuilder {
             )
             entries.append(entry)
 
-            // Next entry starts at the time of the first departure in this entry
+            // Next entry starts at the realtime of the first departure in this entry
             if let first = validDepartures.first {
-                entryDate = first.departureTime
+                entryDate = first.realtimeDepartureTime
             }
         }
 

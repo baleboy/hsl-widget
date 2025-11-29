@@ -177,8 +177,10 @@ class HslApi {
             {
                 stop(id:\"\(stationId)\"){
                     stoptimesWithoutPatterns(numberOfDepartures: \(numberOfResults)) {
+                        scheduledDeparture
                         realtimeDeparture
                         serviceDay
+                        departureDelay
                         headsign
                         trip{
                           route {
@@ -199,13 +201,26 @@ class HslApi {
             if let decodedResponse = try? JSONDecoder().decode(DepartureTimesQueryResponse.self, from: data) {
                 var result = [Departure]()
                 for stopTime in decodedResponse.data.stop.stoptimesWithoutPatterns {
-                    let departureTimeStamp = stopTime.serviceDay + stopTime.realtimeDeparture
-                    let date = Date(timeIntervalSince1970: departureTimeStamp)
+                    // Use scheduled departure for display time
+                    let scheduledTimeStamp = stopTime.serviceDay + stopTime.scheduledDeparture
+                    let scheduledDate = Date(timeIntervalSince1970: scheduledTimeStamp)
+
+                    // Calculate realtime departure for timeline purposes
+                    let realtimeTimeStamp = stopTime.serviceDay + stopTime.realtimeDeparture
+                    let realtimeDate = Date(timeIntervalSince1970: realtimeTimeStamp)
+
                     let shortName = stopTime.trip.route.shortName
                     let headsign = stopTime.headsign
                     let mode = stopTime.trip.route.mode
-                    let departure = Departure(departureTime: date, routeShortName: shortName,
-                        headsign: headsign ?? "No headsign", mode: mode)
+                    let delaySeconds = stopTime.departureDelay
+                    let departure = Departure(
+                        departureTime: scheduledDate,
+                        routeShortName: shortName,
+                        headsign: headsign ?? "No headsign",
+                        mode: mode,
+                        delaySeconds: delaySeconds,
+                        realtimeDepartureTime: realtimeDate
+                    )
                     result.append(departure)
                 }
                 debugLog("HslApi: Fetched \(result.count) departures for stop \(stationId)")

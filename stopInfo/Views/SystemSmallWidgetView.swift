@@ -47,11 +47,18 @@ struct SystemSmallWidgetView: View {
                                 .monospacedDigit()
                         }
 
-                        // Destination
-                        Text(departure.headsign)
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
+                        // Destination with optional delay info
+                        if departure.shouldShowDelay {
+                            Text("\(departure.headsign) · \(departure.delayMinutes) min late")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        } else {
+                            Text(departure.headsign)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
                     }
                 }
             }
