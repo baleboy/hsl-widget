@@ -148,7 +148,8 @@ struct TimelineBuilder {
     ) -> [TimetableEntry] {
 
         // Keep only departures in the future (based on realtime departure)
-        let futureDepartures = departures.filter { $0.realtimeDepartureTime > now }
+        // Add 60 seconds to departure time so trains remain visible for the full minute
+        let futureDepartures = departures.filter { $0.realtimeDepartureTime.addingTimeInterval(60) > now }
 
         guard !futureDepartures.isEmpty else {
             debugLog("Widget: No future departures for \(stop.name)")
@@ -176,7 +177,8 @@ struct TimelineBuilder {
             let slice = Array(futureDepartures[startIndex..<(startIndex + maxShown)])
 
             // Filter relative to the time this entry becomes active (based on realtime departure)
-            let validDepartures = slice.filter { $0.realtimeDepartureTime > entryDate }
+            // Add 60 seconds so departures remain visible for the full minute
+            let validDepartures = slice.filter { $0.realtimeDepartureTime.addingTimeInterval(60) > entryDate }
 
             guard !validDepartures.isEmpty else { continue }
 
@@ -188,9 +190,10 @@ struct TimelineBuilder {
             )
             entries.append(entry)
 
-            // Next entry starts at the realtime of the first departure in this entry
+            // Next entry starts 60 seconds after the realtime of the first departure
+            // This ensures the departure remains visible for the full minute
             if let first = validDepartures.first {
-                entryDate = first.realtimeDepartureTime
+                entryDate = first.realtimeDepartureTime.addingTimeInterval(60)
             }
         }
 
