@@ -30,21 +30,30 @@ struct SystemSmallWidgetView: View {
                     VStack(alignment: .leading, spacing: 1) {
                         HStack(spacing: 4) {
                             // Route with icon
-                            Label {
-                                Text(departure.routeShortName)
-                            } icon: {
+                            HStack(spacing: 2) {
                                 Image(systemName: transitModeIconName(for: departure.mode))
                                     .foregroundColor(transitModeColor(for: departure.mode))
+                                    .font(.caption)
+                                Text(departure.routeShortName)
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .lineLimit(1)
                             }
-                            .font(.caption)
-                            .fontWeight(.medium)
 
                             Spacer()
 
-                            // Time
-                            Text(WidgetViewFormatters.timeFormatter.string(from: departure.departureTime))
-                                .font(.caption)
-                                .monospacedDigit()
+                            // Time with platform
+                            HStack(spacing: 2) {
+                                if let platformCode = departure.platformCode {
+                                    Text("P\(platformCode)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
+                                }
+                                Text(WidgetViewFormatters.timeFormatter.string(from: departure.departureTime))
+                                    .font(.caption)
+                                    .monospacedDigit()
+                            }
                         }
 
                         // Destination with optional delay info

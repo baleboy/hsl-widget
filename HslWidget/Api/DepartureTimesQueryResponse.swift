@@ -23,7 +23,12 @@ struct DepartureTimesQueryResponse: Codable {
         let serviceDay: Double
         let departureDelay: Int
         let headsign: String?
+        let stop: StoptimeStop?
         let trip: Trip
+    }
+
+    struct StoptimeStop: Codable {
+        let platformCode: String?
     }
 
     struct Trip: Codable {

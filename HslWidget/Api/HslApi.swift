@@ -182,6 +182,9 @@ class HslApi {
                         serviceDay
                         departureDelay
                         headsign
+                        stop {
+                            platformCode
+                        }
                         trip{
                           route {
                             mode
@@ -213,13 +216,15 @@ class HslApi {
                     let headsign = stopTime.headsign
                     let mode = stopTime.trip.route.mode
                     let delaySeconds = stopTime.departureDelay
+                    let platformCode = stopTime.stop?.platformCode
                     let departure = Departure(
                         departureTime: scheduledDate,
                         routeShortName: shortName,
                         headsign: headsign ?? "No headsign",
                         mode: mode,
                         delaySeconds: delaySeconds,
-                        realtimeDepartureTime: realtimeDate
+                        realtimeDepartureTime: realtimeDate,
+                        platformCode: platformCode
                     )
                     result.append(departure)
                 }

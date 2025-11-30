@@ -15,8 +15,9 @@ struct Departure: Identifiable {
     let mode: String? // Transportation mode (BUS, TRAM, etc.)
     let delaySeconds: Int // Delay in seconds (negative = early, positive = late)
     let realtimeDepartureTime: Date // Actual predicted departure time (for timeline calculations)
+    let platformCode: String? // Platform code (for trains and metro)
 
-    init(id: UUID = UUID(), departureTime: Date, routeShortName: String, headsign: String, mode: String? = nil, delaySeconds: Int = 0, realtimeDepartureTime: Date? = nil) {
+    init(id: UUID = UUID(), departureTime: Date, routeShortName: String, headsign: String, mode: String? = nil, delaySeconds: Int = 0, realtimeDepartureTime: Date? = nil, platformCode: String? = nil) {
         self.id = id
         self.departureTime = departureTime
         self.routeShortName = routeShortName
@@ -25,6 +26,7 @@ struct Departure: Identifiable {
         self.delaySeconds = delaySeconds
         // If realtime not provided, calculate it from scheduled + delay
         self.realtimeDepartureTime = realtimeDepartureTime ?? departureTime.addingTimeInterval(Double(delaySeconds))
+        self.platformCode = platformCode
     }
 
     /// Delay in minutes (rounded)

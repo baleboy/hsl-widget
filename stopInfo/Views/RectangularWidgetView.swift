@@ -23,11 +23,21 @@ struct RectangularWidgetView: View {
 
                 ForEach(entry.departures) { departure in
                     HStack(spacing: 4) {
-                        Label(departure.routeShortName, systemImage: transitModeIconName(for: departure.mode))
-                            .font(entry.routeFont)
-                            .lineLimit(1)
+                        HStack(spacing: 2) {
+                            Image(systemName: transitModeIconName(for: departure.mode))
+                                .font(entry.routeFont)
+                            Text(departure.routeShortName)
+                                .font(entry.routeFont)
+                                .lineLimit(1)
+                        }
                         Spacer()
                         HStack(spacing: 2) {
+                            if let platformCode = departure.platformCode {
+                                Text("P\(platformCode)")
+                                    .font(entry.timeFont)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                            }
                             Text(WidgetViewFormatters.timeFormatter.string(from: departure.departureTime))
                                 .font(entry.timeFont)
                                 .monospacedDigit()

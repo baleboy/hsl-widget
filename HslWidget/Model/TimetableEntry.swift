@@ -46,10 +46,10 @@ struct TimetableEntry: TimelineEntry {
 
     static let example2Departures = TimetableEntry(
         date: Date(),
-        stopName: "Merisotilaantori",
+        stopName: "Helsinki Central Station",
         departures: [
-            Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM", delaySeconds: 180),
-            Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "550H", headsign: "Kamppi", mode: "BUS")
+            Departure(departureTime: Date().addingTimeInterval(5 * 60), routeShortName: "I", headsign: "Tampere", mode: "RAIL", delaySeconds: 180, platformCode: "7"),
+            Departure(departureTime: Date().addingTimeInterval(12 * 60), routeShortName: "R", headsign: "Riihimäki", mode: "RAIL", platformCode: "3")
         ],
         state: .normal
     )
@@ -67,12 +67,12 @@ struct TimetableEntry: TimelineEntry {
 
     static let example4Departures = TimetableEntry(
         date: Date(),
-        stopName: "Merisotilaantori",
+        stopName: "Helsinki Central Station",
         departures: [
-            Departure(departureTime: Date().addingTimeInterval(3 * 60), routeShortName: "4", headsign: "Munkkiniemi", mode: "TRAM", delaySeconds: 240),
-            Departure(departureTime: Date().addingTimeInterval(8 * 60), routeShortName: "550", headsign: "Westendinasema", mode: "BUS"),
-            Departure(departureTime: Date().addingTimeInterval(15 * 60), routeShortName: "7", headsign: "Töölö", mode: "TRAM", delaySeconds: 180),
-            Departure(departureTime: Date().addingTimeInterval(22 * 60), routeShortName: "4", headsign: "Katajanokka", mode: "TRAM")
+            Departure(departureTime: Date().addingTimeInterval(3 * 60), routeShortName: "P", headsign: "Turku", mode: "RAIL", delaySeconds: 240, platformCode: "9"),
+            Departure(departureTime: Date().addingTimeInterval(8 * 60), routeShortName: "I", headsign: "Tampere", mode: "RAIL", platformCode: "7"),
+            Departure(departureTime: Date().addingTimeInterval(15 * 60), routeShortName: "R", headsign: "Riihimäki", mode: "RAIL", delaySeconds: 180, platformCode: "3"),
+            Departure(departureTime: Date().addingTimeInterval(22 * 60), routeShortName: "S", headsign: "Kouvola", mode: "RAIL", platformCode: "11")
         ],
         state: .normal
     )

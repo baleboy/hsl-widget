@@ -16,7 +16,8 @@ struct InlineWidgetView: View {
             Label {
                 let timeText = WidgetViewFormatters.timeFormatter.string(from: nextDeparture.departureTime)
                 let delayText = nextDeparture.shouldShowDelay ? "+\(nextDeparture.delayMinutes)" : ""
-                Text("\(nextDeparture.routeShortName)•\(timeText)\(delayText)")
+                let platformText = nextDeparture.platformCode.map { " P\($0)" } ?? ""
+                Text("\(nextDeparture.routeShortName)\(platformText)•\(timeText)\(delayText)")
             } icon: {
                 Image(systemName: transitModeIconName(for: nextDeparture.mode, filled: false))
             }
