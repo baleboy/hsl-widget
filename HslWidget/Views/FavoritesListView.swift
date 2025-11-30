@@ -186,6 +186,12 @@ struct FavoritesListView: View {
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
             }
+            .onChange(of: showingSettings) { oldValue, newValue in
+                // Reload data when settings sheet is dismissed
+                if oldValue && !newValue {
+                    loadAllData()
+                }
+            }
         }
     }
 

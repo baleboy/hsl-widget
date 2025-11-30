@@ -16,6 +16,7 @@ struct SettingsView: View {
     private var backgroundLocationEnabled = false
     @AppStorage("numberOfDepartures", store: UserDefaults(suiteName: "group.balenet.widget"))
     private var numberOfDepartures = 2
+    @State private var showingDeleteConfirmation = false
 
     var body: some View {
         NavigationView {
@@ -95,6 +96,21 @@ struct SettingsView: View {
                         Text("To enable background location updates, you need to grant \"Always\" permission in Settings. Tap the button above to open Settings.")
                     }
                 }
+
+                Section {
+                    Button(role: .destructive, action: {
+                        showingDeleteConfirmation = true
+                    }) {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text("Remove All Favorites")
+                        }
+                    }
+                } header: {
+                    Text("Favorites")
+                } footer: {
+                    Text("This will remove all favorite stops from your list.")
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -104,6 +120,14 @@ struct SettingsView: View {
                         dismiss()
                     }
                 }
+            }
+            .alert("Remove All Favorites?", isPresented: $showingDeleteConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Remove All", role: .destructive) {
+                    removeAllFavorites()
+                }
+            } message: {
+                Text("This will permanently remove all your favorite stops. This action cannot be undone.")
             }
         }
     }
@@ -160,6 +184,10 @@ struct SettingsView: View {
         if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
         }
+    }
+
+    private func removeAllFavorites() {
+        FavoritesManager.shared.removeAllFavorites()
     }
 }
 

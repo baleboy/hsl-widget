@@ -75,6 +75,12 @@ class FavoritesManager {
         }
     }
 
+    /// Remove all favorites
+    func removeAllFavorites() {
+        saveFavorites([])
+        debugLog("FavoritesManager: Removed all favorites")
+    }
+
     /// Save favorites to UserDefaults
     private func saveFavorites(_ favorites: [Stop]) {
         if let encoded = try? JSONEncoder().encode(favorites) {
