@@ -153,18 +153,8 @@ struct FavoritesListView: View {
                     Task {
                         let newFavorites = favoritesManager.getFavorites()
 
-                        // Fetch headsigns for all stops
-                        var newFilteredHeadsigns: [String: [String]] = [:]
-                        var newFilteredLinesByMode: [String: [String: [String]]] = [:]
-
-                        for stop in newFavorites {
-                            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
-                            let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
-                            if let headsigns = result.headsigns {
-                                newFilteredHeadsigns[stop.id] = headsigns
-                            }
-                            newFilteredLinesByMode[stop.id] = result.linesByMode
-                        }
+                        // Fetch headsigns for all stops IN PARALLEL
+                        await fetchHeadsignsForStops(newFavorites)
 
                         // Find closest and fetch its departures
                         let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
@@ -175,8 +165,6 @@ struct FavoritesListView: View {
                         // Update all UI state at once
                         await MainActor.run {
                             favorites = newFavorites
-                            filteredHeadsigns = newFilteredHeadsigns
-                            filteredLinesByMode = newFilteredLinesByMode
                             closestStop = newClosest
                             departures = filteredDepartures
                         }
@@ -256,18 +244,8 @@ struct FavoritesListView: View {
         Task {
             let newFavorites = favoritesManager.getFavorites()
 
-            // Fetch headsigns for all stops
-            var newFilteredHeadsigns: [String: [String]] = [:]
-            var newFilteredLinesByMode: [String: [String: [String]]] = [:]
-
-            for stop in newFavorites {
-                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
-                let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
-                if let headsigns = result.headsigns {
-                    newFilteredHeadsigns[stop.id] = headsigns
-                }
-                newFilteredLinesByMode[stop.id] = result.linesByMode
-            }
+            // Fetch headsigns for all stops IN PARALLEL
+            await fetchHeadsignsForStops(newFavorites)
 
             // Find closest and fetch its departures
             let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
@@ -278,8 +256,6 @@ struct FavoritesListView: View {
             // Update all UI state at once
             await MainActor.run {
                 favorites = newFavorites
-                filteredHeadsigns = newFilteredHeadsigns
-                filteredLinesByMode = newFilteredLinesByMode
                 closestStop = newClosest
                 departures = filteredDepartures
             }
@@ -350,22 +326,34 @@ struct FavoritesListView: View {
         return (headsigns: headsigns, linesByMode: linesToDisplay)
     }
 
-    /// Fetch headsigns and lines for all favorite stops
+    /// Fetch headsigns and lines for all favorite stops (in parallel)
     private func fetchFilteredHeadsigns() async {
+        await fetchHeadsignsForStops(favorites)
+    }
+
+    /// Fetch headsigns and lines for given stops in parallel
+    private func fetchHeadsignsForStops(_ stops: [Stop]) async {
         // Collect all data first before updating UI
         var newFilteredHeadsigns: [String: [String]] = [:]
         var newFilteredLinesByMode: [String: [String: [String]]] = [:]
 
-        // Fetch for all favorite stops
-        for stop in favorites {
-            // Fetch departures for this stop
-            let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
-            let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
-
-            if let headsigns = result.headsigns {
-                newFilteredHeadsigns[stop.id] = headsigns
+        // Fetch for all stops IN PARALLEL using TaskGroup
+        await withTaskGroup(of: (String, [String]?, [String: [String]]).self) { group in
+            for stop in stops {
+                group.addTask {
+                    let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
+                    let result = await self.processStopDepartures(stop: stop, allDepartures: allDepartures)
+                    return (stop.id, result.headsigns, result.linesByMode)
+                }
             }
-            newFilteredLinesByMode[stop.id] = result.linesByMode
+
+            // Collect results as they complete
+            for await (stopId, headsigns, linesByMode) in group {
+                if let headsigns = headsigns {
+                    newFilteredHeadsigns[stopId] = headsigns
+                }
+                newFilteredLinesByMode[stopId] = linesByMode
+            }
         }
 
         // Update UI once with all collected data
@@ -376,6 +364,10 @@ struct FavoritesListView: View {
     }
 
     private func removeFavorite(_ stop: Stop) {
+        // Optimistically update UI immediately to prevent flicker
+        favorites.removeAll { $0.id == stop.id }
+
+        // Persist the change
         favoritesManager.removeFavorite(stop)
 
         // Reload data after removing favorite (coordinated update)
@@ -394,18 +386,8 @@ struct FavoritesListView: View {
                 return
             }
 
-            // Fetch headsigns for all remaining stops
-            var newFilteredHeadsigns: [String: [String]] = [:]
-            var newFilteredLinesByMode: [String: [String: [String]]] = [:]
-
-            for stop in newFavorites {
-                let allDepartures = await HslApi.shared.fetchDepartures(stationId: stop.id, numberOfResults: 15)
-                let result = await processStopDepartures(stop: stop, allDepartures: allDepartures)
-                if let headsigns = result.headsigns {
-                    newFilteredHeadsigns[stop.id] = headsigns
-                }
-                newFilteredLinesByMode[stop.id] = result.linesByMode
-            }
+            // Fetch headsigns for all remaining stops IN PARALLEL
+            await fetchHeadsignsForStops(newFavorites)
 
             // Find closest and fetch its departures
             let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
@@ -416,8 +398,6 @@ struct FavoritesListView: View {
             // Update all UI state at once
             await MainActor.run {
                 favorites = newFavorites
-                filteredHeadsigns = newFilteredHeadsigns
-                filteredLinesByMode = newFilteredLinesByMode
                 closestStop = newClosest
                 departures = filteredDepartures
             }
