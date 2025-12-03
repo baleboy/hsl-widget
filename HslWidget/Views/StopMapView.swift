@@ -122,10 +122,10 @@ struct StopMapView: View {
     }
 
     private func modeIcon(for stop: Stop) -> some View {
-        let primaryMode = stop.vehicleModes?.sorted().first?.uppercased() ?? ""
+        let mode = (stop.primaryMode ?? stop.vehicleModes?.first)?.uppercased() ?? ""
 
         return Group {
-            switch primaryMode {
+            switch mode {
             case "BUS":
                 Image(systemName: "bus.fill")
             case "TRAM":
@@ -147,9 +147,9 @@ struct StopMapView: View {
             return .yellow
         }
 
-        let primaryMode = stop.vehicleModes?.sorted().first?.uppercased() ?? ""
+        let mode = (stop.primaryMode ?? stop.vehicleModes?.first)?.uppercased() ?? ""
 
-        switch primaryMode {
+        switch mode {
         case "BUS":
             return .blue
         case "TRAM":

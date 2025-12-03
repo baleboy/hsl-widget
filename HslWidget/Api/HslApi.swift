@@ -65,12 +65,22 @@ class HslApi {
                 // This collects ALL stop IDs that share the same code (for multi-direction stops)
                 // Also filter stops without codes
                 var stopsByCode: [String: Stop] = [:]
+                var routeCountsByCode: [String: [String: Int]] = [:] // code -> (mode -> count)
 
                 for stop in stops {
                     // Skip stops without a code
                     guard let code = stop.code, !code.isEmpty else {
                         continue
                     }
+
+                    // Count routes per mode
+                    var routeCounts = routeCountsByCode[code] ?? [:]
+                    if let routes = stop.routes {
+                        for route in routes {
+                            routeCounts[route.mode, default: 0] += 1
+                        }
+                    }
+                    routeCountsByCode[code] = routeCounts
 
                     // Extract unique vehicle modes from routes
                     var vehicleModes: Set<String>? = nil
@@ -90,6 +100,9 @@ class HslApi {
                         var allIds = existing.allStopIds ?? [existing.id]
                         allIds.append(stop.gtfsId)
 
+                        // Calculate primary mode from accumulated route counts
+                        let primaryMode = Stop.calculatePrimaryMode(from: routeCounts)
+
                         // Create merged stop with combined modes and all IDs
                         let mergedStop = Stop(
                             id: stop.gtfsId,
@@ -98,14 +111,16 @@ class HslApi {
                             latitude: stop.lat ?? existing.latitude,
                             longitude: stop.lon ?? existing.longitude,
                             vehicleModes: mergedModes.isEmpty ? nil : mergedModes,
-                            allStopIds: allIds
+                            allStopIds: allIds,
+                            primaryMode: primaryMode
                         )
 
-                        debugLog("HslApi: Merging \(code): collected IDs \(allIds), modes: \(mergedModes)")
+                        debugLog("HslApi: Merging \(code): collected IDs \(allIds), modes: \(mergedModes), primary: \(primaryMode ?? "nil")")
                         stopsByCode[code] = mergedStop
                     } else {
                         // First occurrence of this code
-                        let newStop = Stop(id: stop.gtfsId, name: stop.name, code: code, latitude: stop.lat, longitude: stop.lon, vehicleModes: vehicleModes, allStopIds: [stop.gtfsId])
+                        let primaryMode = Stop.calculatePrimaryMode(from: routeCounts)
+                        let newStop = Stop(id: stop.gtfsId, name: stop.name, code: code, latitude: stop.lat, longitude: stop.lon, vehicleModes: vehicleModes, allStopIds: [stop.gtfsId], primaryMode: primaryMode)
                         stopsByCode[code] = newStop
                     }
                 }

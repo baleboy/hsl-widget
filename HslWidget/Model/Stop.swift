@@ -17,12 +17,16 @@ struct Stop: Identifiable, Codable, Equatable {
     let vehicleModes: Set<String>?
     let headsigns: [String]?
     let allStopIds: [String]? // All stop IDs that share this code (for multi-direction stops)
+    let primaryMode: String? // The dominant transport mode based on route count
 
     // Filtering options
     let filteredLines: [String]? // If set, only show departures from these route short names
     let filteredHeadsignPattern: String? // If set, only show departures whose headsign contains this pattern
 
-    init(id: String, name: String, code: String, latitude: Double? = nil, longitude: Double? = nil, vehicleModes: Set<String>? = nil, headsigns: [String]? = nil, allStopIds: [String]? = nil, filteredLines: [String]? = nil, filteredHeadsignPattern: String? = nil) {
+    /// Priority order for transport modes (higher index = higher priority)
+    static let modePriority = ["BUS", "FERRY", "TRAM", "RAIL", "SUBWAY"]
+
+    init(id: String, name: String, code: String, latitude: Double? = nil, longitude: Double? = nil, vehicleModes: Set<String>? = nil, headsigns: [String]? = nil, allStopIds: [String]? = nil, primaryMode: String? = nil, filteredLines: [String]? = nil, filteredHeadsignPattern: String? = nil) {
         self.id = id
         self.name = name
         self.code = code
@@ -31,8 +35,27 @@ struct Stop: Identifiable, Codable, Equatable {
         self.vehicleModes = vehicleModes
         self.headsigns = headsigns
         self.allStopIds = allStopIds
+        self.primaryMode = primaryMode
         self.filteredLines = filteredLines
         self.filteredHeadsignPattern = filteredHeadsignPattern
+    }
+
+    /// Calculate primary mode from route counts - mode with most routes wins,
+    /// ties broken by priority (SUBWAY > RAIL > TRAM > FERRY > BUS)
+    static func calculatePrimaryMode(from routeCounts: [String: Int]) -> String? {
+        guard !routeCounts.isEmpty else { return nil }
+
+        let sorted = routeCounts.sorted { (a, b) in
+            if a.value != b.value {
+                return a.value > b.value // Higher count first
+            }
+            // Same count - use priority
+            let priorityA = modePriority.firstIndex(of: a.key.uppercased()) ?? -1
+            let priorityB = modePriority.firstIndex(of: b.key.uppercased()) ?? -1
+            return priorityA > priorityB
+        }
+
+        return sorted.first?.key
     }
 
     static var defaultStop: Stop {

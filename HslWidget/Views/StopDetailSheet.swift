@@ -61,8 +61,13 @@ struct StopDetailSheet: View {
             }
             if let modes = stop.vehicleModes, !modes.isEmpty {
                 HStack(spacing: 4) {
-                    ForEach(Array(modes.sorted()), id: \.self) { mode in
-                        modeIcon(for: mode)
+                    // Show primary mode first and prominently
+                    if let primary = stop.primaryMode {
+                        modeIcon(for: primary, isPrimary: true)
+                    }
+                    // Show other modes smaller
+                    ForEach(Array(modes.sorted().filter { $0 != stop.primaryMode }), id: \.self) { mode in
+                        modeIcon(for: mode, isPrimary: false)
                     }
                 }
             }
@@ -103,7 +108,7 @@ struct StopDetailSheet: View {
         }
     }
 
-    private func modeIcon(for mode: String) -> some View {
+    private func modeIcon(for mode: String, isPrimary: Bool = false) -> some View {
         Group {
             switch mode.uppercased() {
             case "BUS":
@@ -126,7 +131,8 @@ struct StopDetailSheet: View {
                     .foregroundColor(.gray)
             }
         }
-        .font(.roundedBody)
+        .font(isPrimary ? .roundedBody : .roundedCaption)
+        .opacity(isPrimary ? 1.0 : 0.6)
     }
 
     private func loadHeadsigns() async {
