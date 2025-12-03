@@ -7,6 +7,12 @@
 
 import SwiftUI
 import CoreLocation
+import MapKit
+
+enum StopPickerViewMode: String, CaseIterable {
+    case list = "List"
+    case map = "Map"
+}
 
 struct StopPickerView: View {
     @State private var stops = [Stop]()
@@ -18,6 +24,7 @@ struct StopPickerView: View {
     @StateObject private var preloader = HeadsignPreloader()
     @State private var isInitialLoad = true
     @State private var isFetchingInitialHeadsigns = false
+    @State private var viewMode: StopPickerViewMode = .list
 
     private let favoritesManager = FavoritesManager.shared
     let onDismiss: () -> Void
@@ -85,12 +92,21 @@ struct StopPickerView: View {
                         .foregroundColor(.secondary)
                 }
             } else {
-                List {
-                    ForEach(sortedStops) { stop in
-                        stopRow(stop)
+                VStack(spacing: 0) {
+                    viewModePicker
+
+                    if viewMode == .list {
+                        listView
+                    } else {
+                        StopMapView(
+                            stops: stops,
+                            favoriteStopIds: favoriteStopIds,
+                            onToggleFavorite: { stop in
+                                toggleFavorite(stop)
+                            }
+                        )
                     }
                 }
-                .searchable(text: $searchTerm, prompt: "Search by name or code")
                 .navigationBarTitle("Select Stops", displayMode: .inline)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
@@ -101,17 +117,6 @@ struct StopPickerView: View {
                 }
                 .onAppear {
                     loadFavorites()
-                }
-                .onChange(of: sortedStops) { oldStops, newStops in
-                    // Cancel any pending fetch task
-                    headsignFetchTask?.cancel()
-
-                    // Lazy load headsigns for distant stops that aren't in cache
-                    headsignFetchTask = Task {
-                        try? await Task.sleep(nanoseconds: 300_000_000) // 300ms delay
-                        guard !Task.isCancelled else { return }
-                        await fetchHeadsignsForVisibleStops(newStops)
-                    }
                 }
             }
         }
@@ -142,6 +147,37 @@ struct StopPickerView: View {
             await MainActor.run {
                 isFetchingInitialHeadsigns = false
                 isInitialLoad = false
+            }
+        }
+    }
+
+    private var viewModePicker: some View {
+        Picker("View Mode", selection: $viewMode) {
+            ForEach(StopPickerViewMode.allCases, id: \.self) { mode in
+                Text(mode.rawValue).tag(mode)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+
+    private var listView: some View {
+        List {
+            ForEach(sortedStops) { stop in
+                stopRow(stop)
+            }
+        }
+        .searchable(text: $searchTerm, prompt: "Search by name or code")
+        .onChange(of: sortedStops) { oldStops, newStops in
+            // Cancel any pending fetch task
+            headsignFetchTask?.cancel()
+
+            // Lazy load headsigns for distant stops that aren't in cache
+            headsignFetchTask = Task {
+                try? await Task.sleep(nanoseconds: 300_000_000) // 300ms delay
+                guard !Task.isCancelled else { return }
+                await fetchHeadsignsForVisibleStops(newStops)
             }
         }
     }
