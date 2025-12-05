@@ -15,19 +15,30 @@ enum StopPickerViewMode: String, CaseIterable {
 }
 
 struct StopPickerView: View {
-    @State private var stops = [Stop]()
+    @State private var stops: [Stop]
     @State private var searchTerm = ""
     @State private var favoriteStopIds = Set<String>()
-    @State private var stopHeadsigns: [String: [String]] = [:] // stopId -> headsigns
+    @State private var stopHeadsigns: [String: [String]] // stopId -> headsigns
     @State private var headsignFetchTask: Task<Void, Never>? = nil
     @StateObject private var locationManager = LocationManager.shared
     @StateObject private var preloader = HeadsignPreloader()
     @State private var isInitialLoad = true
     @State private var isFetchingInitialHeadsigns = false
     @State private var viewMode: StopPickerViewMode = .list
+    @State private var hasCachedData: Bool
 
     private let favoritesManager = FavoritesManager.shared
+    private let stopsCache = StopsCache.shared
     let onDismiss: () -> Void
+
+    init(onDismiss: @escaping () -> Void) {
+        self.onDismiss = onDismiss
+        // Load from cache synchronously for instant display
+        let cachedStops = StopsCache.shared.loadStops() ?? []
+        _stops = State(initialValue: cachedStops)
+        _hasCachedData = State(initialValue: !cachedStops.isEmpty)
+        _stopHeadsigns = State(initialValue: [:])
+    }
 
     var sortedStops: [Stop] {
         let stopsToSort = filteredStops
@@ -57,14 +68,15 @@ struct StopPickerView: View {
 
     var body: some View {
         NavigationView {
-            if stops.isEmpty {
+            if stops.isEmpty && !hasCachedData {
+                // Only show loading on first-ever launch (no cache)
                 VStack(spacing: 16) {
                     ProgressView()
                     Text("Loading stops...")
                         .font(.roundedHeadline)
                 }
-            } else if preloader.isLoading && isInitialLoad {
-                // Show loading screen with progress during initial headsign preload
+            } else if stops.isEmpty && preloader.isLoading {
+                // Show loading screen with progress during initial headsign preload (first launch only)
                 VStack(spacing: 20) {
                     ProgressView(value: Double(preloader.loadingProgress), total: Double(preloader.totalStops))
                         .progressViewStyle(.linear)
@@ -83,14 +95,6 @@ struct StopPickerView: View {
                         .foregroundColor(.secondary)
                 }
                 .padding()
-            } else if isFetchingInitialHeadsigns {
-                // Show loading screen while fetching headsigns for visible stops
-                VStack(spacing: 16) {
-                    ProgressView()
-                    Text("Loading stop details...")
-                        .font(.roundedHeadline)
-                        .foregroundColor(.secondary)
-                }
             } else {
                 VStack(spacing: 0) {
                     viewModePicker
@@ -121,32 +125,67 @@ struct StopPickerView: View {
             }
         }
         .task {
-            // Set fetching state immediately at the start to prevent showing incomplete UI
-            await MainActor.run {
-                isFetchingInitialHeadsigns = true
-            }
-
-            // Load all stops first
-            stops = await HslApi.shared.fetchAllStops()
-
-            // Load or refresh headsign cache for nearby stops
             let userLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
-            let cachedHeadsigns = await preloader.loadOrRefreshCache(
-                allStops: stops,
-                userLocation: userLocation,
-                radius: 5000
-            )
 
-            // Populate stopHeadsigns with cached data
-            stopHeadsigns = cachedHeadsigns
+            // If we already have cached stops, load headsigns in background without blocking UI
+            if hasCachedData {
+                // Load headsigns from cache synchronously first
+                let cachedHeadsigns = await preloader.loadOrRefreshCache(
+                    allStops: stops,
+                    userLocation: userLocation,
+                    radius: 5000
+                )
+                stopHeadsigns = cachedHeadsigns
 
-            // Fetch headsigns for initially visible stops before showing the list
-            await fetchHeadsignsForVisibleStops(sortedStops)
+                // Fetch any missing headsigns for visible stops
+                await fetchHeadsignsForVisibleStops(sortedStops)
 
-            // Now show the list with all data ready
-            await MainActor.run {
-                isFetchingInitialHeadsigns = false
-                isInitialLoad = false
+                await MainActor.run {
+                    isInitialLoad = false
+                }
+
+                // Refresh stops in background if cache is stale
+                if stopsCache.needsRefresh() {
+                    let freshStops = await HslApi.shared.fetchAllStops()
+                    if !freshStops.isEmpty {
+                        stopsCache.saveStops(freshStops)
+                        await MainActor.run {
+                            stops = freshStops
+                        }
+                    }
+                }
+            } else {
+                // First launch: no cache, need to show loading indicators
+                await MainActor.run {
+                    isFetchingInitialHeadsigns = true
+                }
+
+                // Load all stops from API
+                let fetchedStops = await HslApi.shared.fetchAllStops()
+                stopsCache.saveStops(fetchedStops)
+
+                await MainActor.run {
+                    stops = fetchedStops
+                }
+
+                // Load or refresh headsign cache for nearby stops
+                let cachedHeadsigns = await preloader.loadOrRefreshCache(
+                    allStops: fetchedStops,
+                    userLocation: userLocation,
+                    radius: 5000
+                )
+
+                // Populate stopHeadsigns with cached data
+                stopHeadsigns = cachedHeadsigns
+
+                // Fetch headsigns for initially visible stops before showing the list
+                await fetchHeadsignsForVisibleStops(sortedStops)
+
+                // Now show the list with all data ready
+                await MainActor.run {
+                    isFetchingInitialHeadsigns = false
+                    isInitialLoad = false
+                }
             }
         }
     }

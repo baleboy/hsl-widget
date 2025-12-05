@@ -21,6 +21,9 @@
 		2542B3292EC3D25B002492BC /* FavoritesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B3242EC3D25B002492BC /* FavoritesManager.swift */; };
 		2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */; };
 		2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */; };
+		255AFC4A2EE0889200BEACA7 /* StopsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255AFC492EE0889200BEACA7 /* StopsCache.swift */; };
+		255AFC4B2EE0889200BEACA7 /* StopsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255AFC492EE0889200BEACA7 /* StopsCache.swift */; };
+		255AFC4C2EE0889200BEACA7 /* StopsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255AFC492EE0889200BEACA7 /* StopsCache.swift */; };
 		25979FDD2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
 		25979FDE2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
 		25979FDF2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
@@ -124,6 +127,7 @@
 		2542B32F2EC5ACC8002492BC /* HeadsignPreloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignPreloader.swift; sourceTree = "<group>"; };
 		2542B3332EC8594F002492BC /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		2542B33A2EC89D01002492BC /* HslWidgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HslWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		255AFC492EE0889200BEACA7 /* StopsCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopsCache.swift; sourceTree = "<group>"; };
 		25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedLocationReader.swift; sourceTree = "<group>"; };
 		2597A0012ED36EAF00D81D27 /* WidgetDebugger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WidgetDebugger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2597A0102ED36EB000D81D27 /* WidgetDebuggerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WidgetDebuggerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -343,6 +347,7 @@
 		25FA04262BEA16DA0052A577 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				255AFC492EE0889200BEACA7 /* StopsCache.swift */,
 				25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */,
 				253BB89D2ED1EB2B000D30CC /* TimetableEntry.swift */,
 				2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */,
@@ -622,6 +627,7 @@
 				2597A0442ED36FBE00D81D27 /* StopsQueryResponse.swift in Sources */,
 				2597A0452ED36FBE00D81D27 /* HslApi.swift in Sources */,
 				2597A0462ED36FDD00D81D27 /* WidgetViewFormatters.swift in Sources */,
+				255AFC4C2EE0889200BEACA7 /* StopsCache.swift in Sources */,
 				2597A0472ED36FDD00D81D27 /* EmptyStateView.swift in Sources */,
 				2597A0482ED36FDD00D81D27 /* InlineWidgetView.swift in Sources */,
 				2597A0492ED36FDD00D81D27 /* RectangularWidgetView.swift in Sources */,
@@ -649,6 +655,7 @@
 			files = (
 				2542B3302EC5ACC8002492BC /* HeadsignPreloader.swift in Sources */,
 				2542B3312EC5ACC8002492BC /* HeadsignCache.swift in Sources */,
+				255AFC4B2EE0889200BEACA7 /* StopsCache.swift in Sources */,
 				25FA041D2BE7F5990052A577 /* HslApi.swift in Sources */,
 				25D19E852BE79FFA0055E70E /* Departure.swift in Sources */,
 				2542B3262EC3D25B002492BC /* LocationManager.swift in Sources */,
@@ -671,6 +678,7 @@
 				253BB8AA2ED1EB3E000D30CC /* SystemSmallWidgetView.swift in Sources */,
 				253BB8AB2ED1EB3E000D30CC /* RectangularWidgetView.swift in Sources */,
 				253BB8AC2ED1EB3E000D30CC /* EmptyStateView.swift in Sources */,
+				255AFC4A2EE0889200BEACA7 /* StopsCache.swift in Sources */,
 				253BB8AD2ED1EB3E000D30CC /* InlineWidgetView.swift in Sources */,
 				253BB8AE2ED1EB3E000D30CC /* WidgetViewFormatters.swift in Sources */,
 				253BB8AF2ED1EB3E000D30CC /* WidgetTimelineProvider.swift in Sources */,
