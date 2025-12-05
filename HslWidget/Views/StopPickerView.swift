@@ -10,8 +10,8 @@ import CoreLocation
 import MapKit
 
 enum StopPickerViewMode: String, CaseIterable {
-    case list = "List"
     case map = "Map"
+    case list = "List"
 }
 
 struct StopPickerView: View {
@@ -24,7 +24,7 @@ struct StopPickerView: View {
     @StateObject private var preloader = HeadsignPreloader()
     @State private var isInitialLoad = true
     @State private var isFetchingInitialHeadsigns = false
-    @State private var viewMode: StopPickerViewMode = .list
+    @State private var viewMode: StopPickerViewMode = .map
     @State private var hasCachedData: Bool
 
     private let favoritesManager = FavoritesManager.shared
