@@ -99,9 +99,13 @@ struct StopPickerView: View {
                 VStack(spacing: 0) {
                     viewModePicker
 
-                    if viewMode == .list {
+                    // Use ZStack with opacity to preserve both views in hierarchy
+                    // This prevents the map from being recreated when switching tabs
+                    ZStack {
                         listView
-                    } else {
+                            .opacity(viewMode == .list ? 1 : 0)
+                            .accessibilityHidden(viewMode != .list)
+
                         StopMapView(
                             stops: stops,
                             favoriteStopIds: favoriteStopIds,
@@ -109,6 +113,8 @@ struct StopPickerView: View {
                                 toggleFavorite(stop)
                             }
                         )
+                        .opacity(viewMode == .map ? 1 : 0)
+                        .accessibilityHidden(viewMode != .map)
                     }
                 }
                 .navigationBarTitle("Select Stops", displayMode: .inline)

@@ -15,14 +15,28 @@ struct StopMapView: View {
     let onToggleFavorite: (Stop) -> Void
 
     @StateObject private var locationManager = LocationManager.shared
-    @State private var cameraPosition: MapCameraPosition = .automatic
+    @State private var cameraPosition: MapCameraPosition
     @State private var selectedStop: Stop?
     @State private var showingStopDetail = false
     @State private var visibleRegion: MKCoordinateRegion?
 
     // Helsinki city center as fallback
-    private let helsinkiCenter = CLLocationCoordinate2D(latitude: 60.1699, longitude: 24.9384)
-    private let defaultSpan = MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+    private static let helsinkiCenter = CLLocationCoordinate2D(latitude: 60.1699, longitude: 24.9384)
+    private static let defaultSpan = MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+
+    init(stops: [Stop], favoriteStopIds: Set<String>, onToggleFavorite: @escaping (Stop) -> Void) {
+        self.stops = stops
+        self.favoriteStopIds = favoriteStopIds
+        self.onToggleFavorite = onToggleFavorite
+
+        // Initialize camera with user location or Helsinki center to avoid flash
+        let center = LocationManager.shared.currentLocation?.coordinate
+            ?? LocationManager.shared.getSharedLocation()?.coordinate
+            ?? Self.helsinkiCenter
+        let initialRegion = MKCoordinateRegion(center: center, span: Self.defaultSpan)
+        _cameraPosition = State(initialValue: .region(initialRegion))
+        _visibleRegion = State(initialValue: initialRegion)
+    }
 
     // Maximum stops to display at once for performance
     private let maxVisibleStops = 100
@@ -34,9 +48,7 @@ struct StopMapView: View {
                 stopDetailOverlay(stop: stop)
             }
         }
-        .onAppear {
-            centerOnUserLocation()
-        }
+        // Camera position is initialized in init(), no need for onAppear
     }
 
     private var mapView: some View {
@@ -195,7 +207,7 @@ struct StopMapView: View {
     private var stopsNearCenter: [Stop] {
         let center = locationManager.currentLocation?.coordinate
             ?? locationManager.getSharedLocation()?.coordinate
-            ?? helsinkiCenter
+            ?? Self.helsinkiCenter
 
         return stops
             .filter { $0.latitude != nil && $0.longitude != nil }
@@ -237,9 +249,9 @@ struct StopMapView: View {
     private func centerOnUserLocation() {
         let center = locationManager.currentLocation?.coordinate
             ?? locationManager.getSharedLocation()?.coordinate
-            ?? helsinkiCenter
+            ?? Self.helsinkiCenter
 
-        let region = MKCoordinateRegion(center: center, span: defaultSpan)
+        let region = MKCoordinateRegion(center: center, span: Self.defaultSpan)
         cameraPosition = .region(region)
         visibleRegion = region
     }
