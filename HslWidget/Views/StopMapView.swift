@@ -9,10 +9,22 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
+/// Wrapper to make region changes trackable
+struct MapTargetRegion: Equatable {
+    let id: UUID
+    let region: MKCoordinateRegion
+
+    static func == (lhs: MapTargetRegion, rhs: MapTargetRegion) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 struct StopMapView: View {
     let stops: [Stop]
     let favoriteStopIds: Set<String>
     let onToggleFavorite: (Stop) -> Void
+    let searchMatchingStopIds: Set<String>
+    let targetRegion: MapTargetRegion?
 
     @StateObject private var locationManager = LocationManager.shared
     @State private var cameraPosition: MapCameraPosition
@@ -24,10 +36,18 @@ struct StopMapView: View {
     private static let helsinkiCenter = CLLocationCoordinate2D(latitude: 60.1699, longitude: 24.9384)
     private static let defaultSpan = MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
 
-    init(stops: [Stop], favoriteStopIds: Set<String>, onToggleFavorite: @escaping (Stop) -> Void) {
+    init(
+        stops: [Stop],
+        favoriteStopIds: Set<String>,
+        onToggleFavorite: @escaping (Stop) -> Void,
+        searchMatchingStopIds: Set<String> = [],
+        targetRegion: MapTargetRegion? = nil
+    ) {
         self.stops = stops
         self.favoriteStopIds = favoriteStopIds
         self.onToggleFavorite = onToggleFavorite
+        self.searchMatchingStopIds = searchMatchingStopIds
+        self.targetRegion = targetRegion
 
         // Initialize camera with user location or Helsinki center to avoid flash
         let center = LocationManager.shared.currentLocation?.coordinate
@@ -48,7 +68,14 @@ struct StopMapView: View {
                 stopDetailOverlay(stop: stop)
             }
         }
-        // Camera position is initialized in init(), no need for onAppear
+        .onChange(of: targetRegion) { _, newTarget in
+            if let target = newTarget {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(target.region)
+                }
+                visibleRegion = target.region
+            }
+        }
     }
 
     private var mapView: some View {
@@ -109,28 +136,31 @@ struct StopMapView: View {
 
     private func stopMarker(for stop: Stop) -> some View {
         let isFavorite = favoriteStopIds.contains(stop.id)
+        let isSearchMatch = !searchMatchingStopIds.isEmpty && searchMatchingStopIds.contains(stop.id)
         let color = markerColor(for: stop)
+        let markerSize: CGFloat = isSearchMatch ? 36 : 28
+        let iconSize: CGFloat = isSearchMatch ? 16 : 12
 
         return ZStack {
             Circle()
                 .fill(color)
-                .frame(width: 28, height: 28)
+                .frame(width: markerSize, height: markerSize)
 
             if isFavorite {
                 Image(systemName: "star.fill")
-                    .font(.system(size: 12))
+                    .font(.system(size: iconSize))
                     .foregroundColor(.white)
             } else {
                 modeIcon(for: stop)
-                    .font(.system(size: 12))
+                    .font(.system(size: iconSize))
                     .foregroundColor(.white)
             }
         }
         .overlay(
             Circle()
-                .stroke(Color.white, lineWidth: 2)
+                .stroke(isSearchMatch ? Color.red : Color.white, lineWidth: isSearchMatch ? 3 : 2)
         )
-        .shadow(radius: 2)
+        .shadow(radius: isSearchMatch ? 4 : 2)
     }
 
     private func modeIcon(for stop: Stop) -> some View {

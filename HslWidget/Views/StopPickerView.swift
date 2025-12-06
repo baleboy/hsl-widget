@@ -26,6 +26,7 @@ struct StopPickerView: View {
     @State private var isFetchingInitialHeadsigns = false
     @State private var viewMode: StopPickerViewMode = .map
     @State private var hasCachedData: Bool
+    @State private var mapTargetRegion: MapTargetRegion?
 
     private let favoritesManager = FavoritesManager.shared
     private let stopsCache = StopsCache.shared
@@ -64,6 +65,13 @@ struct StopPickerView: View {
             $0.name.localizedCaseInsensitiveContains(searchTerm) ||
             $0.code.localizedCaseInsensitiveContains(searchTerm)
         }
+    }
+
+    var searchMatchingStopIds: Set<String> {
+        guard !searchTerm.isEmpty else {
+            return []
+        }
+        return Set(filteredStops.map { $0.id })
     }
 
     var body: some View {
@@ -111,11 +119,29 @@ struct StopPickerView: View {
                             favoriteStopIds: favoriteStopIds,
                             onToggleFavorite: { stop in
                                 toggleFavorite(stop)
-                            }
+                            },
+                            searchMatchingStopIds: searchMatchingStopIds,
+                            targetRegion: mapTargetRegion
                         )
                         .opacity(viewMode == .map ? 1 : 0)
                         .accessibilityHidden(viewMode != .map)
                     }
+                }
+                .searchable(text: $searchTerm, prompt: "Search by name or code")
+                .onChange(of: searchTerm) { _, newTerm in
+                    // Only zoom map when in map mode and search term has content
+                    guard viewMode == .map, !newTerm.isEmpty else {
+                        mapTargetRegion = nil
+                        return
+                    }
+                    // Require at least 2 characters to avoid zooming on every keystroke
+                    guard newTerm.count >= 2 else { return }
+
+                    let matches = filteredStops.filter { $0.latitude != nil && $0.longitude != nil }
+                    guard !matches.isEmpty else { return }
+
+                    let region = boundingRegion(for: matches)
+                    mapTargetRegion = MapTargetRegion(id: UUID(), region: region)
                 }
                 .navigationBarTitle("Select Stops", displayMode: .inline)
                 .toolbar {
@@ -213,7 +239,6 @@ struct StopPickerView: View {
                 stopRow(stop)
             }
         }
-        .searchable(text: $searchTerm, prompt: "Search by name or code")
         .onChange(of: sortedStops) { oldStops, newStops in
             // Cancel any pending fetch task
             headsignFetchTask?.cancel()
@@ -424,6 +449,61 @@ struct StopPickerView: View {
                 stopHeadsigns[stopId] = headsigns
             }
         }
+    }
+
+    /// Computes a map region that encompasses all the given stops
+    private func boundingRegion(for stops: [Stop]) -> MKCoordinateRegion {
+        guard !stops.isEmpty else {
+            // Fallback to Helsinki center
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 60.1699, longitude: 24.9384),
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+        }
+
+        let coordinates = stops.compactMap { stop -> CLLocationCoordinate2D? in
+            guard let lat = stop.latitude, let lon = stop.longitude else { return nil }
+            return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        }
+
+        guard !coordinates.isEmpty else {
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 60.1699, longitude: 24.9384),
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+        }
+
+        // Single match: center on it with default zoom
+        if coordinates.count == 1 {
+            return MKCoordinateRegion(
+                center: coordinates[0],
+                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            )
+        }
+
+        // Multiple matches: compute bounding box
+        let minLat = coordinates.map { $0.latitude }.min()!
+        let maxLat = coordinates.map { $0.latitude }.max()!
+        let minLon = coordinates.map { $0.longitude }.min()!
+        let maxLon = coordinates.map { $0.longitude }.max()!
+
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+
+        // Add padding (20%) to the span so stops aren't at the edge
+        let latDelta = max((maxLat - minLat) * 1.2, 0.01)
+        let lonDelta = max((maxLon - minLon) * 1.2, 0.01)
+
+        // Cap max zoom-out to avoid showing too large an area
+        let maxDelta = 0.5
+        let span = MKCoordinateSpan(
+            latitudeDelta: min(latDelta, maxDelta),
+            longitudeDelta: min(lonDelta, maxDelta)
+        )
+
+        return MKCoordinateRegion(center: center, span: span)
     }
 }
 
