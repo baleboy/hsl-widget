@@ -34,13 +34,6 @@ class HeadsignCache {
 
     private init() {}
 
-    /// Generate a unique key for a location (rounded to ~200m precision)
-    private func locationKey(latitude: Double, longitude: Double) -> String {
-        let lat = round(latitude * 1000) / 1000 // ~111m precision
-        let lon = round(longitude * 1000) / 1000 // ~111m precision at equator
-        return "\(lat),\(lon)"
-    }
-
     /// Load the multi-location cache from storage
     private func loadMultiCache() -> MultiLocationCache {
         guard let data = sharedDefaults?.data(forKey: multiCacheKey),
@@ -59,10 +52,8 @@ class HeadsignCache {
         sharedDefaults?.set(data, forKey: multiCacheKey)
     }
 
-    /// Find a cached entry near the current location
+    /// Find a cached entry near the current location (for loading - checks expiration and radius)
     private func findNearbyCacheEntry(location: CLLocation, radius: Double, cache: MultiLocationCache) -> (key: String, entry: LocationCacheEntry)? {
-        let currentCoord = location.coordinate
-
         for (key, entry) in cache.entries {
             let entryLocation = CLLocation(latitude: entry.latitude, longitude: entry.longitude)
             let distance = location.distance(from: entryLocation)
@@ -85,6 +76,29 @@ class HeadsignCache {
         }
 
         return nil
+    }
+
+    /// Find any cache entry near the location (for saving - only checks distance, ignores expiration)
+    private func findNearbyLocationKey(location: CLLocation, cache: MultiLocationCache) -> String? {
+        for (key, entry) in cache.entries {
+            let entryLocation = CLLocation(latitude: entry.latitude, longitude: entry.longitude)
+            let distance = location.distance(from: entryLocation)
+
+            if distance <= cacheLocationThresholdMeters {
+                print("HeadsignCache: Found existing cache entry at \(Int(distance))m away, will update it")
+                return key
+            }
+        }
+        return nil
+    }
+
+    /// Generate a unique sequential key for a new cache location
+    private func generateNewKey(cache: MultiLocationCache) -> String {
+        var index = 0
+        while cache.entries.keys.contains("location_\(index)") {
+            index += 1
+        }
+        return "location_\(index)"
     }
 
     /// Check if cache should be refreshed based on time and location
@@ -149,9 +163,17 @@ class HeadsignCache {
         }
 
         var cache = loadMultiCache()
-
         let coordinate = location.coordinate
-        let key = locationKey(latitude: coordinate.latitude, longitude: coordinate.longitude)
+
+        // Check if there's already a nearby cache entry to update
+        let key: String
+        if let existingKey = findNearbyLocationKey(location: location, cache: cache) {
+            key = existingKey
+            print("HeadsignCache: Updating existing cache entry '\(key)'")
+        } else {
+            key = generateNewKey(cache: cache)
+            print("HeadsignCache: Creating new cache entry '\(key)'")
+        }
 
         let newEntry = LocationCacheEntry(
             latitude: coordinate.latitude,
