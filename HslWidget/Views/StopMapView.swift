@@ -136,7 +136,9 @@ struct StopMapView: View {
 
     private func stopMarker(for stop: Stop) -> some View {
         let isFavorite = favoriteStopIds.contains(stop.id)
-        let isSearchMatch = !searchMatchingStopIds.isEmpty && searchMatchingStopIds.contains(stop.id)
+        let isSearchActive = !searchMatchingStopIds.isEmpty
+        let isSearchMatch = isSearchActive && searchMatchingStopIds.contains(stop.id)
+        let shouldDim = isSearchActive && !isSearchMatch
         let color = markerColor(for: stop)
         let markerSize: CGFloat = isSearchMatch ? 36 : 28
         let iconSize: CGFloat = isSearchMatch ? 16 : 12
@@ -158,9 +160,10 @@ struct StopMapView: View {
         }
         .overlay(
             Circle()
-                .stroke(isSearchMatch ? Color.red : Color.white, lineWidth: isSearchMatch ? 3 : 2)
+                .stroke(Color.white, lineWidth: 2)
         )
-        .shadow(radius: isSearchMatch ? 4 : 2)
+        .shadow(radius: 2)
+        .opacity(shouldDim ? 0.4 : 1.0)
     }
 
     private func modeIcon(for stop: Stop) -> some View {
