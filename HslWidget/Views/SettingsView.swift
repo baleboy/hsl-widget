@@ -23,7 +23,7 @@ struct SettingsView: View {
             Form {
                 Section {
                     Picker(selection: $numberOfDepartures) {
-                        ForEach(1...3, id: \.self) { count in
+                        ForEach(2...3, id: \.self) { count in
                             Text("\(count)").tag(count)
                         }
                     } label: {
