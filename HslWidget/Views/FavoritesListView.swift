@@ -9,6 +9,8 @@ import SwiftUI
 import CoreLocation
 
 struct FavoritesListView: View {
+    private static let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
+
     @State private var favorites: [Stop] = []
     @State private var showingStopPicker = false
     @State private var stopToEdit: Stop?
@@ -20,7 +22,11 @@ struct FavoritesListView: View {
     @State private var showingSettings = false
     @State private var isInitialLoad = true
     @State private var isRefreshing = false
+    @State private var showFilterTooltip = false
     @StateObject private var locationManager = LocationManager.shared
+
+    @AppStorage("hasShownFilterTooltip", store: sharedDefaults)
+    private var hasShownFilterTooltip = false
 
     private let favoritesManager = FavoritesManager.shared
 
@@ -192,6 +198,30 @@ struct FavoritesListView: View {
                     loadAllData()
                 }
             }
+            .overlay {
+                if showFilterTooltip {
+                    FilterTooltipView(onDismiss: dismissFilterTooltip)
+                }
+            }
+        }
+    }
+
+    private func showFilterTooltipIfNeeded() {
+        // Show tooltip only once, after onboarding, when there are favorites
+        if !hasShownFilterTooltip && !favorites.isEmpty {
+            // Small delay to let the UI settle
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation {
+                    showFilterTooltip = true
+                }
+            }
+        }
+    }
+
+    private func dismissFilterTooltip() {
+        withAnimation {
+            showFilterTooltip = false
+            hasShownFilterTooltip = true
         }
     }
 
@@ -235,6 +265,7 @@ struct FavoritesListView: View {
                 self.isInitialLoad = false
                 self.isRefreshing = false  // Clear refresh state after ALL data is ready
                 print("FavoritesListView: All data loaded, showing UI")
+                showFilterTooltipIfNeeded()
             }
         }
     }

@@ -9,6 +9,11 @@ import SwiftUI
 
 @main
 struct HslWidgetApp: App {
+    private static let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
+
+    @AppStorage("hasCompletedOnboarding", store: sharedDefaults)
+    private var hasCompletedOnboarding = false
+
     init() {
         // Clean up old data format from previous version
         cleanupOldData()
@@ -19,7 +24,13 @@ struct HslWidgetApp: App {
 
     var body: some Scene {
         WindowGroup {
-            FavoritesListView()
+            if hasCompletedOnboarding {
+                FavoritesListView()
+            } else {
+                OnboardingContainerView(onComplete: {
+                    hasCompletedOnboarding = true
+                })
+            }
         }
     }
 
