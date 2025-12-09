@@ -17,6 +17,7 @@ struct SettingsView: View {
     @AppStorage("numberOfDepartures", store: UserDefaults(suiteName: "group.balenet.widget"))
     private var numberOfDepartures = 2
     @State private var showingDeleteConfirmation = false
+    @State private var showingWidgetSetup = false
 
     var body: some View {
         NavigationView {
@@ -40,6 +41,21 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Widget Display")
+                }
+
+                Section {
+                    Button(action: { showingWidgetSetup = true }) {
+                        HStack {
+                            Image(systemName: "apps.iphone")
+                            Text("How to Add Widget")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.roundedCaption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                } header: {
+                    Text("Help")
                 }
 
                 Section {
@@ -129,6 +145,9 @@ struct SettingsView: View {
             } message: {
                 Text("This will permanently remove all your favorite stops. This action cannot be undone.")
             }
+            .sheet(isPresented: $showingWidgetSetup) {
+                WidgetSetupSheet()
+            }
         }
     }
 
@@ -188,6 +207,31 @@ struct SettingsView: View {
 
     private func removeAllFavorites() {
         FavoritesManager.shared.removeAllFavorites()
+    }
+}
+
+// MARK: - Widget Setup Sheet
+
+private struct WidgetSetupSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                Spacer()
+                WidgetSetupInstructionsView()
+                Spacer()
+            }
+            .navigationTitle("Add Widget")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
     }
 }
 
