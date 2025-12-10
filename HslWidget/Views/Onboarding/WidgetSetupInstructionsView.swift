@@ -18,10 +18,16 @@ struct WidgetSetupInstructionsView: View {
             VStack(alignment: .leading, spacing: 16) {
                 InstructionRow(number: 1, text: "Long-press your lock screen")
                 InstructionRow(number: 2, text: "Tap \"Customize\"")
-                InstructionRow(number: 3, text: "Tap the area above the time")
+                InstructionRow(number: 3, text: "Tap the area above or below the time")
                 InstructionRow(number: 4, text: "Find \"HSL Widget\" and add it")
             }
             .padding(.horizontal, 32)
+
+            Text("You can also add a widget to your home screen.")
+                .font(.roundedFootnote)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
         }
     }
 }
