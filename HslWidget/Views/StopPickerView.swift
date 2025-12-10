@@ -105,15 +105,28 @@ struct StopPickerView: View {
                 .padding()
             } else {
                 VStack(spacing: 0) {
-                    viewModePicker
+                    // Search field
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        TextField("Search by name or code", text: $searchTerm)
+                            .textFieldStyle(.plain)
+                        if !searchTerm.isEmpty {
+                            Button {
+                                searchTerm = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(10)
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
 
-                    // Use ZStack with opacity to preserve both views in hierarchy
-                    // This prevents the map from being recreated when switching tabs
-                    ZStack {
-                        listView
-                            .opacity(viewMode == .list ? 1 : 0)
-                            .accessibilityHidden(viewMode != .list)
-
+                    TabView(selection: $viewMode) {
                         StopMapView(
                             stops: stops,
                             favoriteStopIds: favoriteStopIds,
@@ -123,11 +136,18 @@ struct StopPickerView: View {
                             searchMatchingStopIds: searchMatchingStopIds,
                             targetRegion: mapTargetRegion
                         )
-                        .opacity(viewMode == .map ? 1 : 0)
-                        .accessibilityHidden(viewMode != .map)
+                        .tabItem {
+                            Label("Map", systemImage: "map")
+                        }
+                        .tag(StopPickerViewMode.map)
+
+                        listView
+                            .tabItem {
+                                Label("List", systemImage: "list.bullet")
+                            }
+                            .tag(StopPickerViewMode.list)
                     }
                 }
-                .searchable(text: $searchTerm, prompt: "Search by name or code")
                 .onChange(of: searchTerm) { _, newTerm in
                     // Only zoom map when in map mode and search term has content
                     guard viewMode == .map, !newTerm.isEmpty else {
@@ -220,17 +240,6 @@ struct StopPickerView: View {
                 }
             }
         }
-    }
-
-    private var viewModePicker: some View {
-        Picker("View Mode", selection: $viewMode) {
-            ForEach(StopPickerViewMode.allCases, id: \.self) { mode in
-                Text(mode.rawValue).tag(mode)
-            }
-        }
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
-        .padding(.vertical, 8)
     }
 
     private var listView: some View {
