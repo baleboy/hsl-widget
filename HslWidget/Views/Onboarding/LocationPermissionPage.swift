@@ -52,6 +52,12 @@ struct LocationPermissionPage: View {
                     }
                     .padding(.bottom, 8)
 
+                    Text("You can enable automatic updates when you move in Settings.")
+                        .font(.roundedFootnote)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+
                     OnboardingButton(title: "Continue", action: onContinue)
                 } else {
                     OnboardingButton(title: "Enable Location", action: requestLocation)
