@@ -22,9 +22,7 @@ struct StopDetailSheet: View {
         VStack(alignment: .leading, spacing: 16) {
             headerView
             detailsView
-            if !headsigns.isEmpty {
-                headsignsView
-            }
+            headsignsSection
             favoriteButton
         }
         .padding()
@@ -70,6 +68,31 @@ struct StopDetailSheet: View {
                         modeIcon(for: mode, isPrimary: false)
                     }
                 }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var headsignsSection: some View {
+        if isLoadingHeadsigns {
+            headsignsLoadingPlaceholder
+        } else if !headsigns.isEmpty {
+            headsignsView
+        }
+    }
+
+    private var headsignsLoadingPlaceholder: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Directions")
+                .font(.roundedSubheadline)
+                .foregroundColor(.secondary)
+            HStack(spacing: 4) {
+                Image(systemName: "arrow.right")
+                    .font(.roundedCaption)
+                    .foregroundColor(.secondary)
+                Text("Loading...")
+                    .font(.roundedSubheadline)
+                    .foregroundColor(.secondary)
             }
         }
     }
