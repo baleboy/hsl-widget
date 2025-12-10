@@ -127,6 +127,21 @@ struct SettingsView: View {
                 } footer: {
                     Text("This will remove all favorite stops from your list.")
                 }
+
+                #if DEBUG
+                Section {
+                    Button(role: .destructive, action: clearAllUserDefaults) {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("Reset All Data")
+                        }
+                    }
+                } header: {
+                    Text("Debug")
+                } footer: {
+                    Text("Clears all UserDefaults including onboarding state. App will restart in onboarding mode.")
+                }
+                #endif
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -208,6 +223,18 @@ struct SettingsView: View {
     private func removeAllFavorites() {
         FavoritesManager.shared.removeAllFavorites()
     }
+
+    #if DEBUG
+    private func clearAllUserDefaults() {
+        let suiteName = "group.balenet.widget"
+        if let defaults = UserDefaults(suiteName: suiteName) {
+            defaults.removePersistentDomain(forName: suiteName)
+            defaults.synchronize()
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+        exit(0)
+    }
+    #endif
 }
 
 // MARK: - Widget Setup Sheet
