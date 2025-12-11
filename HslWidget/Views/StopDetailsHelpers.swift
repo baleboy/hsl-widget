@@ -35,7 +35,7 @@ struct HeadsignPattern: View {
             Image(systemName: "arrow.right")
                 .font(.roundedCaption2)
                 .foregroundColor(.blue)
-            Text("To: \(pattern)")
+            Text("\(String(localized: "To:")) \(pattern)")
                 .font(.roundedCaption)
                 .foregroundColor(.blue)
                 .lineLimit(1)

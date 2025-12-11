@@ -56,7 +56,7 @@ struct NextDeparturesView: View {
 
                             // Destination with optional delay info
                             if departure.shouldShowDelay {
-                                Text("\(departure.headsign) · \(departure.delayMinutes) min late")
+                                Text("\(departure.headsign) · \(departure.delayMinutes) \(String(localized: "min late"))")
                                     .font(.roundedCaption)
                                     .foregroundColor(.secondary)
                                     .lineLimit(1)

@@ -46,7 +46,7 @@ class HeadsignPreloader: ObservableObject {
         await MainActor.run {
             totalStops = nearbyStops.count
             loadingProgress = 0
-            loadingMessage = "Loading \(nearbyStops.count) nearby stops..."
+            loadingMessage = String(localized: "Loading \(nearbyStops.count) nearby stops...")
         }
 
         print("HeadsignPreloader: Preloading headsigns for \(nearbyStops.count) stops within \(Int(radius))m")
@@ -98,7 +98,7 @@ class HeadsignPreloader: ObservableObject {
             let processedCount = min((batchIndex + 1) * batchSize, nearbyStops.count)
             await MainActor.run {
                 loadingProgress = processedCount
-                loadingMessage = "Loaded \(processedCount)/\(nearbyStops.count) stops..."
+                loadingMessage = String(localized: "Loaded \(processedCount)/\(nearbyStops.count) stops...")
             }
 
             // Small delay between batches to be respectful to the API

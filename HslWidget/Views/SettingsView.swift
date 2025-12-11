@@ -169,17 +169,17 @@ struct SettingsView: View {
     private var authorizationStatusText: String {
         switch locationManager.authorizationStatus {
         case .notDetermined:
-            return "Not Requested"
+            return String(localized: "Not Requested")
         case .restricted:
-            return "Restricted"
+            return String(localized: "Restricted")
         case .denied:
-            return "Denied"
+            return String(localized: "Denied")
         case .authorizedWhenInUse:
-            return "While Using App"
+            return String(localized: "While Using App")
         case .authorizedAlways:
-            return "Always"
+            return String(localized: "Always")
         @unknown default:
-            return "Unknown"
+            return String(localized: "Unknown")
         }
     }
 

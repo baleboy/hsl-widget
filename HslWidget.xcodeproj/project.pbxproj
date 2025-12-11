@@ -24,6 +24,8 @@
 		255AFC4A2EE0889200BEACA7 /* StopsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255AFC492EE0889200BEACA7 /* StopsCache.swift */; };
 		255AFC4B2EE0889200BEACA7 /* StopsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255AFC492EE0889200BEACA7 /* StopsCache.swift */; };
 		255AFC4C2EE0889200BEACA7 /* StopsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255AFC492EE0889200BEACA7 /* StopsCache.swift */; };
+		2576EB302EEA8EF800E962EE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2576EB2F2EEA8EF800E962EE /* Localizable.xcstrings */; };
+		2576EB312EEA8EF800E962EE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2576EB2F2EEA8EF800E962EE /* Localizable.xcstrings */; };
 		25979FDD2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
 		25979FDE2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
 		25979FDF2ED3201700D81D27 /* SharedLocationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */; };
@@ -128,6 +130,7 @@
 		2542B3332EC8594F002492BC /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		2542B33A2EC89D01002492BC /* HslWidgetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HslWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		255AFC492EE0889200BEACA7 /* StopsCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopsCache.swift; sourceTree = "<group>"; };
+		2576EB2F2EEA8EF800E962EE /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		25979FDC2ED3201700D81D27 /* SharedLocationReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedLocationReader.swift; sourceTree = "<group>"; };
 		2597A0012ED36EAF00D81D27 /* WidgetDebugger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WidgetDebugger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2597A0102ED36EB000D81D27 /* WidgetDebuggerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WidgetDebuggerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -290,6 +293,7 @@
 		25D19E562BE600920055E70E /* HslWidget */ = {
 			isa = PBXGroup;
 			children = (
+				2576EB2F2EEA8EF800E962EE /* Localizable.xcstrings */,
 				25EB23802ED4BA3100B1CEB3 /* Utils */,
 				25EB237F2ED4BA2000B1CEB3 /* Views */,
 				25FA04302BEB50D30052A577 /* HslWidget.entitlements */,
@@ -587,6 +591,7 @@
 			files = (
 				25D19E5F2BE600930055E70E /* Preview Assets.xcassets in Resources */,
 				25D19E5C2BE600930055E70E /* Assets.xcassets in Resources */,
+				2576EB302EEA8EF800E962EE /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,6 +599,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2576EB312EEA8EF800E962EE /* Localizable.xcstrings in Resources */,
 				25D19E752BE755320055E70E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
