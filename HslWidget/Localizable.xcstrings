@@ -270,7 +270,6 @@
       }
     },
     "Continue": {
-      "extractionState": "stale",
       "localizations": {
         "fi": {
           "stringUnit": {
@@ -493,7 +492,6 @@
       }
     },
     "Find Stops": {
-      "extractionState": "stale",
       "localizations": {
         "fi": {
           "stringUnit": {
