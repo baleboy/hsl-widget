@@ -13,7 +13,12 @@ class StopsCache {
     private let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
     private let cacheKey = "cachedStops"
     private let timestampKey = "cachedStopsTimestamp"
+    private let languageKey = "cachedStopsLanguage"
     private let cacheExpirationHours = 24
+
+    private var currentLanguage: String {
+        Locale.current.language.languageCode?.identifier ?? "fi"
+    }
 
     private init() {}
 
@@ -30,7 +35,7 @@ class StopsCache {
         return stops
     }
 
-    /// Check if cache needs refresh (expired or empty)
+    /// Check if cache needs refresh (expired, empty, or language changed)
     func needsRefresh() -> Bool {
         guard sharedDefaults?.data(forKey: cacheKey) != nil else {
             print("StopsCache: No cache exists, needs refresh")
@@ -39,6 +44,13 @@ class StopsCache {
 
         guard let timestamp = sharedDefaults?.object(forKey: timestampKey) as? Date else {
             print("StopsCache: No timestamp found, needs refresh")
+            return true
+        }
+
+        // Check if language changed
+        let cachedLanguage = sharedDefaults?.string(forKey: languageKey)
+        if cachedLanguage != currentLanguage {
+            print("StopsCache: Language changed from \(cachedLanguage ?? "nil") to \(currentLanguage), needs refresh")
             return true
         }
 
@@ -61,14 +73,16 @@ class StopsCache {
 
         sharedDefaults?.set(data, forKey: cacheKey)
         sharedDefaults?.set(Date(), forKey: timestampKey)
+        sharedDefaults?.set(currentLanguage, forKey: languageKey)
 
-        print("StopsCache: Saved \(stops.count) stops to cache")
+        print("StopsCache: Saved \(stops.count) stops to cache (language: \(currentLanguage))")
     }
 
     /// Clear the cache
     func clearCache() {
         sharedDefaults?.removeObject(forKey: cacheKey)
         sharedDefaults?.removeObject(forKey: timestampKey)
+        sharedDefaults?.removeObject(forKey: languageKey)
         print("StopsCache: Cache cleared")
     }
 
