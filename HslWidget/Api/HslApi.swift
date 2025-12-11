@@ -263,6 +263,11 @@ class HslApi {
         request.httpMethod = "POST"
         request.httpBody = query.data(using: .utf8)
         request.setValue("application/graphql", forHTTPHeaderField: "Content-Type")
+
+        // Request translations based on device language (supports fi, sv, en)
+        let language = Locale.current.language.languageCode?.identifier ?? "fi"
+        request.setValue(language, forHTTPHeaderField: "Accept-Language")
+
         return request
     }
 
