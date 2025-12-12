@@ -78,7 +78,7 @@ class LocationManager: NSObject, ObservableObject {
 
     /// Request a single immediate location update
     func requestImmediateLocation() {
-        print("LocationManager: Requesting immediate location update")
+        debugLog("LocationManager: Requesting immediate location update")
         locationManager.requestLocation()
     }
 
