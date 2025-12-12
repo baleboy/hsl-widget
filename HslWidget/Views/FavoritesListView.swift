@@ -88,6 +88,9 @@ struct FavoritesListView: View {
                                 }
                             }
                         }
+                        .refreshable {
+                            await refreshData()
+                        }
                     }
                 }
 
@@ -267,6 +270,46 @@ struct FavoritesListView: View {
                 print("FavoritesListView: All data loaded, showing UI")
                 showFilterTooltipIfNeeded()
             }
+        }
+    }
+
+    /// Refresh data when user pulls to refresh
+    private func refreshData() async {
+        // Request fresh location
+        locationManager.requestImmediateLocation()
+
+        // Small delay to allow location update to process
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+
+        // Reload favorites from storage
+        let newFavorites = favoritesManager.getFavorites()
+
+        guard !newFavorites.isEmpty else {
+            await MainActor.run {
+                favorites = []
+                filteredHeadsigns = [:]
+                filteredLinesByMode = [:]
+                closestStop = nil
+                departures = []
+            }
+            return
+        }
+
+        // Fetch headsigns for all stops in parallel
+        await fetchHeadsignsForStops(newFavorites)
+
+        // Find closest stop with potentially updated location
+        let currentLocation = locationManager.currentLocation ?? locationManager.getSharedLocation()
+        let closest = findClosestStop(favorites: newFavorites, currentLocation: currentLocation)
+
+        // Fetch departures for closest stop
+        let allDepartures = await HslApi.shared.fetchDepartures(stationId: closest.id, numberOfResults: 10)
+        let filteredDepartures = allDepartures.filter { closest.matchesFilters(departure: $0) }
+
+        await MainActor.run {
+            self.favorites = newFavorites
+            self.closestStop = closest
+            self.departures = filteredDepartures
         }
     }
 

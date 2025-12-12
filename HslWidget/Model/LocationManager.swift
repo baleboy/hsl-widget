@@ -76,6 +76,12 @@ class LocationManager: NSObject, ObservableObject {
         }
     }
 
+    /// Request a single immediate location update
+    func requestImmediateLocation() {
+        print("LocationManager: Requesting immediate location update")
+        locationManager.requestLocation()
+    }
+
     /// Get the last known location from shared storage
     func getSharedLocation() -> CLLocation? {
         guard let latitude = sharedDefaults?.double(forKey: latitudeKey),
