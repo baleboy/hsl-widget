@@ -105,48 +105,33 @@ struct StopPickerView: View {
                 .padding()
             } else {
                 VStack(spacing: 0) {
-                    // Search field
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
-                        TextField("Search by name or code", text: $searchTerm)
-                            .textFieldStyle(.plain)
-                        if !searchTerm.isEmpty {
-                            Button {
-                                searchTerm = ""
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.secondary)
-                            }
-                        }
+                    // Segmented control for switching between Map and List
+                    Picker("View Mode", selection: $viewMode) {
+                        Text("Map").tag(StopPickerViewMode.map)
+                        Text("List").tag(StopPickerViewMode.list)
                     }
-                    .padding(10)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .pickerStyle(.segmented)
                     .padding(.horizontal)
                     .padding(.vertical, 8)
 
-                    TabView(selection: $viewMode) {
-                        StopMapView(
-                            stops: stops,
-                            favoriteStopIds: favoriteStopIds,
-                            onToggleFavorite: { stop in
-                                toggleFavorite(stop)
-                            },
-                            searchMatchingStopIds: searchMatchingStopIds,
-                            targetRegion: mapTargetRegion
-                        )
-                        .tabItem {
-                            Label("Map", systemImage: "map")
+                    // Content based on selected mode
+                    Group {
+                        switch viewMode {
+                        case .map:
+                            StopMapView(
+                                stops: stops,
+                                favoriteStopIds: favoriteStopIds,
+                                onToggleFavorite: { stop in
+                                    toggleFavorite(stop)
+                                },
+                                searchMatchingStopIds: searchMatchingStopIds,
+                                targetRegion: mapTargetRegion
+                            )
+                        case .list:
+                            listView
                         }
-                        .tag(StopPickerViewMode.map)
-
-                        listView
-                            .tabItem {
-                                Label("List", systemImage: "list.bullet")
-                            }
-                            .tag(StopPickerViewMode.list)
                     }
+                    .id(viewMode) // Force view recreation on mode change
                 }
                 .onChange(of: searchTerm) { _, newTerm in
                     // Only zoom map when in map mode and search term has content
@@ -164,6 +149,7 @@ struct StopPickerView: View {
                     mapTargetRegion = MapTargetRegion(id: UUID(), region: region)
                 }
                 .navigationBarTitle("Select Stops", displayMode: .inline)
+                .searchable(text: $searchTerm, prompt: "Search by name or code")
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done") {
