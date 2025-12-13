@@ -34,7 +34,7 @@ jobs:
           set -o pipefail
           xcodebuild test \
             -scheme stopInfoExtension \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
             -resultBundlePath TestResults \
             -enableCodeCoverage YES \
             | tee xcodebuild-test.log \
