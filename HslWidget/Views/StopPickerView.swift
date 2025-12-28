@@ -27,6 +27,7 @@ struct StopPickerView: View {
     @State private var viewMode: StopPickerViewMode = .map
     @State private var hasCachedData: Bool
     @State private var mapTargetRegion: MapTargetRegion?
+    @State private var showingPaywall = false
 
     private let favoritesManager = FavoritesManager.shared
     private let stopsCache = StopsCache.shared
@@ -159,6 +160,9 @@ struct StopPickerView: View {
                 }
                 .onAppear {
                     loadFavorites()
+                }
+                .sheet(isPresented: $showingPaywall) {
+                    PaywallView()
                 }
             }
         }
@@ -334,8 +338,15 @@ struct StopPickerView: View {
     private func toggleFavorite(_ stop: Stop) {
         print("StopPicker: Toggling favorite for: \(stop.name)")
 
-        // Update UI optimistically FIRST for instant feedback
         let isCurrentlyFavorite = favoriteStopIds.contains(stop.id)
+
+        // If trying to ADD a favorite and at limit, show paywall
+        if !isCurrentlyFavorite && favoritesManager.hasReachedFreeLimit() {
+            showingPaywall = true
+            return
+        }
+
+        // Update UI optimistically FIRST for instant feedback
         if isCurrentlyFavorite {
             favoriteStopIds.remove(stop.id)
         } else {

@@ -237,6 +237,9 @@
         }
       }
     },
+    "Check Xcode console for details" : {
+
+    },
     "Clears all UserDefaults including onboarding state. App will restart in onboarding mode." : {
       "localizations" : {
         "fi" : {
@@ -979,6 +982,12 @@
         }
       }
     },
+    "OK" : {
+
+    },
+    "One-time purchase" : {
+
+    },
     "Only show departures whose destination contains this text (case insensitive)" : {
       "localizations" : {
         "fi" : {
@@ -1054,6 +1063,15 @@
           }
         }
       }
+    },
+    "Product not available" : {
+
+    },
+    "Purchase Error" : {
+
+    },
+    "Purchased" : {
+
     },
     "Remove" : {
       "localizations" : {
@@ -1146,6 +1164,9 @@
           }
         }
       }
+    },
+    "Restore Purchases" : {
+
     },
     "Restricted" : {
       "localizations" : {
@@ -1509,6 +1530,12 @@
         }
       }
     },
+    "Transaction verification failed" : {
+
+    },
+    "Unable to load product" : {
+
+    },
     "Unknown" : {
       "localizations" : {
         "fi" : {
@@ -1524,6 +1551,18 @@
           }
         }
       }
+    },
+    "Unlimited Favorites" : {
+
+    },
+    "Unlock for" : {
+
+    },
+    "Upgrade" : {
+
+    },
+    "Upgrade to Unlimited" : {
+
     },
     "View Mode" : {
       "comment" : "A label for the segmented control in the stop picker view.",
@@ -1608,6 +1647,9 @@
           }
         }
       }
+    },
+    "You've reached the free limit of 2 favorites" : {
+
     },
     "Your departures at a glance" : {
       "localizations" : {

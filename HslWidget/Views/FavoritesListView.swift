@@ -23,6 +23,7 @@ struct FavoritesListView: View {
     @State private var isInitialLoad = true
     @State private var isRefreshing = false
     @State private var showFilterTooltip = false
+    @State private var showingPaywall = false
     @StateObject private var locationManager = LocationManager.shared
 
     @AppStorage("hasShownFilterTooltip", store: sharedDefaults)
@@ -99,7 +100,11 @@ struct FavoritesListView: View {
                     VStack {
                         Spacer()
                         Button(action: {
-                            showingStopPicker = true
+                            if favoritesManager.hasReachedFreeLimit() {
+                                showingPaywall = true
+                            } else {
+                                showingStopPicker = true
+                            }
                         }) {
                             ZStack {
                                 Circle()
@@ -194,6 +199,9 @@ struct FavoritesListView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+            }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
             }
             .onChange(of: showingSettings) { oldValue, newValue in
                 // Reload data when settings sheet is dismissed

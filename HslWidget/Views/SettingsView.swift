@@ -11,6 +11,7 @@ import WidgetKit
 
 struct SettingsView: View {
     @StateObject private var locationManager = LocationManager.shared
+    @StateObject private var storeManager = StoreKitManager.shared
     @Environment(\.dismiss) private var dismiss
     @AppStorage("backgroundLocationEnabled", store: UserDefaults(suiteName: "group.balenet.widget"))
     private var backgroundLocationEnabled = false
@@ -18,6 +19,7 @@ struct SettingsView: View {
     private var numberOfDepartures = 2
     @State private var showingDeleteConfirmation = false
     @State private var showingWidgetSetup = false
+    @State private var showingPaywall = false
 
     var body: some View {
         NavigationView {
@@ -114,6 +116,49 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    if storeManager.hasUnlimitedAccess {
+                        HStack {
+                            Image(systemName: "checkmark.seal.fill")
+                                .foregroundColor(.green)
+                            Text("Unlimited Favorites")
+                            Spacer()
+                            Text("Purchased")
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Button(action: { showingPaywall = true }) {
+                            HStack {
+                                Image(systemName: "star.circle.fill")
+                                    .foregroundColor(.accentColor)
+                                Text("Upgrade to Unlimited")
+                                Spacer()
+                                if let product = storeManager.product {
+                                    Text(product.displayPrice)
+                                        .foregroundColor(.secondary)
+                                }
+                                Image(systemName: "chevron.right")
+                                    .font(.roundedCaption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+
+                        Button(action: {
+                            Task {
+                                await storeManager.restorePurchases()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.clockwise")
+                                Text("Restore Purchases")
+                            }
+                        }
+                        .disabled(storeManager.isLoading)
+                    }
+                } header: {
+                    Text("Upgrade")
+                }
+
+                Section {
                     Button(role: .destructive, action: {
                         showingDeleteConfirmation = true
                     }) {
@@ -162,6 +207,12 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingWidgetSetup) {
                 WidgetSetupSheet()
+            }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
+            }
+            .task {
+                await storeManager.loadProducts()
             }
         }
     }
