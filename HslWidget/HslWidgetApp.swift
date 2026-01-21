@@ -20,6 +20,11 @@ struct HslWidgetApp: App {
 
         // Initialize location manager on app launch
         _ = LocationManager.shared
+
+        // Initialize StoreKit manager and verify purchase state
+        Task {
+            await StoreKitManager.shared.updatePurchaseState()
+        }
     }
 
     var body: some Scene {

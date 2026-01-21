@@ -13,8 +13,31 @@ class FavoritesManager {
 
     private let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
     private let favoritesKey = "favoriteStops"
+    private let freeFavoritesLimit = 2
+    private let purchasedKey = "hasUnlimitedPurchase"
 
     private init() {}
+
+    /// Check if the user has purchased unlimited access (reads from cached UserDefaults)
+    private var hasUnlimitedAccess: Bool {
+        sharedDefaults?.bool(forKey: purchasedKey) == true
+    }
+
+    /// Check if the user can add more favorites
+    func canAddFavorite() -> Bool {
+        if hasUnlimitedAccess {
+            return true
+        }
+        return getFavorites().count < freeFavoritesLimit
+    }
+
+    /// Check if the user has reached the free limit
+    func hasReachedFreeLimit() -> Bool {
+        if hasUnlimitedAccess {
+            return false
+        }
+        return getFavorites().count >= freeFavoritesLimit
+    }
 
     /// Get all favorite stops
     func getFavorites() -> [Stop] {

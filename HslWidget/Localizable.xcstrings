@@ -245,6 +245,9 @@
         }
       }
     },
+    "Check Xcode console for details" : {
+
+    },
     "Clears all UserDefaults including onboarding state. App will restart in onboarding mode." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1023,6 +1026,12 @@
         }
       }
     },
+    "OK" : {
+
+    },
+    "One-time purchase" : {
+
+    },
     "Only show departures whose destination contains this text (case insensitive)" : {
       "localizations" : {
         "fi" : {
@@ -1098,6 +1107,15 @@
           }
         }
       }
+    },
+    "Product not available" : {
+
+    },
+    "Purchase Error" : {
+
+    },
+    "Purchased" : {
+
     },
     "Realtime" : {
       "comment" : "A label indicating that the departure time is based on real-time data.",
@@ -1198,6 +1216,9 @@
           }
         }
       }
+    },
+    "Restore Purchases" : {
+
     },
     "Restricted" : {
       "localizations" : {
@@ -1605,6 +1626,12 @@
         }
       }
     },
+    "Transaction verification failed" : {
+
+    },
+    "Unable to load product" : {
+
+    },
     "Unknown" : {
       "localizations" : {
         "fi" : {
@@ -1620,6 +1647,18 @@
           }
         }
       }
+    },
+    "Unlimited Favorites" : {
+
+    },
+    "Unlock for" : {
+
+    },
+    "Upgrade" : {
+
+    },
+    "Upgrade to Unlimited" : {
+
     },
     "View Departure Data" : {
       "comment" : "A button label that, when tapped, presents a view displaying departure data for debugging purposes.",
@@ -1728,6 +1767,9 @@
           }
         }
       }
+    },
+    "You've reached the free limit of 2 favorites" : {
+
     },
     "Your departures at a glance" : {
       "localizations" : {
