@@ -17,7 +17,12 @@ struct Departure: Identifiable {
     let realtimeDepartureTime: Date // Actual predicted departure time (for timeline calculations)
     let platformCode: String? // Platform code (for trains and metro)
 
-    init(id: UUID = UUID(), departureTime: Date, routeShortName: String, headsign: String, mode: String? = nil, delaySeconds: Int = 0, realtimeDepartureTime: Date? = nil, platformCode: String? = nil) {
+    // Debug fields (optional, only populated for debug views)
+    let hasRealtimeData: Bool
+    let realtimeState: String?
+    let serviceDay: Double?
+
+    init(id: UUID = UUID(), departureTime: Date, routeShortName: String, headsign: String, mode: String? = nil, delaySeconds: Int = 0, realtimeDepartureTime: Date? = nil, platformCode: String? = nil, hasRealtimeData: Bool = false, realtimeState: String? = nil, serviceDay: Double? = nil) {
         self.id = id
         self.departureTime = departureTime
         self.routeShortName = routeShortName
@@ -27,6 +32,9 @@ struct Departure: Identifiable {
         // If realtime not provided, calculate it from scheduled + delay
         self.realtimeDepartureTime = realtimeDepartureTime ?? departureTime.addingTimeInterval(Double(delaySeconds))
         self.platformCode = platformCode
+        self.hasRealtimeData = hasRealtimeData
+        self.realtimeState = realtimeState
+        self.serviceDay = serviceDay
     }
 
     /// Delay in minutes (rounded)

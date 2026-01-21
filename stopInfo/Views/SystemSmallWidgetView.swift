@@ -50,14 +50,14 @@ struct SystemSmallWidgetView: View {
                                         .foregroundColor(.secondary)
                                         .lineLimit(1)
                                 }
-                                Text(WidgetViewFormatters.timeFormatter.string(from: departure.departureTime))
+                                Text(WidgetViewFormatters.timeFormatter.string(from: entry.displayTime(for: departure)))
                                     .font(.caption)
                                     .monospacedDigit()
                             }
                         }
 
                         // Destination with optional delay info
-                        if departure.shouldShowDelay {
+                        if !entry.useRealtimeDepartures && departure.shouldShowDelay {
                             Text("\(departure.headsign) · \(departure.delayMinutes) \(String(localized: "min late"))")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)

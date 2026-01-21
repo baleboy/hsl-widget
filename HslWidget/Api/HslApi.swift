@@ -194,6 +194,8 @@ class HslApi {
                     stoptimesWithoutPatterns(numberOfDepartures: \(numberOfResults)) {
                         scheduledDeparture
                         realtimeDeparture
+                        realtime
+                        realtimeState
                         serviceDay
                         departureDelay
                         headsign
@@ -239,9 +241,17 @@ class HslApi {
                         mode: mode,
                         delaySeconds: delaySeconds,
                         realtimeDepartureTime: realtimeDate,
-                        platformCode: platformCode
+                        platformCode: platformCode,
+                        hasRealtimeData: stopTime.realtime,
+                        realtimeState: stopTime.realtimeState,
+                        serviceDay: stopTime.serviceDay
                     )
                     result.append(departure)
+
+                    // Debug: log scheduled vs realtime
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "HH:mm:ss"
+                    debugLog("HslApi: \(shortName) scheduled=\(formatter.string(from: scheduledDate)) realtime=\(formatter.string(from: realtimeDate)) delay=\(delaySeconds)s hasRealtime=\(stopTime.realtime) state=\(stopTime.realtimeState ?? "nil")")
                 }
                 debugLog("HslApi: Fetched \(result.count) departures for stop \(stationId)")
                 return result

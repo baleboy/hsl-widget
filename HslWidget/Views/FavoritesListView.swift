@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreLocation
+import WidgetKit
 
 struct FavoritesListView: View {
     private static let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
@@ -277,6 +278,9 @@ struct FavoritesListView: View {
     private func refreshData() async {
         // Request fresh location
         locationManager.requestImmediateLocation()
+
+        // Also trigger widget timeline refresh
+        WidgetCenter.shared.reloadAllTimelines()
 
         // Small delay to allow location update to process
         try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds

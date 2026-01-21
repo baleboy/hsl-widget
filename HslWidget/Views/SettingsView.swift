@@ -16,6 +16,10 @@ struct SettingsView: View {
     private var backgroundLocationEnabled = false
     @AppStorage("numberOfDepartures", store: UserDefaults(suiteName: "group.balenet.widget"))
     private var numberOfDepartures = 2
+    #if DEBUG
+    @AppStorage("useRealtimeDepartures", store: UserDefaults(suiteName: "group.balenet.widget"))
+    private var useRealtimeDepartures = false
+    #endif
     @State private var showingDeleteConfirmation = false
     @State private var showingWidgetSetup = false
 
@@ -130,6 +134,28 @@ struct SettingsView: View {
 
                 #if DEBUG
                 Section {
+                    Toggle(isOn: $useRealtimeDepartures) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Show Realtime Departures")
+                                .font(.roundedHeadline)
+                            Text("Display predicted times instead of scheduled")
+                                .font(.roundedCaption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .onChange(of: useRealtimeDepartures) { _, _ in
+                        WidgetCenter.shared.reloadAllTimelines()
+                    }
+
+                    NavigationLink {
+                        DebugDeparturesView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "clock.badge.questionmark")
+                            Text("View Departure Data")
+                        }
+                    }
+
                     Button(role: .destructive, action: clearAllUserDefaults) {
                         HStack {
                             Image(systemName: "arrow.counterclockwise")
@@ -139,7 +165,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Debug")
                 } footer: {
-                    Text("Clears all UserDefaults including onboarding state. App will restart in onboarding mode.")
+                    Text("When enabled, the widget shows realtime (predicted) departure times like the official HSL app. When disabled, it shows scheduled times with delay indicators.")
                 }
                 #endif
             }

@@ -14,8 +14,8 @@ struct InlineWidgetView: View {
     var body: some View {
         if let nextDeparture = entry.departures.first {
             Label {
-                let timeText = WidgetViewFormatters.timeFormatter.string(from: nextDeparture.departureTime)
-                let delayText = nextDeparture.shouldShowDelay ? "+\(nextDeparture.delayMinutes)" : ""
+                let timeText = WidgetViewFormatters.timeFormatter.string(from: entry.displayTime(for: nextDeparture))
+                let delayText = (!entry.useRealtimeDepartures && nextDeparture.shouldShowDelay) ? "+\(nextDeparture.delayMinutes)" : ""
                 let platformText = nextDeparture.platformCode.map { " P\($0)" } ?? ""
                 Text("\(nextDeparture.routeShortName)\(platformText)•\(timeText)\(delayText)")
             } icon: {

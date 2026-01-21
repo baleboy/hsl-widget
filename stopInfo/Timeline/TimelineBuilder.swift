@@ -16,6 +16,14 @@ struct TimelineBuilder {
 
     private let favoritesManager = FavoritesManager.shared
     private let locationReader = SharedLocationReader()
+    private let sharedDefaults = UserDefaults(suiteName: "group.balenet.widget")
+
+    /// Whether to show realtime departures (debug setting)
+    private var useRealtimeDepartures: Bool {
+        let value = sharedDefaults?.bool(forKey: "useRealtimeDepartures") ?? false
+        debugLog("Widget: useRealtimeDepartures setting = \(value)")
+        return value
+    }
 
     /// Either returns a ready-made "no favorites" timeline, or a resolved closest stop
     enum FavoritesResolutionResult {
@@ -46,12 +54,17 @@ struct TimelineBuilder {
                 // 2. Fetch departures
                 let departures = await fetchFilteredDepartures(for: closestStop)
 
+                // Save fetch timestamp for debugging
+                sharedDefaults?.set(Date(), forKey: "widgetLastFetchTime")
+                sharedDefaults?.set(closestStop.name, forKey: "widgetLastFetchStop")
+
                 // 3. Build entries from departures
                 let entries = buildTimelineEntries(
                     for: closestStop,
                     departures: departures,
                     now: now,
-                    maxShown: maxShown
+                    maxShown: maxShown,
+                    useRealtimeDepartures: self.useRealtimeDepartures
                 )
 
                 // 4. Always return at least one entry to avoid stale widget content
@@ -59,7 +72,8 @@ struct TimelineBuilder {
                     ? [TimetableEntry(date: now,
                                       stopName: closestStop.name,
                                       departures: [],
-                                      state: .noDepartures)]
+                                      state: .noDepartures,
+                                      useRealtimeDepartures: self.useRealtimeDepartures)]
                     : entries
 
                 // 5. Refresh after 15 minutes
@@ -84,7 +98,8 @@ struct TimelineBuilder {
                 date: now,
                 stopName: "",
                 departures: [],
-                state: .noFavorites
+                state: .noFavorites,
+                useRealtimeDepartures: useRealtimeDepartures
             )
 
             let timeline = Timeline(
@@ -144,7 +159,8 @@ struct TimelineBuilder {
         for stop: Stop,
         departures: [Departure],
         now: Date,
-        maxShown: Int
+        maxShown: Int,
+        useRealtimeDepartures: Bool
     ) -> [TimetableEntry] {
 
         // Keep only departures in the future (based on realtime departure)
@@ -163,7 +179,8 @@ struct TimelineBuilder {
                 date: now,
                 stopName: stop.name,
                 departures: futureDepartures,
-                state: .normal
+                state: .normal,
+                useRealtimeDepartures: useRealtimeDepartures
             )
             return [entry]
         }
@@ -186,7 +203,8 @@ struct TimelineBuilder {
                 date: entryDate,
                 stopName: stop.name,
                 departures: validDepartures,
-                state: .normal
+                state: .normal,
+                useRealtimeDepartures: useRealtimeDepartures
             )
             entries.append(entry)
 

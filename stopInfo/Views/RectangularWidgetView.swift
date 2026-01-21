@@ -38,12 +38,12 @@ struct RectangularWidgetView: View {
                                     .foregroundColor(.secondary)
                                     .lineLimit(1)
                             }
-                            Text(WidgetViewFormatters.timeFormatter.string(from: departure.departureTime))
+                            Text(WidgetViewFormatters.timeFormatter.string(from: entry.displayTime(for: departure)))
                                 .font(entry.timeFont)
                                 .monospacedDigit()
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
-                            if departure.shouldShowDelay {
+                            if !entry.useRealtimeDepartures && departure.shouldShowDelay {
                                 Text("+\(departure.delayMinutes)")
                                     .font(entry.timeFont)
                                     .foregroundColor(.red)
