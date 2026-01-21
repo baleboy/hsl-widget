@@ -129,6 +129,7 @@
 		253BB8A52ED1EB3E000D30CC /* RectangularWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangularWidgetView.swift; sourceTree = "<group>"; };
 		253BB8A62ED1EB3E000D30CC /* SystemSmallWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSmallWidgetView.swift; sourceTree = "<group>"; };
 		253BB8A72ED1EB3E000D30CC /* WidgetViewFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetViewFormatters.swift; sourceTree = "<group>"; };
+		253E37CA2F209E0600D2EAF1 /* stopInfoExtension.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = stopInfoExtension.xctestplan; sourceTree = "<group>"; };
 		2542B3242EC3D25B002492BC /* FavoritesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesManager.swift; sourceTree = "<group>"; };
 		2542B3252EC3D25B002492BC /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2542B32E2EC5ACC8002492BC /* HeadsignCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsignCache.swift; sourceTree = "<group>"; };
@@ -272,6 +273,7 @@
 		25D19E4B2BE600920055E70E = {
 			isa = PBXGroup;
 			children = (
+				253E37CA2F209E0600D2EAF1 /* stopInfoExtension.xctestplan */,
 				5871DC542F01349100DC8964 /* hslWidget.storekit */,
 				25FA04342BEBD1BF0052A577 /* README.md */,
 				25FA04312BEB50F50052A577 /* stopInfoExtension.entitlements */,

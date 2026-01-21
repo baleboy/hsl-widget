@@ -154,6 +154,8 @@ final class ApiResponseDecodingTests: XCTestCase {
                             "serviceDay": 1700000000,
                             "scheduledDeparture": 3600,
                             "realtimeDeparture": 3600,
+                            "realtime": true,
+                            "realtimeState": "UPDATED",
                             "departureDelay": 0,
                             "headsign": null,
                             "trip": {

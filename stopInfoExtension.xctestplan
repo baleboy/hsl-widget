@@ -1,0 +1,48 @@
+{
+  "configurations" : [
+    {
+      "id" : "E860652E-9865-4DA0-A2D2-774BD15D01EF",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "_XCWidgetKind",
+        "value" : ""
+      },
+      {
+        "key" : "_XCWidgetDefaultView",
+        "value" : "timeline"
+      },
+      {
+        "key" : "_XCWidgetFamily",
+        "value" : "systemSmall"
+      },
+      {
+        "key" : "HSL_API_KEY",
+        "value" : "8ccd253267a4423ea1d0838e9ea9dc5e"
+      }
+    ],
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:HslWidget.xcodeproj",
+      "identifier" : "25D19E532BE600920055E70E",
+      "name" : "HslWidget"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:HslWidget.xcodeproj",
+        "identifier" : "2542B3392EC89D01002492BC",
+        "name" : "HslWidgetTests"
+      }
+    }
+  ],
+  "version" : 1
+}

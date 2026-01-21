@@ -141,6 +141,8 @@ struct TestFixtures {
                         "serviceDay": 1700000000,
                         "scheduledDeparture": 3600,
                         "realtimeDeparture": 3600,
+                        "realtime": true,
+                        "realtimeState": "UPDATED",
                         "departureDelay": 0,
                         "headsign": "Munkkiniemi",
                         "trip": {
@@ -154,6 +156,8 @@ struct TestFixtures {
                         "serviceDay": 1700000000,
                         "scheduledDeparture": 7200,
                         "realtimeDeparture": 7200,
+                        "realtime": true,
+                        "realtimeState": "UPDATED",
                         "departureDelay": 0,
                         "headsign": "Kamppi",
                         "trip": {
