@@ -43,13 +43,14 @@ struct RectangularWidgetView: View {
                                 .monospacedDigit()
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
+                        }
+                        .overlay(alignment: .topTrailing) {
                             if !entry.useRealtimeDepartures && departure.shouldShowDelay {
-                                Text("+\(departure.delayMinutes)")
-                                    .font(entry.timeFont)
-                                    .foregroundColor(.red)
-                                    .lineLimit(1)
+                                DelayBadgeView(delayMinutes: departure.delayMinutes, font: .system(size: 8, weight: .medium))
+                                    .offset(x: 6, y: -4)
                             }
                         }
+                        .padding(.trailing, 10)
                     }
                 }
             }

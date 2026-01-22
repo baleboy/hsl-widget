@@ -42,7 +42,7 @@ struct SystemSmallWidgetView: View {
 
                             Spacer()
 
-                            // Time with platform
+                            // Time with platform and delay badge
                             HStack(spacing: 2) {
                                 if let platformCode = departure.platformCode {
                                     Text("P\(platformCode)")
@@ -54,20 +54,20 @@ struct SystemSmallWidgetView: View {
                                     .font(.caption)
                                     .monospacedDigit()
                             }
+                            .overlay(alignment: .topTrailing) {
+                                if !entry.useRealtimeDepartures && departure.shouldShowDelay {
+                                    DelayBadgeView(delayMinutes: departure.delayMinutes, font: .system(size: 8, weight: .medium))
+                                        .offset(x: 6, y: -4)
+                                }
+                            }
+                            .padding(.trailing, 10)
                         }
 
-                        // Destination with optional delay info
-                        if !entry.useRealtimeDepartures && departure.shouldShowDelay {
-                            Text("\(departure.headsign) · \(departure.delayMinutes) \(String(localized: "min late"))")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        } else {
-                            Text(departure.headsign)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
+                        // Destination
+                        Text(departure.headsign)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
                     }
                 }
             }
