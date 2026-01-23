@@ -29,7 +29,7 @@ struct SystemSmallWidgetView: View {
                 ForEach(entry.departures.prefix(3)) { departure in
                     VStack(alignment: .leading, spacing: 1) {
                         HStack(spacing: 4) {
-                            // Route with icon
+                            // Route with icon and delay badge
                             HStack(spacing: 2) {
                                 Image(systemName: transitModeIconName(for: departure.mode))
                                     .foregroundColor(transitModeColor(for: departure.mode))
@@ -38,11 +38,14 @@ struct SystemSmallWidgetView: View {
                                     .font(.caption)
                                     .fontWeight(.medium)
                                     .lineLimit(1)
+                                if !entry.useRealtimeDepartures && departure.shouldShowDelay {
+                                    DelayBadgeView(delayMinutes: departure.delayMinutes, font: .system(size: 8, weight: .medium))
+                                }
                             }
 
                             Spacer()
 
-                            // Time with platform and delay badge
+                            // Time with platform
                             HStack(spacing: 2) {
                                 if let platformCode = departure.platformCode {
                                     Text("P\(platformCode)")
@@ -54,13 +57,6 @@ struct SystemSmallWidgetView: View {
                                     .font(.caption)
                                     .monospacedDigit()
                             }
-                            .overlay(alignment: .topTrailing) {
-                                if !entry.useRealtimeDepartures && departure.shouldShowDelay {
-                                    DelayBadgeView(delayMinutes: departure.delayMinutes, font: .system(size: 8, weight: .medium))
-                                        .offset(x: 6, y: -4)
-                                }
-                            }
-                            .padding(.trailing, 10)
                         }
 
                         // Destination

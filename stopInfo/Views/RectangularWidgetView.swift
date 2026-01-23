@@ -29,6 +29,9 @@ struct RectangularWidgetView: View {
                             Text(departure.routeShortName)
                                 .font(entry.routeFont)
                                 .lineLimit(1)
+                            if !entry.useRealtimeDepartures && departure.shouldShowDelay {
+                                DelayBadgeView(delayMinutes: departure.delayMinutes, font: .system(size: 8, weight: .medium))
+                            }
                         }
                         Spacer()
                         HStack(spacing: 2) {
@@ -44,13 +47,6 @@ struct RectangularWidgetView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
                         }
-                        .overlay(alignment: .topTrailing) {
-                            if !entry.useRealtimeDepartures && departure.shouldShowDelay {
-                                DelayBadgeView(delayMinutes: departure.delayMinutes, font: .system(size: 8, weight: .medium))
-                                    .offset(x: 6, y: -4)
-                            }
-                        }
-                        .padding(.trailing, 10)
                     }
                 }
             }
