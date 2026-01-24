@@ -20,7 +20,7 @@ struct TimelineBuilder {
 
     /// Whether to show realtime departures (debug setting)
     private var useRealtimeDepartures: Bool {
-        let value = sharedDefaults?.bool(forKey: "useRealtimeDepartures") ?? false
+        let value = sharedDefaults?.bool(forKey: "useRealtimeDepartures") ?? true
         debugLog("Widget: useRealtimeDepartures setting = \(value)")
         return value
     }

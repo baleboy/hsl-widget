@@ -19,7 +19,7 @@ struct SettingsView: View {
     private var numberOfDepartures = 2
     #if DEBUG
     @AppStorage("useRealtimeDepartures", store: UserDefaults(suiteName: "group.balenet.widget"))
-    private var useRealtimeDepartures = false
+    private var useRealtimeDepartures = true
     #endif
     @State private var showingDeleteConfirmation = false
     @State private var showingWidgetSetup = false
