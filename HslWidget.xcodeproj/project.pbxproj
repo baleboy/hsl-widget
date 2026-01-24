@@ -62,6 +62,8 @@
 		25D19E792BE755320055E70E /* stopInfoExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 25D19E692BE755310055E70E /* stopInfoExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		25D19E852BE79FFA0055E70E /* Departure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D19E842BE79FFA0055E70E /* Departure.swift */; };
 		25D19E862BE79FFA0055E70E /* Departure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D19E842BE79FFA0055E70E /* Departure.swift */; };
+		25ED44C72F2346F000A11CC5 /* PlatformBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25ED44C62F2346F000A11CC5 /* PlatformBadgeView.swift */; };
+		25ED44C82F2346F000A11CC5 /* PlatformBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25ED44C62F2346F000A11CC5 /* PlatformBadgeView.swift */; };
 		25FA04152BE7CB890052A577 /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA04142BE7CB890052A577 /* Stop.swift */; };
 		25FA041B2BE7DC130052A577 /* DepartureTimesQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA041A2BE7DC130052A577 /* DepartureTimesQueryResponse.swift */; };
 		25FA041D2BE7F5990052A577 /* HslApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA041C2BE7F5990052A577 /* HslApi.swift */; };
@@ -157,6 +159,7 @@
 		25D19E742BE755320055E70E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		25D19E762BE755320055E70E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		25D19E842BE79FFA0055E70E /* Departure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Departure.swift; sourceTree = "<group>"; };
+		25ED44C62F2346F000A11CC5 /* PlatformBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformBadgeView.swift; sourceTree = "<group>"; };
 		25FA04142BE7CB890052A577 /* Stop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stop.swift; sourceTree = "<group>"; };
 		25FA041A2BE7DC130052A577 /* DepartureTimesQueryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepartureTimesQueryResponse.swift; sourceTree = "<group>"; };
 		25FA041C2BE7F5990052A577 /* HslApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HslApi.swift; sourceTree = "<group>"; };
@@ -264,6 +267,7 @@
 		253BB8A82ED1EB3E000D30CC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				25ED44C62F2346F000A11CC5 /* PlatformBadgeView.swift */,
 				253E37CB2F21EEB200D2EAF1 /* DelayBadgeView.swift */,
 				253BB8A32ED1EB3E000D30CC /* EmptyStateView.swift */,
 				253BB8A42ED1EB3E000D30CC /* InlineWidgetView.swift */,
@@ -640,6 +644,7 @@
 			files = (
 				2597A03B2ED36FB500D81D27 /* HeadsignPreloader.swift in Sources */,
 				2597A03C2ED36FB500D81D27 /* SharedLocationReader.swift in Sources */,
+				25ED44C72F2346F000A11CC5 /* PlatformBadgeView.swift in Sources */,
 				2597A03D2ED36FB500D81D27 /* TimetableEntry.swift in Sources */,
 				2597A03E2ED36FB500D81D27 /* FavoritesManager.swift in Sources */,
 				2597A03F2ED36FB500D81D27 /* HeadsignCache.swift in Sources */,
@@ -712,6 +717,7 @@
 				253BB8AE2ED1EB3E000D30CC /* WidgetViewFormatters.swift in Sources */,
 				253BB8AF2ED1EB3E000D30CC /* WidgetTimelineProvider.swift in Sources */,
 				253BB89F2ED1EB2B000D30CC /* TimetableEntry.swift in Sources */,
+				25ED44C82F2346F000A11CC5 /* PlatformBadgeView.swift in Sources */,
 				25FA04272BEA16ED0052A577 /* Stop.swift in Sources */,
 				25FA04242BEA16AB0052A577 /* DepartureTimesQueryResponse.swift in Sources */,
 				25FA04222BEA14010052A577 /* HslApi.swift in Sources */,

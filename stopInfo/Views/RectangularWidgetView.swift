@@ -36,10 +36,7 @@ struct RectangularWidgetView: View {
                         Spacer()
                         HStack(spacing: 2) {
                             if let platformCode = departure.platformCode {
-                                Text("P\(platformCode)")
-                                    .font(entry.timeFont)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
+                                PlatformBadgeView(platformCode: platformCode, mode: departure.mode, font: entry.timeFont)
                             }
                             Text(WidgetViewFormatters.timeFormatter.string(from: entry.displayTime(for: departure)))
                                 .font(entry.timeFont)

@@ -48,10 +48,7 @@ struct SystemSmallWidgetView: View {
                             // Time with platform
                             HStack(spacing: 2) {
                                 if let platformCode = departure.platformCode {
-                                    Text("P\(platformCode)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .lineLimit(1)
+                                    PlatformBadgeView(platformCode: platformCode, mode: departure.mode, font: .caption)
                                 }
                                 Text(WidgetViewFormatters.timeFormatter.string(from: entry.displayTime(for: departure)))
                                     .font(.caption)
