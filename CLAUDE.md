@@ -9,8 +9,8 @@ HSL Widget is an iOS lock screen widget that displays real-time departure times 
 ## Build Commands
 
 - Open in Xcode: `xed .`
-- Build app and widget: `xcodebuild -scheme stopInfoExtension -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build`
-- Run tests: `xcodebuild test -scheme stopInfoExtension -destination 'platform=iOS Simulator,name=iPhone 16'`
+- Build app and widget: `xcodebuild -scheme stopInfoExtension -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17' build`
+- Run tests: `xcodebuild test -scheme stopInfoExtension -destination 'platform=iOS Simulator,name=iPhone 17'`
 
 The project has a single scheme `stopInfoExtension` that builds both targets (main app and widget extension). For development, prefer running this scheme in Xcode to preview widget timelines.
 
