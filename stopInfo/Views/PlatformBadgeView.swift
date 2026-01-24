@@ -17,9 +17,13 @@ struct PlatformBadgeView: View {
         mode?.uppercased() == "RAIL"
     }
 
+    private var platformAbbreviation: String {
+        String(localized: "platform_abbreviation", defaultValue: "P")
+    }
+
     var body: some View {
         if isRail {
-            Text("P\(platformCode)")
+            Text("\(platformAbbreviation)\(platformCode)")
                 .font(.system(size: 11, weight: .bold))
                 .foregroundColor(.white)
                 .padding(.horizontal, 4)
@@ -29,7 +33,7 @@ struct PlatformBadgeView: View {
                         .fill(.black)
                 )
         } else {
-            Text("P\(platformCode)")
+            Text("\(platformAbbreviation)\(platformCode)")
                 .font(font)
                 .foregroundColor(.secondary)
                 .lineLimit(1)
